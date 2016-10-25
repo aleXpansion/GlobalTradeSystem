@@ -63,11 +63,11 @@ public class BlockTrader extends BlockContainer implements ItemModelProvider{
 	 * for render
 	 */
 	public boolean isOpaqueCube(IBlockState state) {
-		return false;
+		return true;
 	}
 
 	public boolean isFullCube(IBlockState state) {
-		return false;
+		return true;
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class BlockTrader extends BlockContainer implements ItemModelProvider{
 	 * TESR's, 1 for liquids, -1 is no render
 	 */
 	public EnumBlockRenderType getRenderType(IBlockState state) {
-		return EnumBlockRenderType.ENTITYBLOCK_ANIMATED;
+		return EnumBlockRenderType.MODEL;
 	}
 
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess source, BlockPos pos) {

@@ -1,0 +1,29 @@
+{
+    "forge_marker": 1,
+    "defaults": {
+        "textures": {
+            "all": "gts:blocks/trader"
+        }
+    },
+    "variants": {
+        "normal": {
+            "model": "cube_all"
+        },
+        "inventory": {
+            "model": "cube_all"
+        },
+        "facing=north": {
+            "model": "cube_all"
+        },
+        "facing=east": {
+            "model": "cube_all"
+        },
+        "facing=south": {
+            "model": "cube_all"
+        },
+        "facing=west": {
+            "model": "cube_all"
+        }
+        
+    }
+}
