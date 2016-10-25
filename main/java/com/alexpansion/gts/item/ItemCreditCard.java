@@ -2,10 +2,14 @@ package com.alexpansion.gts.item;
 
 public class ItemCreditCard extends ItemGTS{
 
-	public ItemCreditCard(){
-		super("creditCard");
+	public ItemCreditCard(String name,int limit){
+		super(name);
 		this.setMaxStackSize(1);
-		this.setMaxDamage(1000);
+		this.setMaxDamage(limit);
+	}
+	
+	public ItemCreditCard(){
+		this("credit_card",1000);
 	}
 	
 }

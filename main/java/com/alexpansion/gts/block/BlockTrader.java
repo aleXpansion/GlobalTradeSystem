@@ -2,8 +2,10 @@ package com.alexpansion.gts.block;
 
 import javax.annotation.Nullable;
 
+import com.alexpansion.gts.GlobalTradeSystem;
 import com.alexpansion.gts.creativetab.CreativeTabGTS;
-import com.alexpansion.gts.tileentity.TileEntitySeller;
+import com.alexpansion.gts.item.ItemModelProvider;
+import com.alexpansion.gts.tileentity.TileEntityTrader;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -20,6 +22,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryHelper;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
@@ -34,7 +37,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.World;
 
-public class BlockSeller extends BlockContainer {
+public class BlockTrader extends BlockContainer implements ItemModelProvider{
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	protected static final AxisAlignedBB NORTH_CHEST_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0D, 0.9375D, 0.875D,
 			0.9375D);
@@ -47,8 +50,10 @@ public class BlockSeller extends BlockContainer {
 	protected static final AxisAlignedBB NOT_CONNECTED_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0625D, 0.9375D, 0.875D,
 			0.9375D);
 
-	public BlockSeller() {
+	public BlockTrader() {
 		super(Material.WOOD);
+		setUnlocalizedName("trader");
+		setRegistryName("trader");
 		this.setDefaultState(this.blockState.getBaseState().withProperty(FACING, EnumFacing.NORTH));
 		setCreativeTab(CreativeTabGTS.GTS_TAB);
 	}
@@ -138,8 +143,8 @@ public class BlockSeller extends BlockContainer {
 		if (stack.hasDisplayName()) {
 			TileEntity tileentity = worldIn.getTileEntity(pos);
 
-			if (tileentity instanceof TileEntitySeller) {
-				((TileEntitySeller) tileentity).setCustomName(stack.getDisplayName());
+			if (tileentity instanceof TileEntityTrader) {
+				((TileEntityTrader) tileentity).setCustomName(stack.getDisplayName());
 			}
 		}
 	}
@@ -201,7 +206,7 @@ public class BlockSeller extends BlockContainer {
 		super.neighborChanged(state, worldIn, pos, blockIn);
 		TileEntity tileentity = worldIn.getTileEntity(pos);
 
-		if (tileentity instanceof TileEntitySeller) {
+		if (tileentity instanceof TileEntityTrader) {
 			tileentity.updateContainingBlockInfo();
 		}
 	}
@@ -242,10 +247,10 @@ public class BlockSeller extends BlockContainer {
 	public ILockableContainer getContainer(World p_189418_1_, BlockPos p_189418_2_, boolean p_189418_3_) {
 		TileEntity tileentity = p_189418_1_.getTileEntity(p_189418_2_);
 
-		if (!(tileentity instanceof TileEntitySeller)) {
+		if (!(tileentity instanceof TileEntityTrader)) {
 			return null;
 		} else {
-			return (TileEntitySeller) tileentity;
+			return (TileEntityTrader) tileentity;
 
 		}
 	}
@@ -255,7 +260,7 @@ public class BlockSeller extends BlockContainer {
 	 * the block.
 	 */
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntitySeller();
+		return new TileEntityTrader();
 	}
 
 	/**
@@ -273,8 +278,8 @@ public class BlockSeller extends BlockContainer {
 			int i = 0;
 			TileEntity tileentity = blockAccess.getTileEntity(pos);
 
-			if (tileentity instanceof TileEntitySeller) {
-				i = ((TileEntitySeller) tileentity).numPlayersUsing;
+			if (tileentity instanceof TileEntityTrader) {
+				i = ((TileEntityTrader) tileentity).numPlayersUsing;
 			}
 
 			return MathHelper.clamp_int(i, 0, 15);
@@ -358,5 +363,10 @@ public class BlockSeller extends BlockContainer {
 
 	public static enum Type {
 		BASIC, TRAP;
+	}
+
+	@Override
+	public void registerItemModel(Item itemBlock) {
+		GlobalTradeSystem.proxy.registerItemRenderer(itemBlock, 0, "trader");
 	}
 }

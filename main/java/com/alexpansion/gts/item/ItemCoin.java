@@ -2,9 +2,9 @@ package com.alexpansion.gts.item;
 
 public class ItemCoin extends ItemGTS {
 
-	public ItemCoin(){
+	public ItemCoin() {
 		super("credit");
-		//this.setUnlocalizedName("Credit");
 	}
-	
+
+
 }

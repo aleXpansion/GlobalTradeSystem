@@ -22,9 +22,9 @@ public class ModItems {
 	
 	public static void init(){
 		
-		GameRegistry.register(CATALOG);
-		GameRegistry.registerItem(CREDIT, "gts:credit");
-		GameRegistry.registerItem(CREDIT_CARD, "gts:creditCard");
+		register(CATALOG);
+		register(CREDIT);
+		register(CREDIT_CARD);
 	}
 	
 	public static Collection<ItemGTS> getItems(){
@@ -33,6 +33,11 @@ public class ModItems {
 	
 	public static void register(ItemGTS item){
 		ITEMS.add(item);
+		GameRegistry.register(item);
+		
+		if(item instanceof ItemModelProvider){
+			((ItemModelProvider)item).registerItemModel(item);
+		}
 	}
 	
 }

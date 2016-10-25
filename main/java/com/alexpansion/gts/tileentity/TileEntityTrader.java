@@ -1,13 +1,11 @@
 package com.alexpansion.gts.tileentity;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-
 import javax.annotation.Nullable;
 
-import com.alexpansion.gts.block.BlockSeller;
+import com.alexpansion.gts.block.BlockTrader;
+import com.alexpansion.gts.exceptions.ValueOverflowException;
 import com.alexpansion.gts.init.ModItems;
+import com.alexpansion.gts.item.ItemCreditCard;
 import com.alexpansion.gts.utility.GTSUtil;
 import com.alexpansion.gts.utility.LogHelper;
 
@@ -31,7 +29,7 @@ import net.minecraft.util.datafix.FixTypes;
 import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.AxisAlignedBB;
 
-public class TileEntitySeller extends TileEntityLockableLoot implements ITickable, IInventory {
+public class TileEntityTrader extends TileEntityLockableLoot implements ITickable, IInventory {
 	private ItemStack[] chestContents = new ItemStack[27];
 	/** The current angle of the lid (between 0 and 1) */
 	public float lidAngle;
@@ -42,8 +40,10 @@ public class TileEntitySeller extends TileEntityLockableLoot implements ITickabl
 	/** Server sync counter (once per 20 ticks) */
 	private int ticksSinceSync;
 	private String customName;
+	private double change;
 
-	public TileEntitySeller() {
+	public TileEntityTrader() {
+		change = 0;
 	}
 
 	/**
@@ -199,9 +199,11 @@ public class TileEntitySeller extends TileEntityLockableLoot implements ITickabl
 		int k = this.pos.getZ();
 		++this.ticksSinceSync;
 
-		if ((this.ticksSinceSync + i + j + k) % 10 == 0) {
-			checkItems();
-		}
+		// if ((this.ticksSinceSync + i + j + k) % 10 == 0) {
+		checkItems();
+		// buyItem();
+		// sellItem();
+		// }
 
 		if (!this.worldObj.isRemote && this.numPlayersUsing != 0 && (this.ticksSinceSync + i + j + k) % 200 == 0) {
 			this.numPlayersUsing = 0;
@@ -281,8 +283,7 @@ public class TileEntitySeller extends TileEntityLockableLoot implements ITickabl
 
 	public void closeInventory(EntityPlayer player) {
 
-		//GTSUtil.addSellableItemById(264, 8192);
-		if (!player.isSpectator() && this.getBlockType() instanceof BlockSeller) {
+		if (!player.isSpectator() && this.getBlockType() instanceof BlockTrader) {
 			--this.numPlayersUsing;
 			this.worldObj.addBlockEvent(this.pos, this.getBlockType(), 1, this.numPlayersUsing);
 			this.worldObj.notifyNeighborsOfStateChange(this.pos, this.getBlockType());
@@ -339,103 +340,36 @@ public class TileEntitySeller extends TileEntityLockableLoot implements ITickabl
 	}
 
 	private void checkItems() {
-		HashMap<Item, Integer> totalSellables = new HashMap<Item, Integer>();
-		for (ItemStack stack : chestContents) {
-			if (stack != null) {
-				Item item = stack.getItem();
-
-				if (GTSUtil.canISell(item)) {
-					int count = stack.stackSize;
-					if (totalSellables.containsKey(item)) {
-						int prevcount = totalSellables.get(item);
-						totalSellables.put(item, prevcount + count);
-					} else {
-						totalSellables.put(item, count);
-					}
-				} else {
-				}
-			}
+		ItemStack lastStack = chestContents[chestContents.length - 1];
+		Item toBuy = null;
+		if (lastStack != null) {
+			toBuy = lastStack.getItem();
 		}
 
-		Iterator<Entry<Item, Integer>> iterator = totalSellables.entrySet().iterator();
-		while (iterator.hasNext()) {
-			Entry<Item, Integer> pair = iterator.next();
-			int count = pair.getValue();
-			Item item = pair.getKey();
-			sellItems(item, count);
-		}
+		buyItem(toBuy);
+		sellItem(toBuy);
 
 	}
 
-	/*
-	 * Attempts to sell count number of item. If the total value of those items
-	 * is less than one credit, does nothing. If there isn't enough room for the
-	 * resulting credits, does nothing.
-	 */
-	private void sellItems(Item item, int count) {
-		double value = GTSUtil.getValue(item) * count;
-		int totalValue = (int) Math.floor(value);
-		if (totalValue < 1) {
-			return;
-		}
-		count++;
-		do {
-			count--;
-			value = GTSUtil.getValue(item) * count;
-			totalValue = (int) Math.floor(value);
-		} while (value - totalValue > GTSUtil.getValue(item));
-
-		int countLeft = count;
-
-		// try to insert the credits
-		if (insertCredits(totalValue)) {
-
-			LogHelper.info(count + " " + item.getUnlocalizedName() + " sold for " + totalValue
-					+ " credits, value recieved: " + ((double) totalValue / count));
-			LogHelper.info(item.getUnlocalizedName() + " is currenty valued at " + GTSUtil.getValue(item));
-			GTSUtil.addValueSold(item, totalValue);
-
-			// remove the sold items from the chest
-			for (int i = 0; i < chestContents.length; i++) {
-				if (chestContents[i] != null) {
-					if (chestContents[i].getItem() == item) {
-						if (chestContents[i].stackSize <= countLeft) {
-							countLeft -= chestContents[i].stackSize;
-							chestContents[i] = null;
-							if (countLeft == 0) {
-								return;
-							}
-						} else {
-							chestContents[i].stackSize -= countLeft;
-							return;
-						}
-					}
-				}
-			}
-		} else {
-			return;
-		}
-		LogHelper.error("Reached end of sellItems with " + countLeft + " left to sell.");
-	}
-
-	/*
+	/**
 	 * Attempts to insert creditCount credits into the inventory. If there's
 	 * room, inserts the credits and returns true. If there isn't room, returns
 	 * false without making any changes.
 	 */
 	private boolean insertCredits(int creditCount) {
 
+		//LogHelper.info("Inserting "+creditCount+" credits");
 		int limit = getInventoryStackLimit();
 		int toInsert = creditCount;
 
 		// make sure we have room for the credits
 		for (ItemStack stack : chestContents) {
-			if (stack == null) {
-				toInsert -= getInventoryStackLimit();
-			} else if (stack.getItem() == ModItems.CREDIT_CARD) {
-				toInsert -= stack.getMaxDamage() - stack.getItemDamage();
-			} else if (stack.getItem() == ModItems.CREDIT) {
-				toInsert -= (limit - stack.stackSize);
+			if(stack == null){
+				toInsert -= 64;
+			}else if(stack.getItem() instanceof ItemCreditCard){
+				toInsert -= stack.getItemDamage();
+			}else if(stack.getItem() == ModItems.CREDIT){
+				toInsert -= stack.getMaxStackSize() - stack.stackSize;
 			}
 		}
 
@@ -449,14 +383,19 @@ public class TileEntitySeller extends TileEntityLockableLoot implements ITickabl
 		for (int i = 0; i < chestContents.length; i++) {
 			if (chestContents[i] != null) {
 				if (chestContents[i].getItem() == ModItems.CREDIT_CARD) {
-					int cardCapacity = chestContents[i].getMaxDamage() - chestContents[i].getItemDamage();
-					if (cardCapacity >= toInsert) {
-						chestContents[i].setItemDamage(chestContents[i].getItemDamage() + toInsert);
-						LogHelper.info("Card damage now set to: " + chestContents[i].getItemDamage());
-						return true;
-					}else if(cardCapacity < toInsert){
-						toInsert-=cardCapacity;
-						chestContents[i].setItemDamage(chestContents[i].getMaxDamage());
+					try {
+						int cardCapacity = chestContents[i].getItemDamage();
+						if (cardCapacity >= toInsert) {
+							GTSUtil.addValue(chestContents[i], toInsert);
+							return true;
+						} else if (cardCapacity < toInsert) {
+							toInsert -= cardCapacity;
+							chestContents[i].setItemDamage(0);
+						}
+					} catch (ValueOverflowException e) {
+						LogHelper.error("U02: ValueOverflowExeption after checking there was capacity.");
+						LogHelper.error("Exception: " + e.getMessage());
+						e.printStackTrace();
 					}
 				}
 			}
@@ -487,9 +426,139 @@ public class TileEntitySeller extends TileEntityLockableLoot implements ITickabl
 		}
 
 		// throw an error if we run out of room - should never run.
-		LogHelper.error("insertCredits ran out of room after making sure it had enough room.");
+		LogHelper.error("U04: insertCredits ran out of room after making sure it had enough room.");
 		return false;
 
 	}
 
+	private int getCreditCount() {
+		int creditCount = 0;
+		for (ItemStack stack : chestContents) {
+			creditCount += GTSUtil.getValue(stack);
+			//LogHelper.info("Trader contains "+creditCount+" credits");
+		}
+		return creditCount;
+	}
+
+	private void removeCredits(int toRemove) {
+		for (int i = 0; i < chestContents.length; i++) {
+			ItemStack stack = chestContents[i];
+
+			if (stack != null) {
+				if (stack.getItem() == ModItems.CREDIT) {
+					if (stack.stackSize <= toRemove) {
+						toRemove -= stack.stackSize;
+						chestContents[i] = null;
+					} else if (stack.stackSize > toRemove) {
+						chestContents[i].stackSize -= toRemove;
+						return;
+					}
+				}
+			}
+		}
+		for (int i = 0; i < chestContents.length; i++) {
+			ItemStack stack = chestContents[i];
+
+			if (stack != null) {
+				try {
+					if (stack.getItem() == ModItems.CREDIT_CARD) {
+						int value = GTSUtil.getValue(stack);
+						if (value <= toRemove) {
+							toRemove -= stack.getMaxDamage() - value;
+							GTSUtil.removeValue(stack, stack.getMaxDamage() - value);
+						} else if (value > toRemove) {
+							GTSUtil.removeValue(stack, toRemove);;
+							return;
+						}
+					}
+				} catch (ValueOverflowException e) {
+					LogHelper.error("U03: ValueOverflowExeption after checking there was sufficient value.");
+					LogHelper.error("Exception: " + e.getMessage());
+					e.printStackTrace();
+				}
+
+			}
+		}
+	}
+
+	private void sellItem(Item ignore) {
+
+		// for every stack in the chest
+		for (int i = 0; i < chestContents.length - 1; i++) {
+
+			// if it's neither null nor ignore
+			if (chestContents[i] != null && chestContents[i].getItem() != ignore) {
+				Item item = chestContents[i].getItem();
+				if (GTSUtil.canISell(item)) {
+					double itemValue = GTSUtil.getValue(item) * .8;
+					LogHelper.info("Selling " + item.getUnlocalizedName() + " for " + itemValue);
+
+					// if adding this value will bring change over 1, attempt to
+					// insert credits as needed. Return if that fails
+					if ((int) (change + itemValue) >= 1) {
+						if (!insertCredits((int) (change + itemValue))) {
+							return;
+						} else {
+							change = (change + itemValue) - (int) (change + itemValue);
+						}
+					} else {
+						
+						change += itemValue;
+					}
+					
+					//LogHelper.info("change is now at "+change);
+
+					// actually remove the item
+					if (chestContents[i].stackSize == 1) {
+						chestContents[i] = null;
+					} else {
+						chestContents[i].stackSize = chestContents[i].stackSize - 1;
+					}
+
+					GTSUtil.addValueSold(item, itemValue);
+					return;
+				}
+			}
+		}
+	}
+
+	private void buyItem(Item toBuy) {
+		if (toBuy == null || !GTSUtil.canIBuy(toBuy)) {
+			return;
+		}
+		double value = GTSUtil.getValue(toBuy);
+		if (getCreditCount() + change < value) {
+			return;
+		}
+		LogHelper.info("Buying " + toBuy.getUnlocalizedName() + " for " + value);
+		for (int i = 0; i < chestContents.length - 1; i++) {
+			if (chestContents[i] != null && chestContents[i].getItem() == toBuy) {
+				if (chestContents[i].getItem() == null) {
+					LogHelper.error("ItemStack with null item");
+				} else {
+					if (chestContents[i].stackSize < chestContents[i].getMaxStackSize()) {
+						chestContents[i].stackSize++;
+						GTSUtil.addValueSold(toBuy, 0 - value);
+						removeCredits(value);
+						return;
+					}
+				}
+			}
+		}
+		for (int i = 0; i < chestContents.length - 1; i++) {
+			if (chestContents[i] == null) {
+				chestContents[i] = new ItemStack(toBuy);
+				return;
+			}
+		}
+	}
+
+	private void removeCredits(double value) {
+		change -= value;
+		if (change < 0) {
+			int toRemove = (int) Math.ceil(0 - change);
+			removeCredits(toRemove);
+			change += toRemove;
+		}
+	}
 }
