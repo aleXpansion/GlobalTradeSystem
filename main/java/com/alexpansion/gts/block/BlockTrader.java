@@ -260,7 +260,7 @@ public class BlockTrader extends BlockContainer implements ItemModelProvider{
 	 * the block.
 	 */
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
-		return new TileEntityTrader();
+		return new TileEntityTrader(worldIn);
 	}
 
 	/**

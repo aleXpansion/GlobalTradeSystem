@@ -3,7 +3,7 @@
   "modid": "gts",
   "name": "Global Trade System",
   "description": "Sell stuff, buy stuff",
-  "version": "0.1",
+  "version": "1.10.2-0.1.3",
   "mcversion": "1.10.2",
   "authorList": ["Alexpansion"],
   "credits": "I'd like to thank my mother and father."

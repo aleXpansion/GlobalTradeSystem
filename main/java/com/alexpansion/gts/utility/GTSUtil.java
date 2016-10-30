@@ -2,35 +2,55 @@ package com.alexpansion.gts.utility;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import com.alexpansion.gts.exceptions.ValueOverflowException;
 import com.alexpansion.gts.handler.ConfigurationHandler;
-import com.alexpansion.gts.init.ModItems;
-import com.alexpansion.gts.item.ItemCreditCard;
-
+import com.alexpansion.gts.item.IValueContainer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class GTSUtil {
 
 	public static HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
 	public static HashMap<Item, Integer> valueSoldMap = new HashMap<Item, Integer>();
 	public static HashMap<Item, Double> changeMap = new HashMap<Item, Double>();
+	public static HashMap<Item, Double> valueMap = new HashMap<Item, Double>();
 	public static int totalValueSold = 0;
+	private static boolean valuesLoaded = false;
 
 	public static boolean canISell(Item item) {
+		/*
+		 * if (!valuesLoaded) { return false; }
+		 */
+
 		return baseValueMap.containsKey(item);
 
 	}
 
 	public static double getValue(Item item) {
+		if (!canISell(item)) {
+			return 0;
+		}
+		// totalValueSold=0;
+		// valueSoldMap = new HashMap<Item, Integer>();
+		if (!valueMap.containsKey(item)) {
+			calculateValue(item);
+		}
+		// LogHelper.info(item.getUnlocalizedName()+" is worth
+		// "+valueMap.get(item));
+		return valueMap.get(item);
+	}
+
+	public static void calculateValue(Item item) {
 		if (totalValueSold == 0) {
 			totalValueSold = 1;
 		}
 		if (valueSoldMap.containsKey(item)) {
 			int rampUp = ConfigurationHandler.rampUpCredits;
 			double multiplier = ConfigurationHandler.depreciationMultiplier;
-			multiplier = (totalValueSold / 15000) + 1;
+			// multiplier = (totalValueSold / 15000) + 1;
+			multiplier = 1;
 			rampUp = 10000;
 			int valueSold = valueSoldMap.get(item);
 			double newValue = baseValueMap.get(item);
@@ -44,11 +64,10 @@ public class GTSUtil {
 			}
 			// LogHelper.info(item.getUnlocalizedName() + " is worth " +
 			// newValue);
-			return newValue;
+			valueMap.put(item, newValue);
 		} else if (baseValueMap.containsKey(item)) {
-			return baseValueMap.get(item);
-		} else {
-			return 0;
+			int base = baseValueMap.get(item);
+			valueMap.put(item, (double) base);
 		}
 	}
 
@@ -63,7 +82,7 @@ public class GTSUtil {
 		int i = 0;
 		for (Map.Entry<Item, Integer> pair : baseValueMap.entrySet()) {
 			if (pair.getKey() != null) {
-				output[i] = pair.getKey().getUnlocalizedName() + "," + pair.getValue();
+				output[i] = pair.getKey().getRegistryName() + "," + pair.getValue();
 			} else {
 				output[i] = "null";
 			}
@@ -82,14 +101,10 @@ public class GTSUtil {
 	 *            The stack to be examined
 	 * @return int The value of the examined stack, in credits
 	 */
+	@Deprecated
 	public static int getValue(ItemStack stack) {
-		if (stack == null) {
-			return 0;
-		}
-		if (stack.getItem() == ModItems.CREDIT) {
-			return stack.stackSize;
-		} else if (stack.getItem() == ModItems.CREDIT_CARD) {
-			return stack.getMaxDamage() - stack.getItemDamage();
+		if (stack != null && stack.getItem() instanceof IValueContainer) {
+			return ((IValueContainer) stack.getItem()).getValue(stack);
 		} else {
 			return 0;
 		}
@@ -99,84 +114,33 @@ public class GTSUtil {
 	 * Removes the given value from the given stack. If the given stack is not a
 	 * credit-storing item, or the stack does not have enough value, throws an
 	 * InsufficientValueExeption with the stack and the remaining value to be
-	 * removed. 
-	 * If the stack is valid for removing value, but does have enough
+	 * removed. If the stack is valid for removing value, but does have enough
 	 * value to remove as much as requested, it does remove the valued before
 	 * throwing the exception.
 	 * 
-	 * @param stack		The stack to remove from
-	 * @param toRemove	The amount to remove
-	 * @return			The resulting stack
-	 * @throws ValueOverflowException	Thrown if an invalid stack is given
+	 * @param stack
+	 *            The stack to remove from
+	 * @param toRemove
+	 *            The amount to remove
+	 * @return The resulting stack
+	 * @throws ValueOverflowException
+	 *             Thrown if an invalid stack is given
 	 */
+	@Deprecated
 	public static ItemStack removeValue(ItemStack stack, int toRemove) throws ValueOverflowException {
-		if (stack == null) {
-			throw new ValueOverflowException(stack, toRemove);
+		if (stack != null && stack.getItem() instanceof IValueContainer) {
+			return ((IValueContainer) stack.getItem()).removeValue(stack, toRemove);
 		}
-		if (stack.getItem() == ModItems.CREDIT) {
-			if (toRemove == stack.stackSize) {
-				return null;
-			} else if (toRemove < stack.stackSize) {
-				stack.stackSize -= toRemove;
-				return stack;
-			} else if (toRemove > stack.stackSize) {
-				int excess = toRemove - stack.stackSize;
-				stack = null;
-				throw new ValueOverflowException(stack, excess);
-			}
-		} else if (stack.getItem() == ModItems.CREDIT_CARD) {
-			int value = stack.getMaxDamage() - stack.getItemDamage();
-			if (value < toRemove) {
-				int excess = toRemove - value;
-				stack.setItemDamage(stack.getMaxDamage());
-				throw new ValueOverflowException(stack, excess);
-			} else if (value >= toRemove) {
-				value -= toRemove;
-				stack.setItemDamage(stack.getMaxDamage() - value);
-				return stack;
-			}
-		} else {
-			throw new ValueOverflowException(stack, toRemove);
-		}
-		LogHelper.error("U01: Unreachable code reached: the end of removeValue in GTSUtil");
-		return null;
+		throw new ValueOverflowException(stack, toRemove);
 	}
 
-	
+	@Deprecated
 	public static ItemStack addValue(ItemStack stack, int toAdd) throws ValueOverflowException {
-		if(stack == null){
-			stack = new ItemStack(ModItems.CREDIT);
-			if(toAdd>stack.getMaxStackSize()){
-				stack.stackSize = stack.getMaxStackSize();
-				toAdd -= stack.getMaxStackSize();
-				throw new ValueOverflowException(stack,toAdd);
-			}else{
-				stack.stackSize = toAdd;
-				return stack;
-			}
+
+		if (stack != null && stack.getItem() instanceof IValueContainer) {
+			return ((IValueContainer) stack.getItem()).addValue(stack, toAdd);
 		}
-		if(stack.getItem() instanceof ItemCreditCard){
-			if(toAdd<=stack.getItemDamage()){
-				stack.setItemDamage(stack.getItemDamage()-toAdd);
-				return stack;
-			}else{
-				toAdd -= stack.getItemDamage();
-				stack.setItemDamage(stack.getItemDamage());
-				throw new ValueOverflowException(stack,toAdd);
-			}
-		}else if(stack.getItem()==ModItems.CREDIT){
-			int toLimit = stack.getMaxStackSize()-stack.stackSize;
-			if(toAdd <= toLimit){
-				stack.stackSize += toAdd;
-				return stack;
-			}else{
-				toAdd -= toLimit;
-				stack.stackSize = stack.getMaxStackSize();
-				throw new ValueOverflowException(stack,toAdd);
-			}
-		}else{
-			throw new ValueOverflowException(stack,toAdd);
-		}
+		throw new ValueOverflowException(stack, toAdd);
 	}
 
 	public static void initItemValues() {
@@ -275,7 +239,8 @@ public class GTSUtil {
 		addSellableItem(Item.getItemById(id), value);
 	}
 
-	public static void addValueSold(Item item, int value) {
+	public static void addValueSold(Item item, int value, World world) {
+		ValueSavedData data = ValueSavedData.get(world);
 		if (!valueSoldMap.containsKey(item)) {
 			valueSoldMap.put(item, value);
 		} else {
@@ -287,20 +252,70 @@ public class GTSUtil {
 				+ valueSoldMap.get(item) + ". "
 				+ (int) Math.floor((double) valueSoldMap.get(item) / totalValueSold * 100)
 				+ " percent of total sales.");
+
+		calculateValue(item);
+		data.saveValues(valueSoldMap);
+		data.setTotal(totalValueSold);
+
 	}
 
-	public static void addValueSold(Item item, double value) {
+	public static void addValueSold(Item item, double value, World world) {
 		if (changeMap.containsKey(item)) {
 			value += changeMap.get(item);
 		}
 		if (value > 1 || value < -1) {
-			addValueSold(item, (int) value);
+			addValueSold(item, (int) value, world);
 		}
 		changeMap.put(item, value % 1);
 	}
 
 	public static boolean canIBuy(Item item) {
 		return valueSoldMap.containsKey(item);
+	}
+
+	public static void updateBaseValues(String[] input) {
+		HashMap<Item, Integer> newMap = new HashMap<Item, Integer>();
+
+		for (String line : input) {
+			if ("null".equalsIgnoreCase(line)) {
+				continue;
+			}
+			String[] values = line.split(",");
+			Item key = getItemFromRegistryName(values[0]);
+			if (key != null) {
+				newMap.put(key, Integer.parseInt(values[1]));
+			}
+		}
+
+		baseValueMap = newMap;
+
+	}
+
+	@SuppressWarnings("deprecation")
+	public static Item getItemFromRegistryName(String name) {
+		try {
+			String[] splitName = name.split(":");
+			return GameRegistry.findItem(splitName[0], splitName[1]);
+		} catch (NullPointerException e) {
+			LogHelper.error("NPE in getItemFromUnlocalizedName with value: " + name);
+			return null;
+		}
+	}
+
+	public static void loadValues(World world) {
+		valuesLoaded = true;
+		ValueSavedData data = ValueSavedData.get(world);
+		if (!data.areValuesLoaded()) {
+			valuesLoaded = false;
+			data.markDirty();
+		} else {
+			valueSoldMap = data.getValues();
+			totalValueSold = data.getTotal();
+		}
+	}
+
+	public static boolean areValuesLoaded() {
+		return valuesLoaded;
 	}
 
 }

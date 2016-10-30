@@ -16,6 +16,9 @@ public class ModRecipes {
 		ItemStack newCard = new ItemStack(ModItems.CREDIT_CARD);
 		newCard.setItemDamage(1000);
 		GameRegistry.addShapedRecipe(newCard, new Object[] {" # ","#@#"," # ",'#',ModItems.CREDIT,'@',Items.PAPER});
+		newCard = new ItemStack(ModItems.CREDIT_CARD2);
+		newCard.setItemDamage(1000);
+		GameRegistry.addShapedRecipe(newCard, new Object[] {" # ","#@#"," # ",'#',ModItems.CREDIT,'@',ModItems.CREDIT_CARD});
 	}
 
 }

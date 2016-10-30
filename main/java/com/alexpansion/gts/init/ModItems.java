@@ -18,6 +18,7 @@ public class ModItems {
 	public static final ItemGTS CATALOG = new ItemCatalog();
 	public static final ItemGTS CREDIT = new ItemCoin();
 	public static final ItemGTS CREDIT_CARD = new ItemCreditCard();
+	public static final ItemGTS CREDIT_CARD2 = new ItemCreditCard("credit_card2",100000); 
 	
 	
 	public static void init(){
@@ -25,6 +26,7 @@ public class ModItems {
 		register(CATALOG);
 		register(CREDIT);
 		register(CREDIT_CARD);
+		register(CREDIT_CARD2);
 	}
 	
 	public static Collection<ItemGTS> getItems(){

@@ -15,6 +15,7 @@ public class ConfigurationHandler {
 	public static int rampUpCredits;
 	public static double depreciationMultiplier;
 	public static String[] configValues;
+	public static double saleMultiplier;
 	
 	public static final String DEPRECIATION_CATAGORY = "depreciation";
 
@@ -31,7 +32,7 @@ public class ConfigurationHandler {
 	public void onConfigChangedEvent(ConfigChangedEvent event) {
 		if (event.getModID().equalsIgnoreCase(Reference.MOD_ID)) {
 			loadConfiguration();
-		}
+		}configuration.getConfigFile();
 	}
 
 	private static void loadConfiguration() {
@@ -43,11 +44,14 @@ public class ConfigurationHandler {
 				"The multiplier used when calculating depreciation. Note: If this is less than 0, value will increase over time.");
 		
 		configValues = configuration.getStringList("Values", DEPRECIATION_CATAGORY, GTSUtil.getDefaultValues(), "The base values for all the items.");
-		//TODO add values config
-
+		
+		saleMultiplier = configuration.getFloat("Sale Multiplier", DEPRECIATION_CATAGORY, (float) 0.9, 0, 1, "Multiplier applied when selling items.");
+		
 		if (configuration.hasChanged()) {
 			configuration.save();
 		}
+		
+		GTSUtil.updateBaseValues(configValues);
 
 	}
 }
