@@ -152,8 +152,8 @@ public class GTSUtil {
 		addSellableItemById(6, 32);
 		addSellableItemById(12, 1);
 		addSellableItemById(13, 4);
-		addSellableItemById(14, 1024);
-		addSellableItemById(15, 128);
+		addSellableItemById(14, 4096);
+		addSellableItemById(15, 512);
 		addSellableItemById(16, 64);
 		addSellableItemById(17, 32);
 		addSellableItemById(18, 1);
@@ -232,6 +232,15 @@ public class GTSUtil {
 		addSellableItemById(121, 2);
 		addSellableItemById(122, 73728);
 		addSellableItemById(123, 1792);
+		addSellableItemById(129, 4096);
+		addSellableItemById(130, 2304);
+		addSellableItemById(131,134);
+		addSellableItemById(133,73728);
+		addSellableItemById(143,8);
+		addSellableItemById(152,576);
+		addSellableItemById(159,256);
+		addSellableItemById(162,32);
+		addSellableItemById(165,216);
 		addSellableItemById(264, 8192);
 	}
 
