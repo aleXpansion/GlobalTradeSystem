@@ -13,7 +13,7 @@ public class CreativeTabGTS {
 		
 		@Override
 		public Item getTabIconItem(){
-			return ModItems.CATALOG;
+			return ModItems.CREDIT_CARD;
 		}
 	};
 }
