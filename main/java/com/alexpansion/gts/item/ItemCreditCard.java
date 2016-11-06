@@ -8,8 +8,6 @@ import com.alexpansion.gts.utility.LogHelper;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 
 public class ItemCreditCard extends ItemGTS implements IValueContainer{
 	

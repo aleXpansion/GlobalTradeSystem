@@ -10,8 +10,7 @@ import net.minecraft.util.ResourceLocation;
 
 public class GuiTileEntityTrader extends GuiContainer {
 
-	private static final ResourceLocation TRADER_GUI_TEXTURE = new ResourceLocation("textures/gui/container/generic_54.png");
-	private int inventoryRows = 3;
+	private static final ResourceLocation TRADER_GUI_TEXTURE = new ResourceLocation("gts","textures/gui/trader.png");
 	private IInventory playerInv;
 	private TileEntityTrader te;
 	
@@ -30,8 +29,7 @@ public class GuiTileEntityTrader extends GuiContainer {
         this.mc.getTextureManager().bindTexture(TRADER_GUI_TEXTURE);
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
-        this.drawTexturedModalRect(i, j, 0, 0, this.xSize, this.inventoryRows * 18 + 17);
-        this.drawTexturedModalRect(i, j + this.inventoryRows * 18 + 17, 0, 126, this.xSize, 96);
+        this.drawTexturedModalRect(i, j, 0, 0, 175, 222);
     }
 	
 	protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY)

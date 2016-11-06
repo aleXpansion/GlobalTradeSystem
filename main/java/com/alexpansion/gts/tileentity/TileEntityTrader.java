@@ -1,10 +1,9 @@
 package com.alexpansion.gts.tileentity;
 
 import javax.annotation.Nullable;
-import javax.security.auth.login.Configuration;
-
 import com.alexpansion.gts.block.BlockTrader;
 import com.alexpansion.gts.exceptions.ValueOverflowException;
+import com.alexpansion.gts.guicontainer.ContainerTileEntityTrader;
 import com.alexpansion.gts.handler.ConfigurationHandler;
 import com.alexpansion.gts.init.ModItems;
 import com.alexpansion.gts.item.IValueContainer;
@@ -14,7 +13,6 @@ import com.alexpansion.gts.utility.LogHelper;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
-import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
@@ -26,20 +24,11 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.util.ITickable;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.datafix.DataFixer;
-import net.minecraft.util.datafix.FixTypes;
-import net.minecraft.util.datafix.walkers.ItemStackDataLists;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.world.World;
 
 public class TileEntityTrader extends TileEntityLockableLoot implements ITickable, IInventory {
-	private ItemStack[] chestContents = new ItemStack[27];
-	/** The current angle of the lid (between 0 and 1) */
-	public float lidAngle;
-	/** The angle of the lid last tick */
-	public float prevLidAngle;
-	/** The number of players currently using this chest */
+	private ItemStack[] chestContents = new ItemStack[29];
 	public int numPlayersUsing;
 	/** Server sync counter (once per 20 ticks) */
 	private int ticksSinceSync;
@@ -62,7 +51,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	 * Returns the number of slots in the inventory.
 	 */
 	public int getSizeInventory() {
-		return 27;
+		return 29;
 	}
 
 	/**
@@ -114,7 +103,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	 * Get the name of this object. For players this returns their username
 	 */
 	public String getName() {
-		return this.hasCustomName() ? this.customName : "container.chest";
+		return this.hasCustomName() ? this.customName : "container.trader";
 	}
 
 	/**
@@ -126,10 +115,6 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 
 	public void setCustomName(String name) {
 		this.customName = name;
-	}
-
-	public static void func_189677_a(DataFixer p_189677_0_) {
-		p_189677_0_.registerWalker(FixTypes.BLOCK_ENTITY, new ItemStackDataLists("Chest", new String[] { "Items" }));
 	}
 
 	public void readFromNBT(NBTTagCompound compound) {
@@ -211,11 +196,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 		int k = this.pos.getZ();
 		++this.ticksSinceSync;
 
-		// if ((this.ticksSinceSync + i + j + k) % 10 == 0) {
 		checkItems();
-		// buyItem();
-		// sellItem();
-		// }
 
 		if (!this.worldObj.isRemote && this.numPlayersUsing != 0 && (this.ticksSinceSync + i + j + k) % 200 == 0) {
 			this.numPlayersUsing = 0;
@@ -234,40 +215,6 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 			}
 		}
 
-		this.prevLidAngle = this.lidAngle;
-		if (this.numPlayersUsing > 0 && this.lidAngle == 0.0F) {
-			double d1 = (double) i + 0.5D;
-			double d2 = (double) k + 0.5D;
-
-			this.worldObj.playSound((EntityPlayer) null, d1, (double) j + 0.5D, d2, SoundEvents.BLOCK_CHEST_OPEN,
-					SoundCategory.BLOCKS, 0.5F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
-		}
-
-		if (this.numPlayersUsing == 0 && this.lidAngle > 0.0F || this.numPlayersUsing > 0 && this.lidAngle < 1.0F) {
-			float f2 = this.lidAngle;
-
-			if (this.numPlayersUsing > 0) {
-				this.lidAngle += 0.1F;
-			} else {
-				this.lidAngle -= 0.1F;
-			}
-
-			if (this.lidAngle > 1.0F) {
-				this.lidAngle = 1.0F;
-			}
-
-			if (this.lidAngle < 0.5F && f2 >= 0.5F) {
-				double d3 = (double) i + 0.5D;
-				double d0 = (double) k + 0.5D;
-
-				this.worldObj.playSound((EntityPlayer) null, d3, (double) j + 0.5D, d0, SoundEvents.BLOCK_CHEST_CLOSE,
-						SoundCategory.BLOCKS, 0.5F, this.worldObj.rand.nextFloat() * 0.1F + 0.9F);
-			}
-
-			if (this.lidAngle < 0.0F) {
-				this.lidAngle = 0.0F;
-			}
-		}
 	}
 
 	public boolean receiveClientEvent(int id, int type) {
@@ -309,6 +256,12 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	 * stack size) into the given slot.
 	 */
 	public boolean isItemValidForSlot(int index, ItemStack stack) {
+		if(index == 0){
+			return GTSUtil.canIBuy(stack.getItem());
+		}
+		if(index == 1){
+			return stack.getItem() instanceof IValueContainer;
+		}
 		return true;
 	}
 
@@ -321,41 +274,25 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	}
 
 	public String getGuiID() {
-		return "minecraft:chest";
+		return "gts:trader";
 	}
 
 	public Container createContainer(InventoryPlayer playerInventory, EntityPlayer playerIn) {
-		return new ContainerChest(playerInventory, this, playerIn);
-	}
-
-	public int getField(int id) {
-		return 0;
-	}
-
-	public void setField(int id, int value) {
-	}
-
-	public int getFieldCount() {
-		return 0;
+		return new ContainerTileEntityTrader(playerInventory, this);
 	}
 
 	public void clear() {
-		this.fillWithLoot((EntityPlayer) null);
 
 		for (int i = 0; i < this.chestContents.length; ++i) {
 			this.chestContents[i] = null;
 		}
 	}
 
-	public net.minecraftforge.items.IItemHandler getSingleChestHandler() {
-		return super.getCapability(net.minecraftforge.items.CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-	}
-
 	private void checkItems() {
-		ItemStack lastStack = chestContents[chestContents.length - 1];
+		ItemStack target = chestContents[0];
 		Item toBuy = null;
-		if (lastStack != null) {
-			toBuy = lastStack.getItem();
+		if (target != null) {
+			toBuy = target.getItem();
 		}
 
 		buyItem(toBuy);
@@ -370,20 +307,19 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	 */
 	private boolean insertCredits(int creditCount) {
 
-		// LogHelper.info("Inserting "+creditCount+" credits");
-		int limit = getInventoryStackLimit();
+		LogHelper.info("Inserting "+creditCount+" credits");
 		int toInsert = creditCount;
 
 		// make sure we have room for the credits
-		for (ItemStack stack : chestContents) {
-			if (stack == null) {
+		ItemStack creditStack = chestContents[1];
+			if (creditStack == null) {
 				toInsert -= 64;
-			} else if (stack.getItem() instanceof ItemCreditCard) {
-				toInsert -= ((ItemCreditCard) stack.getItem()).getValue(stack);
-			} else if (stack.getItem() == ModItems.CREDIT) {
-				toInsert -= stack.getMaxStackSize() - stack.stackSize;
+			} else if (creditStack.getItem() instanceof ItemCreditCard) {
+				toInsert -= ((ItemCreditCard) creditStack.getItem()).getValue(creditStack);
+			} else if (creditStack.getItem() == ModItems.CREDIT) {
+				toInsert -= creditStack.getMaxStackSize() - creditStack.stackSize;
 			}
-		}
+		
 
 		// return false if we don't have enough room
 		if (toInsert > 0) {
@@ -392,6 +328,26 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 
 		// insert the credits
 		toInsert = creditCount;
+		if(creditStack == null){
+			if (toInsert <= getInventoryStackLimit()) {
+				chestContents[1] = new ItemStack(ModItems.CREDIT, toInsert);
+				return true;
+			} else {
+				chestContents[1] = new ItemStack(ModItems.CREDIT, getInventoryStackLimit());
+				toInsert -= getInventoryStackLimit();
+			}
+		}else if(creditStack.getItem() instanceof IValueContainer){
+			try{
+				((IValueContainer) creditStack.getItem()).addValue(creditStack,toInsert);
+			} catch (ValueOverflowException e) {
+				LogHelper.error("U02: ValueOverflowExeption after checking there was capacity.");
+				LogHelper.error("Exception: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+		//all of this was replaced by the two if statements above
+		//TODO remove as long as the above code works
+		/*
 		for (int i = 0; i < chestContents.length; i++) {
 			if (chestContents[i] != null) {
 				if (chestContents[i].getItem() instanceof IValueContainer) {
@@ -438,7 +394,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 				}
 			}
 		}
-
+*/
 		// throw an error if we run out of room - should never run.
 		LogHelper.error("U04: insertCredits ran out of room after making sure it had enough room.");
 		return false;
@@ -579,5 +535,20 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 			removeCredits(toRemove);
 			change += toRemove;
 		}
+	}
+
+	@Override
+	public int getField(int id) {
+		return 0;
+	}
+
+	@Override
+	public void setField(int id, int value) {
+		
+	}
+
+	@Override
+	public int getFieldCount() {
+		return 0;
 	}
 }
