@@ -4,6 +4,7 @@ import javax.annotation.Nullable;
 
 import com.alexpansion.gts.GlobalTradeSystem;
 import com.alexpansion.gts.creativetab.CreativeTabGTS;
+import com.alexpansion.gts.handler.ModGuiHandler;
 import com.alexpansion.gts.item.ItemModelProvider;
 import com.alexpansion.gts.tileentity.TileEntityTrader;
 
@@ -37,7 +38,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.World;
 
-public class BlockTrader extends BlockContainer implements ItemModelProvider{
+public class BlockTrader extends BlockContainer implements ItemModelProvider {
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	protected static final AxisAlignedBB NORTH_CHEST_AABB = new AxisAlignedBB(0.0625D, 0.0D, 0.0D, 0.9375D, 0.875D,
 			0.9375D);
@@ -227,12 +228,8 @@ public class BlockTrader extends BlockContainer implements ItemModelProvider{
 		if (worldIn.isRemote) {
 			return true;
 		} else {
-			ILockableContainer ilockablecontainer = this.getLockableContainer(worldIn, pos);
-
-			if (ilockablecontainer != null) {
-				playerIn.displayGUIChest(ilockablecontainer);
-
-			}
+			playerIn.openGui(GlobalTradeSystem.instance, ModGuiHandler.TILE_ENTITY_TRADER_GUI, worldIn, pos.getX(),
+					pos.getY(), pos.getZ());
 
 			return true;
 		}
