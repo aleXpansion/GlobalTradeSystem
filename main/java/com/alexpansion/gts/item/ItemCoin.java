@@ -22,7 +22,7 @@ public class ItemCoin extends ItemGTS implements IValueContainer{
 
 	@Override
 	public ItemStack addValue(ItemStack stack, int toAdd) throws ValueOverflowException {
-		if(stack.getItem()!= this){
+		if(stack == null || stack.getItem()!= this){
 			LogHelper.error("W05");
 			return null;
 		}
@@ -40,7 +40,7 @@ public class ItemCoin extends ItemGTS implements IValueContainer{
 
 	@Override
 	public ItemStack removeValue(ItemStack stack, int toRemove) throws ValueOverflowException {
-		if(stack.getItem()!= this){
+		if(stack == null ||stack.getItem()!= this){
 			LogHelper.error("W06");
 			return null;
 		}
@@ -48,6 +48,9 @@ public class ItemCoin extends ItemGTS implements IValueContainer{
 			toRemove -= stack.stackSize;
 			stack.stackSize = 0;
 			throw new ValueOverflowException(stack,toRemove);
+		}else if(toRemove == stack.stackSize){
+			stack = null;
+			return null;
 		}else{
 			stack.stackSize -= toRemove;
 			return stack;

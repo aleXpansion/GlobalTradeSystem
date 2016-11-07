@@ -1,5 +1,6 @@
 package com.alexpansion.gts.guicontainer;
 
+import com.alexpansion.gts.item.IValueContainer;
 import com.alexpansion.gts.tileentity.TileEntityTrader;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -62,9 +63,23 @@ public class ContainerTileEntityTrader extends Container {
 				}
 			} else {
 				// from Player Inventory to TE Inventory
-				if (!this.mergeItemStack(current, 2, 11, false)) {
+
+				// if the item is a value container, and the credit slot is
+				// either empty or has a matching item, try to place it in the
+				// credit slot
+				Slot creditSlot = (Slot) this.inventorySlots.get(1);
+				if (current.getItem() instanceof IValueContainer
+						&& (!creditSlot.getHasStack() || creditSlot.getStack().getItem() == current.getItem())) {
+
+					if (!this.mergeItemStack(current, 1, 2, false)) {
+						return null;
+					}
+
+					// otherwise, try to insert it in the selling slots
+				} else if (!this.mergeItemStack(current, 2, 11, false)) {
 					return null;
 				}
+
 			}
 
 			if (current.stackSize == 0)
