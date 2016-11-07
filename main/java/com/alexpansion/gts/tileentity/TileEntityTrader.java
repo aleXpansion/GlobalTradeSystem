@@ -256,10 +256,10 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	 * stack size) into the given slot.
 	 */
 	public boolean isItemValidForSlot(int index, ItemStack stack) {
-		if(index == 0){
+		if (index == 0) {
 			return GTSUtil.canIBuy(stack.getItem());
 		}
-		if(index == 1){
+		if (index == 1) {
 			return stack.getItem() instanceof IValueContainer;
 		}
 		return true;
@@ -300,165 +300,85 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 
 	}
 
+	private void consolidateValue(){
+		for(int i = 2;i<=10;i++){
+			if(chestContents[i] != null && chestContents[i].getItem() instanceof IValueContainer){
+				
+			}
+		}
+	}
+	
 	/**
 	 * Attempts to insert creditCount credits into the inventory. If there's
 	 * room, inserts the credits and returns true. If there isn't room, returns
 	 * false without making any changes.
 	 */
-	private boolean insertCredits(int creditCount) {
+	private boolean insertCredits(int toInsert) {
 
-		LogHelper.info("Inserting "+creditCount+" credits");
-		int toInsert = creditCount;
-
-		// make sure we have room for the credits
+		LogHelper.info("Inserting " + toInsert + " credits");
 		ItemStack creditStack = chestContents[1];
-			if (creditStack == null) {
-				toInsert -= 64;
-			} else if (creditStack.getItem() instanceof ItemCreditCard) {
-				toInsert -= ((ItemCreditCard) creditStack.getItem()).getValue(creditStack);
-			} else if (creditStack.getItem() == ModItems.CREDIT) {
-				toInsert -= creditStack.getMaxStackSize() - creditStack.stackSize;
-			}
-		
 
-		// return false if we don't have enough room
-		if (toInsert > 0) {
+		// if creditStack is empty, add a stack of credits. If we need to add
+		// more that 64, return false
+		if (creditStack == null) {
+			if (toInsert > 64) {
+				return false;
+			} else {
+				chestContents[1] = new ItemStack(ModItems.CREDIT);
+				chestContents[1].stackSize = toInsert;
+				return true;
+			}
+
+			// if creditStack has a valid valueContainer in it, add value.
+			// Return false if there's not enough room.
+		} else if (creditStack.getItem() instanceof IValueContainer) {
+			IValueContainer item = (IValueContainer) creditStack.getItem();
+			if (toInsert > item.getSpace(creditStack)) {
+				return false;
+			} else {
+				try {
+					item.addValue(creditStack, toInsert);
+					return true;
+				} catch (ValueOverflowException e) {
+					LogHelper.error("ValueOverflowException in TileEntityTrader.insertCredits()");
+					return false;
+				}
+			}
+
+			// if it's neither empty nor has a valid container, return false.
+		} else {
 			return false;
 		}
-
-		// insert the credits
-		toInsert = creditCount;
-		if(creditStack == null){
-			if (toInsert <= getInventoryStackLimit()) {
-				chestContents[1] = new ItemStack(ModItems.CREDIT, toInsert);
-				return true;
-			} else {
-				chestContents[1] = new ItemStack(ModItems.CREDIT, getInventoryStackLimit());
-				toInsert -= getInventoryStackLimit();
-			}
-		}else if(creditStack.getItem() instanceof IValueContainer){
-			try{
-				((IValueContainer) creditStack.getItem()).addValue(creditStack,toInsert);
-			} catch (ValueOverflowException e) {
-				LogHelper.error("U02: ValueOverflowExeption after checking there was capacity.");
-				LogHelper.error("Exception: " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-		//all of this was replaced by the two if statements above
-		//TODO remove as long as the above code works
-		/*
-		for (int i = 0; i < chestContents.length; i++) {
-			if (chestContents[i] != null) {
-				if (chestContents[i].getItem() instanceof IValueContainer) {
-					try {
-						ItemStack stack = chestContents[i];
-						IValueContainer item = (IValueContainer) stack.getItem();
-						int cardCapacity = item.getSpace(stack);
-						if (cardCapacity >= toInsert) {
-							item.addValue(chestContents[i], toInsert);
-							return true;
-						} else if (cardCapacity < toInsert) {
-							toInsert -= cardCapacity;
-							item.addValue(stack, cardCapacity);
-						}
-					} catch (ValueOverflowException e) {
-						LogHelper.error("U02: ValueOverflowExeption after checking there was capacity.");
-						LogHelper.error("Exception: " + e.getMessage());
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-		for (int i = 0; i < chestContents.length; i++) {
-			if (chestContents[i] != null) {
-				if (chestContents[i].getItem() == ModItems.CREDIT) {
-					if (limit - chestContents[i].stackSize >= toInsert) {
-						chestContents[i].stackSize += toInsert;
-						return true;
-					} else {
-						toInsert -= limit - chestContents[i].stackSize;
-						chestContents[i].stackSize = limit;
-					}
-				}
-			}
-		}
-		for (int i = 0; i < chestContents.length; i++) {
-			if (chestContents[i] == null) {
-				if (toInsert <= getInventoryStackLimit()) {
-					chestContents[i] = new ItemStack(ModItems.CREDIT, toInsert);
-					return true;
-				} else {
-					chestContents[i] = new ItemStack(ModItems.CREDIT, getInventoryStackLimit());
-					toInsert -= getInventoryStackLimit();
-				}
-			}
-		}
-*/
-		// throw an error if we run out of room - should never run.
-		LogHelper.error("U04: insertCredits ran out of room after making sure it had enough room.");
-		return false;
 
 	}
 
 	private int getCreditCount() {
-		int creditCount = 0;
-		for (ItemStack stack : chestContents) {
-			if (stack != null && stack.getItem() instanceof IValueContainer) {
-				creditCount += ((IValueContainer) stack.getItem()).getValue(stack);
-			}
+		ItemStack creditStack = chestContents[1];
+		if (creditStack != null && creditStack.getItem() instanceof IValueContainer) {
+			return ((IValueContainer) creditStack.getItem()).getValue(creditStack);
+		} else {
+			return 0;
 		}
-		// LogHelper.info("Trader contains "+creditCount+" credits");
-		return creditCount;
 	}
 
-	private void removeCredits(int toRemove) {
-		for (int i = 0; i < chestContents.length; i++) {
-			ItemStack stack = chestContents[i];
-
-			if (stack != null) {
-				if (stack.getItem() == ModItems.CREDIT) {
-					if (stack.stackSize <= toRemove) {
-						toRemove -= stack.stackSize;
-						chestContents[i] = null;
-					} else if (stack.stackSize > toRemove) {
-						chestContents[i].stackSize -= toRemove;
-						return;
-					}
-				}
-			}
-		}
-		for (int i = 0; i < chestContents.length; i++) {
-			ItemStack stack = chestContents[i];
-
-			if (stack != null) {
-				try {
-					if (stack.getItem() instanceof IValueContainer) {
-						IValueContainer item = (IValueContainer) stack.getItem();
-						int value = item.getValue(stack);
-						if (value <= toRemove) {
-							toRemove -= value;
-							item.removeValue(stack, value);
-						} else if (value > toRemove) {
-							item.removeValue(stack, toRemove);
-							;
-							return;
-						}
-					}
-				} catch (ValueOverflowException e) {
-					LogHelper.error("U03: ValueOverflowExeption after checking there was sufficient value.");
-					LogHelper.error("Exception: " + e.getMessage());
-					e.printStackTrace();
-				}
-
-			}
+	/**
+	 * Removes credits from the credit slot.
+	 * 
+	 * @param toRemove
+	 * @throws ValueOverflowException
+	 *             Thrown if there isn't enough value in the slot
+	 */
+	private void removeCredits(int toRemove) throws ValueOverflowException {
+		ItemStack creditStack = chestContents[1];
+		if (creditStack.getItem() instanceof IValueContainer) {
+			((IValueContainer) creditStack.getItem()).removeValue(creditStack, toRemove);
 		}
 	}
 
 	private void sellItem(Item ignore) {
 
-		// for every stack in the chest
-		for (int i = 0; i < chestContents.length - 1; i++) {
+		// for every stack in the selling row
+		for (int i = 2; i <= 10; i++) {
 
 			// if it's neither null nor ignore
 			if (chestContents[i] != null && chestContents[i].getItem() != ignore) {
@@ -497,38 +417,58 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	}
 
 	private void buyItem(Item toBuy) {
+
+		// if the toBuy item is either null or invalid for selling, return.
 		if (toBuy == null || !GTSUtil.canIBuy(toBuy)) {
 			return;
 		}
+
 		double value = GTSUtil.getValue(toBuy);
+
+		// if we don't have enough credits to buy it, return
 		if (getCreditCount() + change < value) {
 			return;
 		}
+
 		LogHelper.info("Buying " + toBuy.getUnlocalizedName() + " for " + value);
-		for (int i = 0; i < chestContents.length - 1; i++) {
-			if (chestContents[i] != null && chestContents[i].getItem() == toBuy) {
-				if (chestContents[i].getItem() == null) {
-					LogHelper.error("ItemStack with null item");
-				} else {
-					if (chestContents[i].stackSize < chestContents[i].getMaxStackSize()) {
-						chestContents[i].stackSize++;
-						GTSUtil.addValueSold(toBuy, 0 - value, this.worldObj);
-						removeCredits(value);
-						return;
+
+		// try to buy the item (because we already checked we can afford it, the
+		// ValueOverFlowException should never be thrown)
+		try {
+
+			// for every slot in the purchases row
+			for (int i = 11; i <= 21; i++) {
+
+				// check that it's not null and contains the target item
+				if (chestContents[i] != null && chestContents[i].getItem() == toBuy) {
+					if (chestContents[i].getItem() == null) {
+						LogHelper.error("ItemStack with null item");
+					} else {
+						if (chestContents[i].stackSize < chestContents[i].getMaxStackSize()) {
+							chestContents[i].stackSize++;
+							GTSUtil.addValueSold(toBuy, 0 - value, this.worldObj);
+							removeCredits(value);
+							return;
+						}
 					}
 				}
 			}
-		}
-		for (int i = 0; i < chestContents.length - 1; i++) {
-			if (chestContents[i] == null) {
-				chestContents[i] = new ItemStack(toBuy);
-				removeCredits(value);
-				return;
+
+			// looping through the purchase row again in case there wasn't a valid stack with enough room
+			for (int i = 11; i <= 21; i++) {
+				if (chestContents[i] == null) {
+					chestContents[i] = new ItemStack(toBuy);
+					removeCredits(value);
+					return;
+				}
 			}
+		} catch (ValueOverflowException e) {
+			LogHelper.error(
+					"Error in TileEntityTrader.buyItem, ValueOverflowException was thrown after checking value.");
 		}
 	}
 
-	private void removeCredits(double value) {
+	private void removeCredits(double value) throws ValueOverflowException {
 		change -= value;
 		if (change < 0) {
 			int toRemove = (int) Math.ceil(0 - change);
@@ -544,7 +484,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 
 	@Override
 	public void setField(int id, int value) {
-		
+
 	}
 
 	@Override

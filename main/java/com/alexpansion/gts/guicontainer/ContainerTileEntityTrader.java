@@ -62,7 +62,7 @@ public class ContainerTileEntityTrader extends Container {
 				}
 			} else {
 				// from Player Inventory to TE Inventory
-				if (!this.mergeItemStack(current, 0, 27, false)) {
+				if (!this.mergeItemStack(current, 2, 11, false)) {
 					return null;
 				}
 			}
