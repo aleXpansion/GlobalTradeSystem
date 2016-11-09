@@ -38,7 +38,9 @@ public class GuiTileEntityTrader extends GuiContainer {
         this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8,130, 4210752);
         this.fontRendererObj.drawString("Purchases", 8, 80, 4210752);
         this.fontRendererObj.drawString("To Sell", 8, 44, 4210752);
-        this.fontRendererObj.drawString("Insert Item info here.", 32, 20, 4210752);
+        this.fontRendererObj.drawString(te.getItemInfo(), 32, 19, 4210752);
+        this.fontRendererObj.drawString(te.getItemInfo2(), 32, 29, 4210752);
+        
     }
 
 }

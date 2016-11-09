@@ -267,6 +267,14 @@ public class GTSUtil {
 		data.setTotal(totalValueSold);
 
 	}
+	
+	public static double getValuePercentage(Item item){
+		if(!canIBuy(item)){
+			return 0;
+		}else{
+			return Math.floor(((double) valueSoldMap.get(item) / totalValueSold * 100)*100)/100;
+		}
+	}
 
 	public static void addValueSold(Item item, double value, World world) {
 		if (changeMap.containsKey(item)) {

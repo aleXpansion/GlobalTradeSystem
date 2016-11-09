@@ -24,6 +24,7 @@ import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntityLockableLoot;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
 
 public class TileEntityTrader extends TileEntityLockableLoot implements ITickable, IInventory {
@@ -33,16 +34,20 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	private int ticksSinceSync;
 	private String customName;
 	private double change;
+	private String itemInfo;
+	private String itemInfo2;
+	private Item lastSold;
 
 	public TileEntityTrader(World worldIn) {
+		this();
 		worldObj = worldIn;
-		change = 0;
 		if (!GTSUtil.areValuesLoaded()) {
 			GTSUtil.loadValues(this.worldObj);
 		}
 	}
 
 	public TileEntityTrader() {
+		itemInfo = "";
 		change = 0;
 	}
 
@@ -298,6 +303,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 		sellItem(toBuy);
 		consolidateValue();
 		fillContainer();
+		updateInfo(toBuy);
 	}
 
 	private void consolidateValue() {
@@ -324,7 +330,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 					// has one above, so we should never get an exception
 					try {
 						chestContents[i] = item.removeValue(chestContents[i], 1);
-						if(chestContents[i] == null){
+						if (chestContents[i] == null) {
 							return;
 						}
 					} catch (ValueOverflowException e) {
@@ -421,8 +427,8 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	 */
 	private void removeCredits(int toRemove) throws ValueOverflowException {
 		ItemStack creditStack = chestContents[1];
-		if(creditStack == null){
-			throw new ValueOverflowException(null,toRemove);
+		if (creditStack == null) {
+			throw new ValueOverflowException(null, toRemove);
 		}
 		if (creditStack.getItem() instanceof IValueContainer) {
 			chestContents[1] = ((IValueContainer) creditStack.getItem()).removeValue(creditStack, toRemove);
@@ -454,6 +460,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 					}
 
 					LogHelper.info("Selling " + item.getUnlocalizedName() + " for " + itemValue);
+					lastSold = item;
 					// LogHelper.info("change is now at "+change);
 
 					// actually remove the item
@@ -484,7 +491,8 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 			return;
 		}
 
-		//LogHelper.info("Buying " + toBuy.getUnlocalizedName() + " for " + value);
+		// LogHelper.info("Buying " + toBuy.getUnlocalizedName() + " for " +
+		// value);
 
 		// try to buy the item (because we already checked we can afford it, the
 		// ValueOverFlowException should never be thrown)
@@ -545,5 +553,43 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	@Override
 	public int getFieldCount() {
 		return 0;
+	}
+
+	public void updateInfo(Item item) {
+		if (item != null) {
+			itemInfo = "B: " + item.getUnlocalizedName() + ", " + toRoundedString(GTSUtil.getValue(item))+", "+GTSUtil.getValuePercentage(item)+"%";
+		}else{
+			itemInfo = "B:";
+		}
+		if (lastSold != null) {
+			itemInfo2 = "S:" + lastSold.getUnlocalizedName() + ", "
+					+ toRoundedString(GTSUtil.getValue(lastSold))+", "+GTSUtil.getValuePercentage(lastSold)+"%";
+		}else{
+			itemInfo2 = "S:";
+		}
+	}
+	
+	private String toRoundedString(double in){
+		in *= 100;
+		in += .5;
+		int inInt = (int) in;
+		in = (double)inInt/100;
+		return Double.toString(in);
+	}
+
+	public String getItemInfo() {
+		return itemInfo;
+	}
+
+	public String getItemInfo2() {
+		return itemInfo2;
+	}
+	
+	public Item getLastSold(){
+		return lastSold;
+	}
+	
+	public double getLastSoldValue(){
+		return GTSUtil.getValue(lastSold);
 	}
 }
