@@ -110,39 +110,6 @@ public class GTSUtil {
 		}
 	}
 
-	/**
-	 * Removes the given value from the given stack. If the given stack is not a
-	 * credit-storing item, or the stack does not have enough value, throws an
-	 * InsufficientValueExeption with the stack and the remaining value to be
-	 * removed. If the stack is valid for removing value, but does have enough
-	 * value to remove as much as requested, it does remove the valued before
-	 * throwing the exception.
-	 * 
-	 * @param stack
-	 *            The stack to remove from
-	 * @param toRemove
-	 *            The amount to remove
-	 * @return The resulting stack
-	 * @throws ValueOverflowException
-	 *             Thrown if an invalid stack is given
-	 */
-	@Deprecated
-	public static ItemStack removeValue(ItemStack stack, int toRemove) throws ValueOverflowException {
-		if (stack != null && stack.getItem() instanceof IValueContainer) {
-			return ((IValueContainer) stack.getItem()).removeValue(stack, toRemove);
-		}
-		throw new ValueOverflowException(stack, toRemove);
-	}
-
-	@Deprecated
-	public static ItemStack addValue(ItemStack stack, int toAdd) throws ValueOverflowException {
-
-		if (stack != null && stack.getItem() instanceof IValueContainer) {
-			return ((IValueContainer) stack.getItem()).addValue(stack, toAdd);
-		}
-		throw new ValueOverflowException(stack, toAdd);
-	}
-
 	public static void initItemValues() {
 		addSellableItemById(1, 1);
 		addSellableItemById(2, 1);
@@ -256,11 +223,11 @@ public class GTSUtil {
 			valueSoldMap.put(item, valueSoldMap.get(item) + value);
 		}
 		totalValueSold += value;
-		LogHelper.info("Total value is now at " + totalValueSold);
-		LogHelper.info("Added " + value + " value to " + item.getUnlocalizedName() + " for a total of "
+		//LogHelper.info("Total value is now at " + totalValueSold);
+		/*LogHelper.info("Added " + value + " value to " + item.getUnlocalizedName() + " for a total of "
 				+ valueSoldMap.get(item) + ". "
 				+ (int) Math.floor((double) valueSoldMap.get(item) / totalValueSold * 100)
-				+ " percent of total sales.");
+				+ " percent of total sales.");*/
 
 		calculateValue(item);
 		data.saveValues(valueSoldMap);

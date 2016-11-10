@@ -5,6 +5,7 @@ import com.alexpansion.gts.block.BlockTrader;
 import com.alexpansion.gts.exceptions.ValueOverflowException;
 import com.alexpansion.gts.guicontainer.ContainerTileEntityTrader;
 import com.alexpansion.gts.handler.ConfigurationHandler;
+import com.alexpansion.gts.handler.TraderItemHandler;
 import com.alexpansion.gts.init.ModItems;
 import com.alexpansion.gts.item.IValueContainer;
 import com.alexpansion.gts.utility.GTSUtil;
@@ -22,10 +23,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.tileentity.TileEntityLockableLoot;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.text.translation.I18n;
 import net.minecraft.world.World;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class TileEntityTrader extends TileEntityLockableLoot implements ITickable, IInventory {
 	private ItemStack[] chestContents = new ItemStack[29];
@@ -37,7 +40,9 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	private String itemInfo;
 	private String itemInfo2;
 	private Item lastSold;
-
+	private TraderItemHandler handler;
+	
+	
 	public TileEntityTrader(World worldIn) {
 		this();
 		worldObj = worldIn;
@@ -49,11 +54,29 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	public TileEntityTrader() {
 		itemInfo = "";
 		change = 0;
+		handler = new TraderItemHandler(this);
 	}
 
+	@Override
+	public boolean hasCapability(Capability<?> capability,EnumFacing facing){
+		if(capability==CapabilityItemHandler.ITEM_HANDLER_CAPABILITY){
+			return true;
+		}
+		return super.hasCapability(capability, facing);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public <T> T getCapability(Capability<T> capability,EnumFacing facing){
+		if(capability==CapabilityItemHandler.ITEM_HANDLER_CAPABILITY){
+			return (T) handler;
+		}
+		return super.getCapability(capability, facing);
+	}
+	
 	/**
 	 * Returns the number of slots in the inventory.
 	 */
+
 	public int getSizeInventory() {
 		return 29;
 	}
@@ -307,29 +330,42 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	}
 
 	private void consolidateValue() {
+		int count = 0;
+		int goal = 500;
 		for (int i = 2; i <= 10; i++) {
 			if (chestContents[i] != null && chestContents[i].getItem() instanceof IValueContainer) {
 				ItemStack stack = chestContents[i];
 				IValueContainer item = (IValueContainer) stack.getItem();
-				int count = 0;
 
 				// make sure the item have a value of at least one
 				if (item.getValue(stack) < 1) {
-					return;
+					continue;
 				}
 
-				while (chestContents != null && item.getValue(stack) >= 1 && count < 50) {
-					count++;
+				while (item.getValue(stack) >= 1 && count < goal) {
 					// attempt to add a credit to the credit slot, return if it
 					// fails
+					int toRemove = 0;
 					if (!insertCredits(1)) {
 						return;
+					}else{
+						count++;
+						toRemove++;
+					}
+					
+					if(item.getValue(stack)>1){
+						if(item.getValue(stack)>=goal){
+							if(insertCredits(goal-1)){
+								toRemove = goal;
+								count = goal;
+							}
+						}
 					}
 
 					// attempt to remove one value from the slot. We checked it
 					// has one above, so we should never get an exception
 					try {
-						chestContents[i] = item.removeValue(chestContents[i], 1);
+						chestContents[i] = item.removeValue(chestContents[i], toRemove);
 						if (chestContents[i] == null) {
 							return;
 						}
@@ -345,24 +381,33 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	}
 
 	private void fillContainer() {
+		int count = 0;
 		for (int i = 11; i <= 28; i++) {
 			if (chestContents[i] != null && chestContents[i].getItem() instanceof IValueContainer) {
 				ItemStack stack = chestContents[i];
 				IValueContainer item = (IValueContainer) stack.getItem();
-				int count = 0;
-
-				while (getCreditCount() > 0 && item.getSpace(stack) > 0 && count < 50) {
-					count++;
+				int goal = 500;
+				while (getCreditCount() > 0 && item.getSpace(stack) > 0 && count < goal) {
+					int toRemove = 0;
+					if(item.getSpace(stack)>=goal){
+						toRemove = goal;
+					}else{
+						toRemove = item.getSpace(stack);
+					}
+					if(toRemove>getCreditCount()){
+						toRemove = getCreditCount();
+					}
+					count += toRemove;
 					try {
-						removeCredits(1);
-						item.addValue(stack, 1);
+						removeCredits(toRemove);
+						item.addValue(stack, toRemove);
 					} catch (ValueOverflowException e) {
 						LogHelper.error("ValueOverflowException in TileEntityTrader.fillContainer");
 					}
 				}
-				return;
 			}
 		}
+		return;
 	}
 
 	/**
@@ -459,7 +504,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 						change += itemValue;
 					}
 
-					LogHelper.info("Selling " + item.getUnlocalizedName() + " for " + itemValue);
+					//LogHelper.info("Selling " + item.getUnlocalizedName() + " for " + itemValue);
 					lastSold = item;
 					// LogHelper.info("change is now at "+change);
 
@@ -478,6 +523,14 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	}
 
 	private void buyItem(Item toBuy) {
+
+		if (GTSUtil.canISell(toBuy) && !GTSUtil.canIBuy(toBuy)) {
+			if (worldObj != null) {
+				GTSUtil.addValueSold(toBuy, 0, worldObj);
+			} else {
+				LogHelper.error("worldObj is null in buyItem()");
+			}
+		}
 
 		// if the toBuy item is either null or invalid for selling, return.
 		if (toBuy == null || !GTSUtil.canIBuy(toBuy)) {
@@ -557,23 +610,24 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 
 	public void updateInfo(Item item) {
 		if (item != null) {
-			itemInfo = "B: " + item.getUnlocalizedName() + ", " + toRoundedString(GTSUtil.getValue(item))+", "+GTSUtil.getValuePercentage(item)+"%";
-		}else{
+			itemInfo = "B: " + item.getUnlocalizedName() + ", " + toRoundedString(GTSUtil.getValue(item)) + ", "
+					+ GTSUtil.getValuePercentage(item) + "%";
+		} else {
 			itemInfo = "B:";
 		}
 		if (lastSold != null) {
-			itemInfo2 = "S:" + lastSold.getUnlocalizedName() + ", "
-					+ toRoundedString(GTSUtil.getValue(lastSold))+", "+GTSUtil.getValuePercentage(lastSold)+"%";
-		}else{
+			itemInfo2 = "S:"  + toRoundedString(GTSUtil.getValue(lastSold)) + ", "
+					+ GTSUtil.getValuePercentage(lastSold) + "% ,"+ lastSold.getUnlocalizedName();
+		} else {
 			itemInfo2 = "S:";
 		}
 	}
-	
-	private String toRoundedString(double in){
+
+	private String toRoundedString(double in) {
 		in *= 100;
 		in += .5;
 		int inInt = (int) in;
-		in = (double)inInt/100;
+		in = (double) inInt / 100;
 		return Double.toString(in);
 	}
 
@@ -584,12 +638,12 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	public String getItemInfo2() {
 		return itemInfo2;
 	}
-	
-	public Item getLastSold(){
+
+	public Item getLastSold() {
 		return lastSold;
 	}
-	
-	public double getLastSoldValue(){
+
+	public double getLastSoldValue() {
 		return GTSUtil.getValue(lastSold);
 	}
 }

@@ -37,7 +37,7 @@ public class ContainerTileEntityTrader extends Container {
 		// Player Inventory, Slot 9-35, Slot IDs 29-55
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 9; ++x) {
-				this.addSlotToContainer(new Slot(playerInv, x + y * 9 + 9, 8 + x * 18, 141 + y * 18));
+				this.addSlotToContainer(new Slot(playerInv, x + y * 9 + 9, 8 + x * 18, 140 + y * 18));
 			}
 		}
 

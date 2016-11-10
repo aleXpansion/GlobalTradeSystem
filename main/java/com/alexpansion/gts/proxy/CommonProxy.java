@@ -5,6 +5,8 @@ import com.alexpansion.gts.crafting.ModRecipes;
 import com.alexpansion.gts.handler.ModGuiHandler;
 import com.alexpansion.gts.init.ModBlocks;
 import com.alexpansion.gts.init.ModItems;
+import com.alexpansion.gts.network.PacketHandler;
+
 import net.minecraft.item.Item;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -17,6 +19,7 @@ public abstract class CommonProxy implements IProxy{
 		ModItems.init();
 		ModBlocks.init();
 		ModRecipes.init();
+		PacketHandler.registerMessages("modgts");
 	}
 	
 	public void init(FMLInitializationEvent e) {

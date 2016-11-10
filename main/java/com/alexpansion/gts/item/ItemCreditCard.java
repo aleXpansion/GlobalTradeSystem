@@ -16,7 +16,7 @@ public class ItemCreditCard extends ItemGTS implements IValueContainer{
 	
 	@Override
 	public void addInformation(ItemStack stack, EntityPlayer player, List<String> list, boolean par4){
-		list.add("Value: "+getValue(stack));
+		list.add("Value: "+getValue(stack)+"/"+((ItemCreditCard) stack.getItem()).getLimit());
 	}
 
 	public ItemCreditCard(String name,int limit){
