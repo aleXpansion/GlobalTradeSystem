@@ -8,6 +8,7 @@ import net.minecraft.inventory.Container;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public class ContainerTileEntityTrader extends Container {
 
@@ -55,7 +56,6 @@ public class ContainerTileEntityTrader extends Container {
 		if (slot != null && slot.getHasStack()) {
 			ItemStack current = slot.getStack();
 			previous = current.copy();
-
 			if (fromSlot < 29) {
 				// from TE inventory to Player Inventory
 				if (!this.mergeItemStack(current, 26, 62, true)) {
@@ -87,8 +87,9 @@ public class ContainerTileEntityTrader extends Container {
 			else
 				slot.onSlotChanged();
 
-			if (current.stackSize == previous.stackSize)
+			if (current.stackSize == previous.stackSize){
 				return null;
+			}
 			slot.onPickupFromSlot(playerIn, current);
 		}
 		return previous;

@@ -6,7 +6,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class TraderItemHandler extends ItemStackHandler{
+public class TraderItemHandler extends ItemStackHandler {
 
 	private TileEntityTrader te;
 
@@ -72,31 +72,39 @@ public class TraderItemHandler extends ItemStackHandler{
 			if (amount == 0) {
 				return null;
 			}
-			
+
 			ItemStack existing = te.getStackInSlot(slot);
-			
-			if(existing == null){
+
+			if (existing == null) {
 				return null;
 			}
-			
+
 			int toExtract = Math.min(amount, existing.getMaxStackSize());
-			
-			if(existing.stackSize <= toExtract){
-				if(!simulate){
+
+			if (existing.stackSize <= toExtract) {
+				if (!simulate) {
 					te.setInventorySlotContents(slot, null);
 				}
 				return existing;
-			}else{
-				if(!simulate){
-					te.setInventorySlotContents(slot, ItemHandlerHelper.copyStackWithSize(existing, existing.stackSize - toExtract));
+			} else {
+				if (!simulate) {
+					te.setInventorySlotContents(slot,
+							ItemHandlerHelper.copyStackWithSize(existing, existing.stackSize - toExtract));
 				}
-				
-				return ItemHandlerHelper.copyStackWithSize(existing, toExtract); 
+
+				return ItemHandlerHelper.copyStackWithSize(existing, toExtract);
 			}
 
 		} else {
 			return null;
 		}
+	}
+
+	@Override
+	public void setStackInSlot(int slot, ItemStack stack) {
+		if (ItemStack.areItemStacksEqual(this.getStackInSlot(slot), stack))
+			return;
+		te.setInventorySlotContents(slot, stack);
 	}
 
 }

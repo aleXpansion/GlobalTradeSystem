@@ -41,8 +41,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	private String itemInfo2;
 	private Item lastSold;
 	private TraderItemHandler handler;
-	
-	
+
 	public TileEntityTrader(World worldIn) {
 		this();
 		worldObj = worldIn;
@@ -58,21 +57,21 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	}
 
 	@Override
-	public boolean hasCapability(Capability<?> capability,EnumFacing facing){
-		if(capability==CapabilityItemHandler.ITEM_HANDLER_CAPABILITY){
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return true;
 		}
 		return super.hasCapability(capability, facing);
 	}
-	
+
 	@SuppressWarnings("unchecked")
-	public <T> T getCapability(Capability<T> capability,EnumFacing facing){
-		if(capability==CapabilityItemHandler.ITEM_HANDLER_CAPABILITY){
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+		if (capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) {
 			return (T) handler;
 		}
 		return super.getCapability(capability, facing);
 	}
-	
+
 	/**
 	 * Returns the number of slots in the inventory.
 	 */
@@ -223,7 +222,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 		int k = this.pos.getZ();
 		++this.ticksSinceSync;
 
-		checkItems();
+			checkItems();
 
 		if (!this.worldObj.isRemote && this.numPlayersUsing != 0 && (this.ticksSinceSync + i + j + k) % 200 == 0) {
 			this.numPlayersUsing = 0;
@@ -322,11 +321,14 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 			toBuy = target.getItem();
 		}
 
-		buyItem(toBuy);
-		sellItem(toBuy);
-		consolidateValue();
-		fillContainer();
-		updateInfo(toBuy);
+		if (!this.worldObj.isRemote) {
+			buyItem(toBuy);
+			sellItem(toBuy);
+			consolidateValue();
+			fillContainer();
+		} else {
+			updateInfo(toBuy);
+		}
 	}
 
 	private void consolidateValue() {
@@ -348,14 +350,14 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 					int toRemove = 0;
 					if (!insertCredits(1)) {
 						return;
-					}else{
+					} else {
 						count++;
 						toRemove++;
 					}
-					
-					if(item.getValue(stack)>1){
-						if(item.getValue(stack)>=goal){
-							if(insertCredits(goal-1)){
+
+					if (item.getValue(stack) > 1) {
+						if (item.getValue(stack) >= goal) {
+							if (insertCredits(goal - 1)) {
 								toRemove = goal;
 								count = goal;
 							}
@@ -389,12 +391,12 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 				int goal = 500;
 				while (getCreditCount() > 0 && item.getSpace(stack) > 0 && count < goal) {
 					int toRemove = 0;
-					if(item.getSpace(stack)>=goal){
+					if (item.getSpace(stack) >= goal) {
 						toRemove = goal;
-					}else{
+					} else {
 						toRemove = item.getSpace(stack);
 					}
-					if(toRemove>getCreditCount()){
+					if (toRemove > getCreditCount()) {
 						toRemove = getCreditCount();
 					}
 					count += toRemove;
@@ -504,15 +506,15 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 						change += itemValue;
 					}
 
-					//LogHelper.info("Selling " + item.getUnlocalizedName() + " for " + itemValue);
+					LogHelper.info("Selling " + item.getUnlocalizedName() + "for " + itemValue);
 					lastSold = item;
 					// LogHelper.info("change is now at "+change);
 
 					// actually remove the item
 					if (chestContents[i].stackSize == 1) {
-						chestContents[i] = null;
+						handler.setStackInSlot(i, null);
 					} else {
-						chestContents[i].stackSize = chestContents[i].stackSize - 1;
+						chestContents[i].stackSize--;
 					}
 
 					GTSUtil.addValueSold(item, itemValue, this.worldObj);
@@ -616,8 +618,8 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 			itemInfo = "B:";
 		}
 		if (lastSold != null) {
-			itemInfo2 = "S:"  + toRoundedString(GTSUtil.getValue(lastSold)) + ", "
-					+ GTSUtil.getValuePercentage(lastSold) + "% ,"+ lastSold.getUnlocalizedName();
+			itemInfo2 = "S:" + toRoundedString(GTSUtil.getValue(lastSold)) + ", " + GTSUtil.getValuePercentage(lastSold)
+					+ "% ," + lastSold.getUnlocalizedName();
 		} else {
 			itemInfo2 = "S:";
 		}

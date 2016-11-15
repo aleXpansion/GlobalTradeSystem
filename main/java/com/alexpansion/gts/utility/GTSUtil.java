@@ -18,6 +18,7 @@ public class GTSUtil {
 	public static HashMap<Item, Double> valueMap = new HashMap<Item, Double>();
 	public static int totalValueSold = 0;
 	private static boolean valuesLoaded = false;
+	private static int calcCount = 0;
 
 	public static boolean canISell(Item item) {
 		/*
@@ -27,11 +28,17 @@ public class GTSUtil {
 		return baseValueMap.containsKey(item);
 
 	}
+	
+	@Deprecated
+	public static double getCachedValue(Item item){
+		return getValue(item);
+	}
 
 	public static double getValue(Item item) {
 		if (!canISell(item)) {
 			return 0;
 		}
+		
 		// totalValueSold=0;
 		// valueSoldMap = new HashMap<Item, Integer>();
 		if (!valueMap.containsKey(item)) {
@@ -40,6 +47,14 @@ public class GTSUtil {
 		// LogHelper.info(item.getUnlocalizedName()+" is worth
 		// "+valueMap.get(item));
 		return valueMap.get(item);
+	}
+	
+	public static void calculateValues(){
+		LogHelper.info("recalculating all values");
+		for(Item key:valueSoldMap.keySet()){
+			calculateValue(key);
+		}
+		calcCount = 0;
 	}
 
 	public static void calculateValue(Item item) {
@@ -223,11 +238,11 @@ public class GTSUtil {
 			valueSoldMap.put(item, valueSoldMap.get(item) + value);
 		}
 		totalValueSold += value;
-		//LogHelper.info("Total value is now at " + totalValueSold);
-		/*LogHelper.info("Added " + value + " value to " + item.getUnlocalizedName() + " for a total of "
+		LogHelper.info("Total value is now at " + totalValueSold);
+		LogHelper.info("Added " + value + " value to " + item.getUnlocalizedName() + " for a total of "
 				+ valueSoldMap.get(item) + ". "
 				+ (int) Math.floor((double) valueSoldMap.get(item) / totalValueSold * 100)
-				+ " percent of total sales.");*/
+				+ " percent of total sales.");
 
 		calculateValue(item);
 		data.saveValues(valueSoldMap);
@@ -251,6 +266,9 @@ public class GTSUtil {
 			addValueSold(item, (int) value, world);
 		}
 		changeMap.put(item, value % 1);
+		if(calcCount++>5){
+			calculateValues();
+		}
 	}
 
 	public static boolean canIBuy(Item item) {
