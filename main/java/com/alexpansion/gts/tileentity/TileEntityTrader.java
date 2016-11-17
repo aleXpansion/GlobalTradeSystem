@@ -612,17 +612,19 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 
 	public void updateInfo(Item item) {
 		if (item != null) {
-			itemInfo = "B: " + item.getUnlocalizedName() + ", " + toRoundedString(GTSUtil.getValue(item)) + ", "
+			itemInfo = "B: " + item.getItemStackDisplayName(new ItemStack(item));
+			itemInfo2 = "V: "+toRoundedString(GTSUtil.getValue(item)) + ", "
 					+ GTSUtil.getValuePercentage(item) + "%";
 		} else {
 			itemInfo = "B:";
+			itemInfo2 = "V:";
 		}
-		if (lastSold != null) {
+		/*if (lastSold != null) {
 			itemInfo2 = "S:" + toRoundedString(GTSUtil.getValue(lastSold)) + ", " + GTSUtil.getValuePercentage(lastSold)
 					+ "% ," + lastSold.getUnlocalizedName();
 		} else {
 			itemInfo2 = "S:";
-		}
+		}*/
 	}
 
 	private String toRoundedString(double in) {

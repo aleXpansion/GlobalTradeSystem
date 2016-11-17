@@ -36,7 +36,7 @@ public class PacketCatalogOpened implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketCatalogOpened message, MessageContext ctx) {
-			FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
+			//FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
 		

@@ -2,7 +2,6 @@ package com.alexpansion.gts.utility;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.alexpansion.gts.exceptions.ValueOverflowException;
 import com.alexpansion.gts.handler.ConfigurationHandler;
 import com.alexpansion.gts.item.IValueContainer;
 import net.minecraft.item.Item;
