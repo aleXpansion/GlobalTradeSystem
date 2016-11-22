@@ -22,15 +22,17 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.tileentity.TileEntityLockableLoot;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.items.CapabilityItemHandler;
 
-public class TileEntityTrader extends TileEntityLockableLoot implements ITickable, IInventory {
+public class TileEntityTrader extends TileEntity implements ITickable, IInventory {
 	private ItemStack[] chestContents = new ItemStack[29];
 	public int numPlayersUsing;
 	/** Server sync counter (once per 20 ticks) */
@@ -131,6 +133,10 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	public String getName() {
 		return this.hasCustomName() ? this.customName : "container.trader";
 	}
+	
+	public ITextComponent getDisplayName(){
+		return new TextComponentTranslation(getName(),new Object());
+	}
 
 	/**
 	 * Returns true if this thing is named
@@ -151,37 +157,34 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 			this.customName = compound.getString("CustomName");
 		}
 
-		if (!this.checkLootAndRead(compound)) {
-			NBTTagList nbttaglist = compound.getTagList("Items", 10);
+		NBTTagList nbttaglist = compound.getTagList("Items", 10);
 
-			for (int i = 0; i < nbttaglist.tagCount(); ++i) {
-				NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
-				int j = nbttagcompound.getByte("Slot") & 255;
+		for (int i = 0; i < nbttaglist.tagCount(); ++i) {
+			NBTTagCompound nbttagcompound = nbttaglist.getCompoundTagAt(i);
+			int j = nbttagcompound.getByte("Slot") & 255;
 
-				if (j >= 0 && j < this.chestContents.length) {
-					this.chestContents[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
-				}
+			if (j >= 0 && j < this.chestContents.length) {
+				this.chestContents[j] = ItemStack.loadItemStackFromNBT(nbttagcompound);
 			}
 		}
+
 	}
 
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
 		super.writeToNBT(compound);
 
-		if (!this.checkLootAndWrite(compound)) {
-			NBTTagList nbttaglist = new NBTTagList();
+		NBTTagList nbttaglist = new NBTTagList();
 
-			for (int i = 0; i < this.chestContents.length; ++i) {
-				if (this.chestContents[i] != null) {
-					NBTTagCompound nbttagcompound = new NBTTagCompound();
-					nbttagcompound.setByte("Slot", (byte) i);
-					this.chestContents[i].writeToNBT(nbttagcompound);
-					nbttaglist.appendTag(nbttagcompound);
-				}
+		for (int i = 0; i < this.chestContents.length; ++i) {
+			if (this.chestContents[i] != null) {
+				NBTTagCompound nbttagcompound = new NBTTagCompound();
+				nbttagcompound.setByte("Slot", (byte) i);
+				this.chestContents[i].writeToNBT(nbttagcompound);
+				nbttaglist.appendTag(nbttagcompound);
 			}
-
-			compound.setTag("Items", nbttaglist);
 		}
+
+		compound.setTag("Items", nbttaglist);
 
 		if (this.hasCustomName()) {
 			compound.setString("CustomName", this.customName);
@@ -222,7 +225,7 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 		int k = this.pos.getZ();
 		++this.ticksSinceSync;
 
-			checkItems();
+		checkItems();
 
 		if (!this.worldObj.isRemote && this.numPlayersUsing != 0 && (this.ticksSinceSync + i + j + k) % 200 == 0) {
 			this.numPlayersUsing = 0;
@@ -613,18 +616,17 @@ public class TileEntityTrader extends TileEntityLockableLoot implements ITickabl
 	public void updateInfo(Item item) {
 		if (item != null) {
 			itemInfo = "B: " + item.getItemStackDisplayName(new ItemStack(item));
-			itemInfo2 = "V: "+toRoundedString(GTSUtil.getValue(item)) + ", "
-					+ GTSUtil.getValuePercentage(item) + "%";
+			itemInfo2 = "V: " + toRoundedString(GTSUtil.getValue(item)) + ", " + GTSUtil.getValuePercentage(item) + "%";
 		} else {
 			itemInfo = "B:";
 			itemInfo2 = "V:";
 		}
-		/*if (lastSold != null) {
-			itemInfo2 = "S:" + toRoundedString(GTSUtil.getValue(lastSold)) + ", " + GTSUtil.getValuePercentage(lastSold)
-					+ "% ," + lastSold.getUnlocalizedName();
-		} else {
-			itemInfo2 = "S:";
-		}*/
+		/*
+		 * if (lastSold != null) { itemInfo2 = "S:" +
+		 * toRoundedString(GTSUtil.getValue(lastSold)) + ", " +
+		 * GTSUtil.getValuePercentage(lastSold) + "% ," +
+		 * lastSold.getUnlocalizedName(); } else { itemInfo2 = "S:"; }
+		 */
 	}
 
 	private String toRoundedString(double in) {

@@ -35,7 +35,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
-import net.minecraft.world.ILockableContainer;
 import net.minecraft.world.World;
 
 public class BlockTrader extends BlockContainer implements ItemModelProvider {
@@ -236,12 +235,12 @@ public class BlockTrader extends BlockContainer implements ItemModelProvider {
 	}
 
 	@Nullable
-	public ILockableContainer getLockableContainer(World worldIn, BlockPos pos) {
+	public TileEntityTrader getLockableContainer(World worldIn, BlockPos pos) {
 		return this.getContainer(worldIn, pos, false);
 	}
 
 	@Nullable
-	public ILockableContainer getContainer(World p_189418_1_, BlockPos p_189418_2_, boolean p_189418_3_) {
+	public TileEntityTrader getContainer(World p_189418_1_, BlockPos p_189418_2_, boolean p_189418_3_) {
 		TileEntity tileentity = p_189418_1_.getTileEntity(p_189418_2_);
 
 		if (!(tileentity instanceof TileEntityTrader)) {
