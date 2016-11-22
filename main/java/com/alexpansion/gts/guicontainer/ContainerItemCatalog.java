@@ -35,7 +35,7 @@ public class ContainerItemCatalog extends Container {
 			}
 		}
 
-		// Player Inventory, Slot 0-8, Slot IDs 64-72
+		// Player Inventory, Slot 0-8, Slot IDs 64-72 (hotbar)
 		for (int x = 0; x < 9; ++x) {
 			this.addSlotToContainer(new Slot(playerInv, x, 8 + x * 18, 198));
 		}
@@ -87,5 +87,6 @@ public class ContainerItemCatalog extends Container {
 		}
 		return super.slotClick(slot, dragType, clickTypeIn, player);
 	}
+	
 	
 }
