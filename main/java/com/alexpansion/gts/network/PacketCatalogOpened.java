@@ -1,11 +1,8 @@
 package com.alexpansion.gts.network;
 
 import com.alexpansion.gts.item.IValueContainer;
-import com.alexpansion.gts.utility.LogHelper;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.fml.common.FMLCommonHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -39,10 +36,10 @@ public class PacketCatalogOpened implements IMessage {
 			//FMLCommonHandler.instance().getWorldThread(ctx.netHandler).addScheduledTask(() -> handle(message, ctx));
 			return null;
 		}
-		
+		/*
 		private void handle(PacketCatalogOpened message, MessageContext ctx){
 			LogHelper.info("A catalog with value "+message.storedValue+" has been opened!");
-		}
+		}*/
 	}
 
 }

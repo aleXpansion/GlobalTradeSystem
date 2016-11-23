@@ -24,7 +24,7 @@ public class ModGuiHandler implements IGuiHandler {
 					(TileEntityTrader) world.getTileEntity(new BlockPos(x, y, z)));
 		} else if (ID == ITEM_CATALOG_GUI) {
 			if (player.getHeldItemMainhand().getItem() instanceof ItemCatalog) {
-				ContainerItemCatalog container= new ContainerItemCatalog(player.inventory, new InventoryCatalog(player.getHeldItemMainhand()));
+				ContainerItemCatalog container= new ContainerItemCatalog(player.inventory, new InventoryCatalog(player.getHeldItemMainhand(),world));
 				player.openContainer = container;
 				return container;
 			}
@@ -39,7 +39,7 @@ public class ModGuiHandler implements IGuiHandler {
 					(TileEntityTrader) world.getTileEntity(new BlockPos(x, y, z)));
 		} else if (ID == ITEM_CATALOG_GUI) {
 			if (player.getHeldItemMainhand().getItem() instanceof ItemCatalog) {
-				return new GuiItemCatalog(player.inventory, new InventoryCatalog(player.getHeldItemMainhand()));
+				return new GuiItemCatalog(player.inventory, new InventoryCatalog(player.getHeldItemMainhand(), world));
 			}
 		}
 		return null;

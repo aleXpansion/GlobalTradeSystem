@@ -5,6 +5,7 @@ import com.alexpansion.gts.inventory.InventoryCatalog;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
 
@@ -14,7 +15,7 @@ public class GuiItemCatalog extends GuiContainer {
 	private IInventory playerInv;
 	private InventoryCatalog catalog;
 	
-	public GuiItemCatalog(IInventory playerInvIn,InventoryCatalog catalogIn) {
+	public GuiItemCatalog(InventoryPlayer playerInvIn,InventoryCatalog catalogIn) {
 		super(new ContainerItemCatalog(playerInvIn, catalogIn));
 		this.playerInv = playerInvIn;
 		this.catalog = catalogIn;
@@ -30,8 +31,9 @@ public class GuiItemCatalog extends GuiContainer {
         int i = (this.width - this.xSize) / 2;
         int j = (this.height - this.ySize) / 2;
         this.drawTexturedModalRect(i, j, 0, 0, 175, 222);
-        this.fontRendererObj.drawString(this.catalog.getDisplayName().getUnformattedText(), 8, 6, 4210752);
-        this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), 8,130, 4210752);
+        this.fontRendererObj.drawString(this.catalog.getDisplayName().getUnformattedText(), i+7, j+6, 4210752);
+        this.fontRendererObj.drawString("Stored: "+this.catalog.getStoredValue(), i+32, j+20, 4210752);
+        this.fontRendererObj.drawString(this.playerInv.getDisplayName().getUnformattedText(), i+7,j+128, 4210752);
     }
 
 }

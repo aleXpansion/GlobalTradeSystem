@@ -123,6 +123,16 @@ public class GTSUtil {
 			return 0;
 		}
 	}
+	
+	public static Item[] getAllSellableItems(){
+		Item[] items = new Item[valueSoldMap.size()];
+		int i = 0;
+		for(Item key:valueSoldMap.keySet()){
+			items[i] = key;
+			i++;
+		}
+		return items;
+	}
 
 	public static void initItemValues() {
 		addSellableItemById(1, 1);

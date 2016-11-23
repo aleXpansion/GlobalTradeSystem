@@ -2,6 +2,7 @@ package com.alexpansion.gts.inventory;
 
 import com.alexpansion.gts.exceptions.ValueOverflowException;
 import com.alexpansion.gts.item.ItemCatalog;
+import com.alexpansion.gts.item.ItemCreditCard;
 import com.alexpansion.gts.utility.GTSUtil;
 import com.alexpansion.gts.utility.LogHelper;
 
@@ -13,6 +14,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentTranslation;
+import net.minecraft.world.World;
 import net.minecraftforge.common.util.Constants;
 
 public class InventoryCatalog implements IInventory {
@@ -22,18 +24,23 @@ public class InventoryCatalog implements IInventory {
 	public static final int INV_SIZE = 37;
 	private ItemStack[] inventory = new ItemStack[INV_SIZE];
 	private double change;
+	private World worldObj;
 
-	public InventoryCatalog(ItemStack stack) {
+	public InventoryCatalog(ItemStack stack, World world) {
 		if (!(stack.getItem() instanceof ItemCatalog)) {
 			LogHelper.error("Attempted to create an InventoryCatalog with an ItemStack that isn't a catalog!");
 		}
 		invItem = stack;
+		worldObj = world;
 
 		if (!stack.hasTagCompound()) {
 			stack.setTagCompound(new NBTTagCompound());
 		}
 
 		readFromNBT(stack.getTagCompound());
+		if (!world.isRemote) {
+			refreshSellables();
+		}
 	}
 
 	@Override
@@ -77,9 +84,8 @@ public class InventoryCatalog implements IInventory {
 
 	@Override
 	public ItemStack removeStackFromSlot(int index) {
-		ItemStack stack = inventory[index];
-		inventory[index] = null;
-		markDirty();
+		ItemStack stack = getStackInSlot(index);
+		setInventorySlotContents(index, null);
 		return stack;
 	}
 
@@ -90,9 +96,9 @@ public class InventoryCatalog implements IInventory {
 		if (stack != null && stack.stackSize > getInventoryStackLimit()) {
 			stack.stackSize = getInventoryStackLimit();
 		}
-
+		while (sellItem())
+			;
 		markDirty();
-
 	}
 
 	@Override
@@ -119,12 +125,11 @@ public class InventoryCatalog implements IInventory {
 
 	@Override
 	public void openInventory(EntityPlayer player) {
-		sellItem();
+
 	}
 
 	@Override
 	public void closeInventory(EntityPlayer player) {
-		sellItem();
 	}
 
 	@Override
@@ -188,10 +193,9 @@ public class InventoryCatalog implements IInventory {
 				inventory[slot] = ItemStack.loadItemStackFromNBT(item);
 			}
 		}
-		//sellItem();
 	}
 
-	private void sellItem() {
+	private boolean sellItem() {
 		if (inventory[0] != null && GTSUtil.canISell(inventory[0].getItem())) {
 			ItemStack stack = inventory[0];
 			Item item = stack.getItem();
@@ -202,10 +206,61 @@ public class InventoryCatalog implements IInventory {
 					catalog.addValue(invItem, (int) (GTSUtil.getValue(item) + change));
 					change = (value + change) % 1;
 					decrStackSize(0, 1);
+					if (!worldObj.isRemote) {
+						GTSUtil.addValueSold(item, value, worldObj);
+					}
+						refreshSellables();
+					return true;
 				} catch (ValueOverflowException e) {
 					LogHelper.error("ValueOverflowException in InventoryCatalog.sellItem");
 					e.printStackTrace();
 				}
+			}
+		}
+		return false;
+	}
+
+	public int getStoredValue() {
+		return ((ItemCreditCard) invItem.getItem()).getValue(invItem);
+	}
+
+	public void refreshSellables() {
+		Item[] items = GTSUtil.getAllSellableItems();
+		if (items.length >= INV_SIZE) {
+			LogHelper.error("more sellable items than space, I should probably figure out what to do here");
+			// TODO logic for when there's more items than space;
+		} else {
+			int slot = 1;
+			for (Item item : items) {
+				if (GTSUtil.getValue(item) <= getStoredValue()) {
+					inventory[slot] = new ItemStack(item);
+					slot++;
+				}
+			}
+			while (slot < INV_SIZE - 1) {
+				setInventorySlotContents(slot, null);
+				slot++;
+			}
+		}
+	}
+
+	public void buyItem(int slot) {
+		ItemCatalog catalog = (ItemCatalog) invItem.getItem();
+		if (getStackInSlot(slot) != null) {
+			Item toSell = getStackInSlot(slot).getItem();
+			if (GTSUtil.canISell(toSell)) {
+				int toRemove = (int) (GTSUtil.getValue(toSell) - change);
+				change = (GTSUtil.getValue(getStackInSlot(slot).getItem()) - change) % 1;
+				try {
+					catalog.removeValue(invItem, toRemove);
+					if (!worldObj.isRemote) {
+						GTSUtil.addValueSold(toSell, 0 - GTSUtil.getValue(toSell), worldObj);
+					}
+				} catch (ValueOverflowException e) {
+					LogHelper.error("VOE in InventoryCatalog.buyItem");
+					e.printStackTrace();
+				}
+				// refreshSellables();
 			}
 		}
 	}
