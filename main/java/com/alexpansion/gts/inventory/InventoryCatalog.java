@@ -1,5 +1,7 @@
 package com.alexpansion.gts.inventory;
 
+import java.util.ArrayList;
+
 import com.alexpansion.gts.exceptions.ValueOverflowException;
 import com.alexpansion.gts.item.ItemCatalog;
 import com.alexpansion.gts.item.ItemCreditCard;
@@ -21,7 +23,7 @@ public class InventoryCatalog implements IInventory {
 
 	private String name = "Catalog";
 	private final ItemStack invItem;
-	public static final int INV_SIZE = 37;
+	public static final int INV_SIZE = 38;
 	private ItemStack[] inventory = new ItemStack[INV_SIZE];
 	private double change;
 	private World worldObj;
@@ -209,7 +211,7 @@ public class InventoryCatalog implements IInventory {
 					if (!worldObj.isRemote) {
 						GTSUtil.addValueSold(item, value, worldObj);
 					}
-						refreshSellables();
+					refreshSellables();
 					return true;
 				} catch (ValueOverflowException e) {
 					LogHelper.error("ValueOverflowException in InventoryCatalog.sellItem");
@@ -225,23 +227,30 @@ public class InventoryCatalog implements IInventory {
 	}
 
 	public void refreshSellables() {
-		Item[] items = GTSUtil.getAllSellableItems();
-		if (items.length >= INV_SIZE) {
-			LogHelper.error("more sellable items than space, I should probably figure out what to do here");
-			// TODO logic for when there's more items than space;
-		} else {
-			int slot = 1;
-			for (Item item : items) {
-				if (GTSUtil.getValue(item) <= getStoredValue()) {
-					inventory[slot] = new ItemStack(item);
-					slot++;
-				}
+		if (getStoredValue() == 0) {
+			return;
+		}
+		int size = INV_SIZE;
+		int targetValue = getStoredValue();
+		if (getStackInSlot(1) != null) {
+			Item target = getStackInSlot(1).getItem();
+			if (target != null&&GTSUtil.getValue(target)<targetValue) {
+				targetValue = (int) GTSUtil.getValue(target)+1;
 			}
-			while (slot < INV_SIZE - 1) {
-				setInventorySlotContents(slot, null);
+		}
+		ArrayList<Item> items = GTSUtil.getAllSellableItemsSorted(targetValue);
+		int slot = 2;
+		for (Item item : items) {
+			if (GTSUtil.getValue(item) <= getStoredValue() && slot < size) {
+				inventory[slot] = new ItemStack(item);
 				slot++;
 			}
 		}
+		while (slot < INV_SIZE) {
+			setInventorySlotContents(slot, null);
+			slot++;
+		}
+
 	}
 
 	public void buyItem(int slot) {

@@ -1,5 +1,6 @@
 package com.alexpansion.gts.utility;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import com.alexpansion.gts.handler.ConfigurationHandler;
@@ -18,6 +19,7 @@ public class GTSUtil {
 	public static int totalValueSold = 0;
 	private static boolean valuesLoaded = false;
 	private static int calcCount = 0;
+	private static Item toRemove = null;
 
 	public static boolean canISell(Item item) {
 		/*
@@ -27,9 +29,9 @@ public class GTSUtil {
 		return baseValueMap.containsKey(item);
 
 	}
-	
+
 	@Deprecated
-	public static double getCachedValue(Item item){
+	public static double getCachedValue(Item item) {
 		return getValue(item);
 	}
 
@@ -37,7 +39,7 @@ public class GTSUtil {
 		if (!canISell(item)) {
 			return 0;
 		}
-		
+
 		// totalValueSold=0;
 		// valueSoldMap = new HashMap<Item, Integer>();
 		if (!valueMap.containsKey(item)) {
@@ -47,11 +49,15 @@ public class GTSUtil {
 		// "+valueMap.get(item));
 		return valueMap.get(item);
 	}
-	
-	public static void calculateValues(){
+
+	public static void calculateValues() {
 		LogHelper.info("recalculating all values");
-		for(Item key:valueSoldMap.keySet()){
+		for (Item key : valueSoldMap.keySet()) {
 			calculateValue(key);
+		}
+		if(toRemove != null){
+			valueSoldMap.remove(toRemove);
+			toRemove = null;
 		}
 		calcCount = 0;
 	}
@@ -67,6 +73,10 @@ public class GTSUtil {
 			multiplier = 1;
 			rampUp = 10000;
 			int valueSold = valueSoldMap.get(item);
+			if(baseValueMap.get(item)==null){
+				toRemove = item;
+				return;
+			}
 			double newValue = baseValueMap.get(item);
 			double loss = 0;
 			if (totalValueSold < rampUp) {
@@ -123,17 +133,48 @@ public class GTSUtil {
 			return 0;
 		}
 	}
-	
-	public static Item[] getAllSellableItems(){
-		Item[] items = new Item[valueSoldMap.size()];
-		int i = 0;
-		for(Item key:valueSoldMap.keySet()){
-			items[i] = key;
-			i++;
+
+	public static ArrayList<Item> getAllSellableItems() {
+		ArrayList<Item> items = new ArrayList<Item>();
+		for (Item key : valueSoldMap.keySet()) {
+			items.add(key);
 		}
 		return items;
 	}
 
+	public static ArrayList<Item> getAllSellableItems(int limit) {
+		ArrayList<Item> items = getAllSellableItems();
+		ArrayList<Item> newItems = new ArrayList<Item>();
+		for (Item item : items) {
+			if (getValue(item) <= limit) {
+				newItems.add(item);
+			}
+		}
+		return newItems;
+	}
+
+	public static ArrayList<Item> getAllSellableItemsSorted(int limit){
+		ArrayList<Item> oldList = getAllSellableItems(limit);
+		ArrayList<Item> newList = new ArrayList<Item>();
+		while(oldList.size()>0){
+			Double top = (double) 0;
+			Item topItem = null;
+			for(Item item:oldList){
+				if(getValue(item)>top){
+					top = getValue(item);
+					topItem = item;
+				}
+			}
+			if(topItem == null){
+				LogHelper.error("topItem was null in GTSUtil.getAllSellableItems");
+				return newList;
+			}
+			newList.add(topItem);
+			oldList.remove(topItem);
+		}
+		return newList;
+	}
+	
 	public static void initItemValues() {
 		addSellableItemById(1, 1);
 		addSellableItemById(2, 1);
@@ -225,14 +266,40 @@ public class GTSUtil {
 		addSellableItemById(123, 1792);
 		addSellableItemById(129, 4096);
 		addSellableItemById(130, 2304);
-		addSellableItemById(131,134);
-		addSellableItemById(133,73728);
-		addSellableItemById(143,8);
-		addSellableItemById(152,576);
-		addSellableItemById(159,256);
-		addSellableItemById(162,32);
-		addSellableItemById(165,216);
+		addSellableItemById(131, 134);
+		addSellableItemById(133, 73728);
+		addSellableItemById(143, 8);
+		addSellableItemById(152, 576);
+		addSellableItemById(159, 256);
+		addSellableItemById(162, 32);
+		addSellableItemById(165, 216);
 		addSellableItemById(264, 8192);
+		addSellableItemByRegistryName("minecraft:gunpowder",192);
+		addSellableItemByRegistryName("minecraft:feather",48);
+		addSellableItemByRegistryName("minecraft:string",12);
+		addSellableItemByRegistryName("minecraft:apple",128);
+		addSellableItemByRegistryName("minecraft:hopper",1344);
+		addSellableItemByRegistryName("minecraft:coal_block",1152);
+		addSellableItemByRegistryName("minecraft:clay_ball",64);
+		addSellableItemByRegistryName("minecraft:iron_ingot",256);
+		addSellableItemByRegistryName("minecraft:rotten_flesh",24);
+		addSellableItemByRegistryName("minecraft:reeds",32);
+		addSellableItemByRegistryName("minecraft:flint",4);
+		addSellableItemByRegistryName("minecraft:redstone",64);
+		addSellableItemByRegistryName("minecraft:stick",4);
+		addSellableItemByRegistryName("minecraft:coal",128);
+		addSellableItemByRegistryName("minecraft:wheat",24);
+		addSellableItemByRegistryName("minecraft:wheat_seeds",16);
+		addSellableItemByRegistryName("minecraft:arrow",14);
+		addSellableItemByRegistryName("minecraft:bone",96);
+		addSellableItemByRegistryName("minecraft:gold_ingot",2048);
+		addSellableItemByRegistryName("minecraft:paper",32);
+		addSellableItemByRegistryName("minecraft:sugar",32);
+		addSellableItemByRegistryName("minecraft:book",96);
+		addSellableItemByRegistryName("minecraft:leather",64);
+		addSellableItemByRegistryName("minecraft:beef",64);
+		addSellableItemByRegistryName("minecraft:cooked_beef",64);
+		addSellableItemByRegistryName("minecraft:bread",72);
 	}
 
 	public static void addSellableItemById(int id, int value) {
@@ -258,12 +325,12 @@ public class GTSUtil {
 		data.setTotal(totalValueSold);
 
 	}
-	
-	public static double getValuePercentage(Item item){
-		if(!canIBuy(item)){
+
+	public static double getValuePercentage(Item item) {
+		if (!canIBuy(item)) {
 			return 0;
-		}else{
-			return Math.floor(((double) valueSoldMap.get(item) / totalValueSold * 100)*100)/100;
+		} else {
+			return Math.floor(((double) valueSoldMap.get(item) / totalValueSold * 100) * 100) / 100;
 		}
 	}
 
@@ -275,7 +342,7 @@ public class GTSUtil {
 			addValueSold(item, (int) value, world);
 		}
 		changeMap.put(item, value % 1);
-		if(calcCount++>5){
+		if (calcCount++ > 5) {
 			calculateValues();
 		}
 	}
@@ -311,6 +378,10 @@ public class GTSUtil {
 			LogHelper.error("NPE in getItemFromUnlocalizedName with value: " + name);
 			return null;
 		}
+	}
+	
+	public static void addSellableItemByRegistryName(String name,int value){
+		addSellableItem(getItemFromRegistryName(name),value);
 	}
 
 	public static void loadValues(World world) {

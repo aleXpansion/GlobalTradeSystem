@@ -23,23 +23,26 @@ public class ContainerItemCatalog extends Container {
 
 		// Catalog, Slot 0, Slot ID 0 (Selling Slot)
 		this.addSlotToContainer(new Slot(itemInv, 0, 8, 18));
+		
+		// Catalog, Slot 1, Slot ID 1 (Target Slot)
+		this.addSlotToContainer(new Slot(itemInv, 1,152,18));
 
-		// Catalog, Slots 1-36, Slot IDs 1-36 (Purchase Slots)
+		// Catalog, Slots 2-37, Slot IDs 2-37 (Purchase Slots)
 		for (int y = 0; y < 4; ++y) {
 			for (int x = 0; x < 9; ++x) {
 				this.addSlotToContainer(
-						new SlotFurnaceOutput(playerInv.player, itemInv, x + y * 9 + 1, 8 + x * 18, 54 + y * 18));
+						new SlotFurnaceOutput(playerInv.player, itemInv, x + y * 9 + 2, 8 + x * 18, 54 + y * 18));
 			}
 		}
 
-		// Player Inventory, Slot 9-35, Slot IDs 37-63
+		// Player Inventory, Slot 9-35, Slot IDs 38-64
 		for (int y = 0; y < 3; ++y) {
 			for (int x = 0; x < 9; ++x) {
 				this.addSlotToContainer(new Slot(playerInv, x + y * 9 + 9, 8 + x * 18, 140 + y * 18));
 			}
 		}
 
-		// Player Inventory, Slot 0-8, Slot IDs 64-72 (hotbar)
+		// Player Inventory, Slot 0-8, Slot IDs 65-73 (hotbar)
 		for (int x = 0; x < 9; ++x) {
 			this.addSlotToContainer(new Slot(playerInv, x, 8 + x * 18, 198));
 		}
@@ -58,14 +61,15 @@ public class ContainerItemCatalog extends Container {
 		if (slot != null && slot.getHasStack()) {
 			ItemStack current = slot.getStack();
 			previous = current.copy();
-			if (fromSlot < 1) {
+			if (fromSlot <= 1) {
 				if (!this.mergeItemStack(current, INV_START, HOTBAR_END, true)) {
 					return null;
 				}
-			} else if (fromSlot < 37) {
+			} else if (fromSlot <= 37) {
 				itemInv.buyItem(fromSlot);
-				while(itemInv.getStoredValue()>GTSUtil.getValue(current.getItem())&&current.stackSize<current.getMaxStackSize()){
-					current.stackSize ++;
+				while (itemInv.getStoredValue() > GTSUtil.getValue(current.getItem())
+						&& current.stackSize < current.getMaxStackSize()) {
+					current.stackSize++;
 					itemInv.buyItem(fromSlot);
 				}
 				if (!this.mergeItemStack(current, INV_START, HOTBAR_END, true)) {
