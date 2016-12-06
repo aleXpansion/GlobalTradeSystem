@@ -1,6 +1,7 @@
 package com.alexpansion.gts.guicontainer;
 
 import com.alexpansion.gts.inventory.InventoryCatalog;
+import com.alexpansion.gts.inventory.SlotCatalogOutput;
 import com.alexpansion.gts.utility.GTSUtil;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -8,7 +9,6 @@ import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
-import net.minecraft.inventory.SlotFurnaceOutput;
 import net.minecraft.item.ItemStack;
 
 public class ContainerItemCatalog extends Container {
@@ -31,7 +31,7 @@ public class ContainerItemCatalog extends Container {
 		for (int y = 0; y < 4; ++y) {
 			for (int x = 0; x < 9; ++x) {
 				this.addSlotToContainer(
-						new SlotFurnaceOutput(playerInv.player, itemInv, x + y * 9 + 2, 8 + x * 18, 54 + y * 18));
+						new SlotCatalogOutput(itemInv, x + y * 9 + 2, 8 + x * 18, 54 + y * 18));
 			}
 		}
 
