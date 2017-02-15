@@ -115,7 +115,14 @@ public class GTSUtil {
 
 		return output;
 	}
-
+	
+	public static int getBaseValue(Item item){
+		if(baseValueMap.containsKey(item)){
+			return baseValueMap.get(item);
+		}else{
+			return 0;
+		}
+	}
 	/**
 	 * Gets the value in credits of a given stack. This only works for items
 	 * that store credits, such as credits and credit cards. If the item is not
