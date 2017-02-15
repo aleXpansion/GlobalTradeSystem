@@ -5,6 +5,7 @@ import com.alexpansion.gts.inventory.InventoryCatalog;
 
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.client.renderer.GlStateManager;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.util.ResourceLocation;
@@ -15,8 +16,8 @@ public class GuiItemCatalog extends GuiContainer {
 	private IInventory playerInv;
 	private InventoryCatalog catalog;
 	
-	public GuiItemCatalog(InventoryPlayer playerInvIn,InventoryCatalog catalogIn) {
-		super(new ContainerItemCatalog(playerInvIn, catalogIn));
+	public GuiItemCatalog(InventoryPlayer playerInvIn,InventoryCatalog catalogIn,EntityPlayer player) {
+		super(new ContainerItemCatalog(playerInvIn, catalogIn,player));
 		this.playerInv = playerInvIn;
 		this.catalog = catalogIn;
 		this.xSize = 176;

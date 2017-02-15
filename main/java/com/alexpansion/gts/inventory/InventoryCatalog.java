@@ -3,6 +3,7 @@ package com.alexpansion.gts.inventory;
 import java.util.ArrayList;
 
 import com.alexpansion.gts.exceptions.ValueOverflowException;
+import com.alexpansion.gts.handler.ConfigurationHandler;
 import com.alexpansion.gts.item.ItemCatalog;
 import com.alexpansion.gts.item.ItemCreditCard;
 import com.alexpansion.gts.utility.GTSUtil;
@@ -202,10 +203,10 @@ public class InventoryCatalog implements IInventory {
 			ItemStack stack = inventory[0];
 			Item item = stack.getItem();
 			ItemCatalog catalog = (ItemCatalog) invItem.getItem();
-			double value = GTSUtil.getValue(item);
+			double value = GTSUtil.getValue(item)*ConfigurationHandler.saleMultiplier;
 			if (value + catalog.getValue(invItem) + change <= catalog.getLimit()) {
 				try {
-					catalog.addValue(invItem, (int) (GTSUtil.getValue(item) + change));
+					catalog.addValue(invItem, (int) (value + change));
 					change = (value + change) % 1;
 					decrStackSize(0, 1);
 					if (!worldObj.isRemote) {
@@ -227,51 +228,61 @@ public class InventoryCatalog implements IInventory {
 	}
 
 	public void refreshSellables() {
-		if (getStoredValue() == 0) {
-			return;
-		}
-		int size = INV_SIZE;
-		int targetValue = getStoredValue();
-		if (getStackInSlot(1) != null) {
-			Item target = getStackInSlot(1).getItem();
-			if (target != null&&GTSUtil.getValue(target)<targetValue) {
-				targetValue = (int) GTSUtil.getValue(target)+1;
+		if (!worldObj.isRemote) {
+			LogHelper.info("refreshSellables was called");
+			if (getStoredValue() == 0) {
+				return;
 			}
-		}
-		ArrayList<Item> items = GTSUtil.getAllSellableItemsSorted(targetValue);
-		int slot = 2;
-		for (Item item : items) {
-			if (GTSUtil.getValue(item) <= getStoredValue() && slot < size) {
-				inventory[slot] = new ItemStack(item);
+			int size = INV_SIZE;
+			int targetValue = getStoredValue();
+			if (getStackInSlot(1) != null) {
+				Item target = getStackInSlot(1).getItem();
+				if (target != null && GTSUtil.getValue(target) < targetValue) {
+					targetValue = (int) GTSUtil.getValue(target) + 1;
+				}
+			}
+			ArrayList<Item> items = GTSUtil.getAllSellableItemsSorted(targetValue);
+			int slot = 2;
+			for (Item item : items) {
+				if (GTSUtil.getValue(item) <= getStoredValue() && slot < size) {
+					inventory[slot] = new ItemStack(item);
+					slot++;
+				}
+			}
+			while (slot < INV_SIZE) {
+				setInventorySlotContents(slot, null);
 				slot++;
 			}
+			markDirty();
 		}
-		while (slot < INV_SIZE) {
-			setInventorySlotContents(slot, null);
-			slot++;
-		}
-
 	}
 
 	public void buyItem(int slot) {
-		ItemCatalog catalog = (ItemCatalog) invItem.getItem();
-		if (getStackInSlot(slot) != null) {
-			Item toSell = getStackInSlot(slot).getItem();
-			if (GTSUtil.canISell(toSell)) {
-				int toRemove = (int) (GTSUtil.getValue(toSell) - change);
-				change = (GTSUtil.getValue(getStackInSlot(slot).getItem()) - change) % 1;
-				try {
-					catalog.removeValue(invItem, toRemove);
-					if (!worldObj.isRemote) {
-						GTSUtil.addValueSold(toSell, 0 - GTSUtil.getValue(toSell), worldObj);
+		//if (!worldObj.isRemote) {
+			LogHelper.info("buyItem was called");
+			ItemCatalog catalog = (ItemCatalog) invItem.getItem();
+			if (getStackInSlot(slot) != null) {
+				Item toSell = getStackInSlot(slot).getItem();
+				if (GTSUtil.canISell(toSell)) {
+					int toRemove = (int) (GTSUtil.getValue(toSell) - change);
+					change = (GTSUtil.getValue(getStackInSlot(slot).getItem()) - change) % 1;
+					try {
+						catalog.removeValue(invItem, toRemove);
+						if (!worldObj.isRemote) {
+							GTSUtil.addValueSold(toSell, 0 - GTSUtil.getValue(toSell), worldObj);
+						}
+					} catch (ValueOverflowException e) {
+						LogHelper.error("VOE in InventoryCatalog.buyItem");
+						e.printStackTrace();
 					}
-				} catch (ValueOverflowException e) {
-					LogHelper.error("VOE in InventoryCatalog.buyItem");
-					e.printStackTrace();
+					// refreshSellables();
 				}
-				// refreshSellables();
-			}
+			//}
 		}
+	}
+	
+	public World getWorld(){
+		return worldObj;
 	}
 
 }
