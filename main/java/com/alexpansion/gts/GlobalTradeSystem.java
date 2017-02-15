@@ -4,6 +4,7 @@ import com.alexpansion.gts.handler.ConfigurationHandler;
 import com.alexpansion.gts.proxy.CommonProxy;
 import com.alexpansion.gts.reference.Reference;
 import com.alexpansion.gts.tileentity.TileEntityTrader;
+import com.alexpansion.gts.utility.EventHandler;
 import com.alexpansion.gts.utility.LogHelper;
 
 import net.minecraftforge.common.MinecraftForge;
@@ -28,6 +29,7 @@ public class GlobalTradeSystem {
 		proxy.preInit(event);
 		ConfigurationHandler.init(event.getSuggestedConfigurationFile());
 		MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
+		MinecraftForge.EVENT_BUS.register(EventHandler.INSTANCE);
 		
 		//GTSUtil.initItemValues();
 		GameRegistry.registerTileEntity(TileEntityTrader.class, "gts:seller");
