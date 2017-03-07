@@ -35,7 +35,6 @@ public class ValuesRequestPacket implements IMessage {
 			mainThread.addScheduledTask( new Runnable(){
 				@Override
 				public void run(){
-					System.out.println(ctx.getServerHandler().playerEntity.getDisplayNameString());
 					//EntityPlayerMP player = ctx.getServerHandler().playerEntity;
 					ValueManager manager = ValueManager.getManager(player.worldObj);
 					ValuesBean bean= manager.getBean();

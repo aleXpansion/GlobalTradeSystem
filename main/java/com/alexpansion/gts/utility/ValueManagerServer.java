@@ -20,8 +20,8 @@ public class ValueManagerServer {
 
 		for (Item item : sellables) {
 			//TODO implement stuff
-			baseMap.put(new SItem(item), GTSUtil.getBaseValue(item));
-			valueMap.put(new SItem(item), GTSUtil.getValue(item));
+			baseMap.put(SItem.getSItem(item), GTSUtil.getBaseValue(item));
+			valueMap.put(SItem.getSItem(item), GTSUtil.getValue(item));
 		}
 		return new ValuesBean(baseMap,valueMap);
 	}

@@ -374,6 +374,9 @@ public class GTSUtil {
 		} catch (NullPointerException e) {
 			LogHelper.error("NPE in getItemFromUnlocalizedName with value: " + name);
 			return null;
+		} catch (IndexOutOfBoundsException e){
+			LogHelper.error("IOOB Exception in getItemFromRegistryName. Input:"+name);
+			return null;
 		}
 	}
 	
