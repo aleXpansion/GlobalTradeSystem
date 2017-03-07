@@ -24,7 +24,6 @@ public class ClientProxy extends CommonProxy {
 
 	@Override
 	public void postInit(FMLPostInitializationEvent e) {
-		// TODO Auto-generated method stub
 		super.postInit(e);
 	}
 

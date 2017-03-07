@@ -10,6 +10,7 @@ import com.alexpansion.gts.init.ModItems;
 import com.alexpansion.gts.item.IValueContainer;
 import com.alexpansion.gts.utility.GTSUtil;
 import com.alexpansion.gts.utility.LogHelper;
+import com.alexpansion.gts.utility.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
@@ -43,10 +44,13 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 	private String itemInfo2;
 	private Item lastSold;
 	private TraderItemHandler handler;
+	private ValueManager manager;
 
 	public TileEntityTrader(World worldIn) {
 		this();
 		worldObj = worldIn;
+		manager = ValueManager.getManager(worldIn);
+		// TODO remove this - it shouldn't break anything
 		if (!GTSUtil.areValuesLoaded()) {
 			GTSUtil.loadValues(this.worldObj);
 		}
@@ -133,9 +137,9 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 	public String getName() {
 		return this.hasCustomName() ? this.customName : "container.trader";
 	}
-	
-	public ITextComponent getDisplayName(){
-		return new TextComponentTranslation(getName(),new Object());
+
+	public ITextComponent getDisplayName() {
+		return new TextComponentTranslation(getName(), new Object());
 	}
 
 	/**
@@ -225,7 +229,9 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 		int k = this.pos.getZ();
 		++this.ticksSinceSync;
 
-		checkItems();
+		if (manager != null) {
+			checkItems();
+		}
 
 		if (!this.worldObj.isRemote && this.numPlayersUsing != 0 && (this.ticksSinceSync + i + j + k) % 200 == 0) {
 			this.numPlayersUsing = 0;
@@ -286,7 +292,7 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 	 */
 	public boolean isItemValidForSlot(int index, ItemStack stack) {
 		if (index == 0) {
-			return GTSUtil.canIBuy(stack.getItem());
+			return manager.canIBuy(stack.getItem());
 		}
 		if (index == 1) {
 			return stack.getItem() instanceof IValueContainer;
@@ -493,8 +499,8 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 			// if it's neither null nor ignore
 			if (chestContents[i] != null && chestContents[i].getItem() != ignore) {
 				Item item = chestContents[i].getItem();
-				if (GTSUtil.canISell(item)) {
-					double itemValue = GTSUtil.getValue(item) * ConfigurationHandler.saleMultiplier;
+				if (manager.canISell(item)) {
+					double itemValue = manager.getValue(item) * ConfigurationHandler.saleMultiplier;
 
 					// if adding this value will bring change over 1, attempt to
 					// insert credits as needed. Return if that fails
@@ -528,8 +534,11 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 	}
 
 	private void buyItem(Item toBuy) {
+		if (manager == null) {
+			return;
+		}
 
-		if (GTSUtil.canISell(toBuy) && !GTSUtil.canIBuy(toBuy)) {
+		if (manager.canISell(toBuy) && !manager.canIBuy(toBuy)) {
 			if (worldObj != null) {
 				GTSUtil.addValueSold(toBuy, 0, worldObj);
 			} else {
@@ -538,11 +547,11 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 		}
 
 		// if the toBuy item is either null or invalid for selling, return.
-		if (toBuy == null || !GTSUtil.canIBuy(toBuy)) {
+		if (toBuy == null || !manager.canIBuy(toBuy)) {
 			return;
 		}
 
-		double value = GTSUtil.getValue(toBuy);
+		double value = manager.getValue(toBuy);
 
 		// if we don't have enough credits to buy it, return
 		if (getCreditCount() + change < value) {
@@ -616,7 +625,7 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 	public void updateInfo(Item item) {
 		if (item != null) {
 			itemInfo = "B: " + item.getItemStackDisplayName(new ItemStack(item));
-			itemInfo2 = "V: " + toRoundedString(GTSUtil.getValue(item)) + ", " + GTSUtil.getValuePercentage(item) + "%";
+			itemInfo2 = "V: " + toRoundedString(manager.getValue(item)) + ", " + GTSUtil.getValuePercentage(item) + "%";
 		} else {
 			itemInfo = "B:";
 			itemInfo2 = "V:";
@@ -650,6 +659,6 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 	}
 
 	public double getLastSoldValue() {
-		return GTSUtil.getValue(lastSold);
+		return manager.getValue(lastSold);
 	}
 }

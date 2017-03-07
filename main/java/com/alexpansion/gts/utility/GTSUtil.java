@@ -21,32 +21,20 @@ public class GTSUtil {
 	private static int calcCount = 0;
 	private static Item toRemove = null;
 
-	public static boolean canISell(Item item) {
-		/*
-		 * if (!valuesLoaded) { return false; }
-		 */
-
-		return baseValueMap.containsKey(item);
-
-	}
-
 	@Deprecated
-	public static double getCachedValue(Item item) {
-		return getValue(item);
+	public static boolean canISell(Item item) {
+		return baseValueMap.containsKey(item);
 	}
 
+	
+	@Deprecated
 	public static double getValue(Item item) {
 		if (!canISell(item)) {
 			return 0;
 		}
-
-		// totalValueSold=0;
-		// valueSoldMap = new HashMap<Item, Integer>();
 		if (!valueMap.containsKey(item)) {
 			calculateValue(item);
 		}
-		// LogHelper.info(item.getUnlocalizedName()+" is worth
-		// "+valueMap.get(item));
 		return valueMap.get(item);
 	}
 
@@ -116,6 +104,7 @@ public class GTSUtil {
 		return output;
 	}
 	
+	@Deprecated
 	public static int getBaseValue(Item item){
 		if(baseValueMap.containsKey(item)){
 			return baseValueMap.get(item);
@@ -354,6 +343,7 @@ public class GTSUtil {
 		}
 	}
 
+	@Deprecated
 	public static boolean canIBuy(Item item) {
 		return valueSoldMap.containsKey(item);
 	}

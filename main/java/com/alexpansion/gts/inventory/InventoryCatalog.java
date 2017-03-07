@@ -8,6 +8,7 @@ import com.alexpansion.gts.item.ItemCatalog;
 import com.alexpansion.gts.item.ItemCreditCard;
 import com.alexpansion.gts.utility.GTSUtil;
 import com.alexpansion.gts.utility.LogHelper;
+import com.alexpansion.gts.utility.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
@@ -28,8 +29,10 @@ public class InventoryCatalog implements IInventory {
 	private ItemStack[] inventory = new ItemStack[INV_SIZE];
 	private double change;
 	private World worldObj;
+	private ValueManager manager;
 
 	public InventoryCatalog(ItemStack stack, World world) {
+		manager = ValueManager.getManager(world);
 		if (!(stack.getItem() instanceof ItemCatalog)) {
 			LogHelper.error("Attempted to create an InventoryCatalog with an ItemStack that isn't a catalog!");
 		}
@@ -142,19 +145,16 @@ public class InventoryCatalog implements IInventory {
 
 	@Override
 	public int getField(int id) {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	@Override
 	public void setField(int id, int value) {
-		// TODO Auto-generated method stub
 
 	}
 
 	@Override
 	public int getFieldCount() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -199,11 +199,11 @@ public class InventoryCatalog implements IInventory {
 	}
 
 	private boolean sellItem() {
-		if (inventory[0] != null && GTSUtil.canISell(inventory[0].getItem())) {
+		if (inventory[0] != null && manager.canISell(inventory[0].getItem())) {
 			ItemStack stack = inventory[0];
 			Item item = stack.getItem();
 			ItemCatalog catalog = (ItemCatalog) invItem.getItem();
-			double value = GTSUtil.getValue(item)*ConfigurationHandler.saleMultiplier;
+			double value = manager.getValue(item)*ConfigurationHandler.saleMultiplier;
 			if (value + catalog.getValue(invItem) + change <= catalog.getLimit()) {
 				try {
 					catalog.addValue(invItem, (int) (value + change));
@@ -237,14 +237,14 @@ public class InventoryCatalog implements IInventory {
 			int targetValue = getStoredValue();
 			if (getStackInSlot(1) != null) {
 				Item target = getStackInSlot(1).getItem();
-				if (target != null && GTSUtil.getValue(target) < targetValue) {
-					targetValue = (int) GTSUtil.getValue(target) + 1;
+				if (target != null && manager.getValue(target) < targetValue) {
+					targetValue = (int) manager.getValue(target) + 1;
 				}
 			}
 			ArrayList<Item> items = GTSUtil.getAllSellableItemsSorted(targetValue);
 			int slot = 2;
 			for (Item item : items) {
-				if (GTSUtil.getValue(item) <= getStoredValue() && slot < size) {
+				if (manager.getValue(item) <= getStoredValue() && slot < size) {
 					inventory[slot] = new ItemStack(item);
 					slot++;
 				}
@@ -263,13 +263,13 @@ public class InventoryCatalog implements IInventory {
 			ItemCatalog catalog = (ItemCatalog) invItem.getItem();
 			if (getStackInSlot(slot) != null) {
 				Item toSell = getStackInSlot(slot).getItem();
-				if (GTSUtil.canISell(toSell)) {
-					int toRemove = (int) (GTSUtil.getValue(toSell) - change);
-					change = (GTSUtil.getValue(getStackInSlot(slot).getItem()) - change) % 1;
+				if (manager.canISell(toSell)) {
+					int toRemove = (int) (manager.getValue(toSell) - change);
+					change = (manager.getValue(getStackInSlot(slot).getItem()) - change) % 1;
 					try {
 						catalog.removeValue(invItem, toRemove);
 						if (!worldObj.isRemote) {
-							GTSUtil.addValueSold(toSell, 0 - GTSUtil.getValue(toSell), worldObj);
+							GTSUtil.addValueSold(toSell, 0 - manager.getValue(toSell), worldObj);
 						}
 					} catch (ValueOverflowException e) {
 						LogHelper.error("VOE in InventoryCatalog.buyItem");

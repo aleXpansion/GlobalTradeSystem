@@ -1,6 +1,6 @@
 package com.alexpansion.gts.inventory;
 
-import com.alexpansion.gts.utility.GTSUtil;
+import com.alexpansion.gts.utility.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;
@@ -12,9 +12,11 @@ public class SlotCatalogOutput extends Slot {
 	InventoryCatalog inventory;
 	ItemStack formerStack = null;
 	World world;
+	ValueManager manager;
 
 	public SlotCatalogOutput(InventoryCatalog inventoryIn, int index, int xPosition, int yPosition,World world) {
 		super(inventoryIn, index, xPosition, yPosition);
+		manager = ValueManager.getManager(world);
 		inventory = inventoryIn;
 		this.world = world;
 	}
@@ -28,7 +30,7 @@ public class SlotCatalogOutput extends Slot {
 	public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack)
     {
 		this.putStack(stack);
-		if(GTSUtil.getValue(stack.getItem())>inventory.getStoredValue()&&!world.isRemote){
+		if(manager.getValue(stack.getItem())>inventory.getStoredValue()&&!world.isRemote){
 			this.putStack(null);
 			formerStack = null;
 			return;

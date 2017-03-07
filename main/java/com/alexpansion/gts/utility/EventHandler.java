@@ -13,13 +13,14 @@ public class EventHandler {
 
 	@SubscribeEvent
 	public void onTooltip(ItemTooltipEvent event) {
+		ValueManager manager = ValueManager.getManager(event.getEntityPlayer().worldObj);
 		ItemStack stack = event.getItemStack();
 		Item item = stack.getItem();
-		if (GTSUtil.canISell(item)) {
+		if (manager.canISell(item)) {
 			List<String> tooltips = event.getToolTip();
-			double value = GTSUtil.getValue(stack.getItem());
+			double value = manager.getValue(stack.getItem());
 			tooltips.add("Credit Value: " + (Math.floor(value*100))/100);
-			tooltips.add("Base Value: " + GTSUtil.getBaseValue(item));
+			tooltips.add("Base Value: " + manager.getBaseValue(item));
 		}
 	}
 

@@ -92,7 +92,6 @@ public class ValueSavedData extends WorldSavedData {
 			instance = new ValueSavedData();
 			storage.setData(DATA_NAME, instance);
 		}
-		// instance.blank = true;
 
 		if (!GTSUtil.areValuesLoaded()) {
 			GTSUtil.loadValues(world);

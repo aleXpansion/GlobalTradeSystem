@@ -1,6 +1,8 @@
 package com.alexpansion.gts;
 
 import com.alexpansion.gts.handler.ConfigurationHandler;
+import com.alexpansion.gts.network.ValuesPacket;
+import com.alexpansion.gts.network.ValuesRequestPacket;
 import com.alexpansion.gts.proxy.CommonProxy;
 import com.alexpansion.gts.reference.Reference;
 import com.alexpansion.gts.tileentity.TileEntityTrader;
@@ -13,10 +15,15 @@ import net.minecraftforge.fml.common.SidedProxy;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.common.network.NetworkRegistry;
+import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
 
 @Mod(modid = Reference.MOD_ID, version = Reference.VERSION, name = Reference.MOD_NAME, guiFactory = Reference.GUI_FACTORY_CLASS)
 public class GlobalTradeSystem {
+	
+	public static SimpleNetworkWrapper network;
 	
 	@Mod.Instance(Reference.MOD_ID)
 	public static GlobalTradeSystem instance;
@@ -30,6 +37,9 @@ public class GlobalTradeSystem {
 		ConfigurationHandler.init(event.getSuggestedConfigurationFile());
 		MinecraftForge.EVENT_BUS.register(new ConfigurationHandler());
 		MinecraftForge.EVENT_BUS.register(EventHandler.INSTANCE);
+		network = NetworkRegistry.INSTANCE.newSimpleChannel("myChannel");
+		network.registerMessage(ValuesRequestPacket.Handler.class, ValuesRequestPacket.class, 0, Side.SERVER);
+		network.registerMessage(ValuesPacket.Handler.class, ValuesPacket.class, 1, Side.CLIENT);
 		
 		//GTSUtil.initItemValues();
 		GameRegistry.registerTileEntity(TileEntityTrader.class, "gts:seller");

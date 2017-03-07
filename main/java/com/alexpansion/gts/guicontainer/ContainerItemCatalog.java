@@ -2,7 +2,8 @@ package com.alexpansion.gts.guicontainer;
 
 import com.alexpansion.gts.inventory.InventoryCatalog;
 import com.alexpansion.gts.inventory.SlotCatalogOutput;
-import com.alexpansion.gts.utility.GTSUtil;
+import com.alexpansion.gts.utility.ValueManager;
+
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;
 import net.minecraft.inventory.ClickType;
@@ -16,8 +17,10 @@ public class ContainerItemCatalog extends Container {
 			HOTBAR_START = INV_END + 1, HOTBAR_END = HOTBAR_START + 8;
 
 	private InventoryCatalog itemInv;
+	private ValueManager manager;
 
 	public ContainerItemCatalog(InventoryPlayer playerInv, InventoryCatalog itemInv, EntityPlayer player) {
+		manager = ValueManager.getManager(player.worldObj);
 		this.itemInv = itemInv;
 
 		// Catalog, Slot 0, Slot ID 0 (Selling Slot)
@@ -68,7 +71,7 @@ public class ContainerItemCatalog extends Container {
 
 				itemInv.buyItem(fromSlot);
 				int i = 0;
-				while (itemInv.getStoredValue() > GTSUtil.getValue(current.getItem())
+				while (itemInv.getStoredValue() > manager.getValue(current.getItem())
 						&& current.stackSize < current.getMaxStackSize() && i < 64) {
 					current.stackSize++;
 					itemInv.buyItem(fromSlot);
@@ -81,7 +84,7 @@ public class ContainerItemCatalog extends Container {
 					return null;
 				}
 			} else {
-				if (GTSUtil.canISell(current.getItem())) {
+				if (manager.canISell(current.getItem())) {
 					if (!this.mergeItemStack(current, 0, 1, false)) {
 						return null;
 					}

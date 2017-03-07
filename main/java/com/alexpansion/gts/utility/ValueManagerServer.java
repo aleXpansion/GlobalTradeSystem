@@ -1,0 +1,29 @@
+package com.alexpansion.gts.utility;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+
+import net.minecraft.item.Item;
+import net.minecraft.world.World;
+
+public class ValueManagerServer {
+
+	@SuppressWarnings("deprecation")
+	public static ValuesBean getBean(World world) {
+		if (!GTSUtil.areValuesLoaded()) {
+			GTSUtil.loadValues(world);
+		}
+		HashMap<SItem, Integer> baseMap = new HashMap<SItem, Integer>();
+		HashMap<SItem, Double> valueMap = new HashMap<SItem, Double>();
+
+		ArrayList<Item> sellables = GTSUtil.getAllSellableItems();
+
+		for (Item item : sellables) {
+			//TODO implement stuff
+			baseMap.put(new SItem(item), GTSUtil.getBaseValue(item));
+			valueMap.put(new SItem(item), GTSUtil.getValue(item));
+		}
+		return new ValuesBean(baseMap,valueMap);
+	}
+
+}
