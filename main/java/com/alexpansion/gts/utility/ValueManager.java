@@ -1,62 +1,42 @@
 package com.alexpansion.gts.utility;
 
-import java.util.Calendar;
-import com.alexpansion.gts.GlobalTradeSystem;
-import com.alexpansion.gts.network.ValuesRequestPacket;
-
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
-public class ValueManager {
+public abstract class ValueManager {
 
-	private ValuesBean bean;
-	private boolean isClient;
+	protected ValuesBean bean;
+	protected World world;
 	private static ValueManager clientInstance;
-	private static World clientWorld;
 	private static ValueManager serverInstance;
-	private static World serverWorld;
-	private Calendar lastUpdate = Calendar.getInstance();
 
 	public ValueManager(World inWorld) {
-		isClient = inWorld.isRemote;
-		if (isClient) {
-			clientWorld = inWorld;
-			clientInstance = this;
-		} else {
-			serverWorld = inWorld;
-			serverInstance = this;
-		}
+		world = inWorld;
 		bean = getBean();
 	}
 
 	public static ValueManager getManager(World inWorld) {
 
 		if (inWorld.isRemote) {
-			if (clientWorld != null && clientInstance != null && clientWorld.equals(inWorld)) {
+			if (clientInstance != null && clientInstance.world != null && clientInstance.world.equals(inWorld)) {
+				return clientInstance;
+			}else{
+				clientInstance = new ValueManagerClient(inWorld);
 				return clientInstance;
 			}
 		} else {
-			if (serverWorld != null && serverInstance != null && serverWorld.equals(inWorld)) {
+			if (serverInstance != null && serverInstance.world != null && serverInstance.world.equals(inWorld)) {
+				return serverInstance;
+			}
+			else{
+				serverInstance = new ValueManagerServer(inWorld);
 				return serverInstance;
 			}
 		}
-		return new ValueManager(inWorld);
 
 	}
 
-	public ValuesBean getBean() {
-		if (isClient) {
-			long timeSinceUpdate = Calendar.getInstance().getTimeInMillis() - lastUpdate.getTimeInMillis();
-			//TODO add config for refresh time
-			if (timeSinceUpdate > 1000) {
-				GlobalTradeSystem.network.sendToServer(new ValuesRequestPacket());
-				lastUpdate = Calendar.getInstance();
-			}
-			return bean;
-		} else {
-			return ValueManagerServer.getBean(serverWorld);
-		}
-	}
+	public abstract ValuesBean getBean();
 
 	public void setBean(ValuesBean inBean) {
 		bean = inBean;

@@ -6,10 +6,15 @@ import java.util.HashMap;
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
-public class ValueManagerServer {
+public class ValueManagerServer extends ValueManager{
+	
+	public ValueManagerServer(World inWorld) {
+		super(inWorld);
+	}
 
 	@SuppressWarnings("deprecation")
-	public static ValuesBean getBean(World world) {
+	@Override
+	public ValuesBean getBean() {
 		if (!GTSUtil.areValuesLoaded()) {
 			GTSUtil.loadValues(world);
 		}
