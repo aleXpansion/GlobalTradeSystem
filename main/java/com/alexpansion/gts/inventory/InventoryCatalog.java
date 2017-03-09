@@ -241,7 +241,7 @@ public class InventoryCatalog implements IInventory {
 					targetValue = (int) manager.getValue(target) + 1;
 				}
 			}
-			ArrayList<Item> items = GTSUtil.getAllSellableItemsSorted(targetValue);
+			ArrayList<Item> items = GTSUtil.getAllBuyableItemsSorted(targetValue);
 			int slot = 2;
 			for (Item item : items) {
 				if (manager.getValue(item) <= getStoredValue() && slot < size) {

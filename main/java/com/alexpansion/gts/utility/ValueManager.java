@@ -1,8 +1,6 @@
 package com.alexpansion.gts.utility;
 
 import java.util.Calendar;
-import java.util.Date;
-
 import com.alexpansion.gts.GlobalTradeSystem;
 import com.alexpansion.gts.network.ValuesRequestPacket;
 
@@ -49,6 +47,7 @@ public class ValueManager {
 	public ValuesBean getBean() {
 		if (isClient) {
 			long timeSinceUpdate = Calendar.getInstance().getTimeInMillis() - lastUpdate.getTimeInMillis();
+			//TODO add config for refresh time
 			if (timeSinceUpdate > 1000) {
 				GlobalTradeSystem.network.sendToServer(new ValuesRequestPacket());
 				lastUpdate = Calendar.getInstance();

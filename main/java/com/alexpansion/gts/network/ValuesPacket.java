@@ -1,6 +1,5 @@
 package com.alexpansion.gts.network;
 
-import com.alexpansion.gts.utility.LogHelper;
 import com.alexpansion.gts.utility.ValueManager;
 import com.alexpansion.gts.utility.ValuesBean;
 
@@ -46,7 +45,7 @@ public class ValuesPacket implements IMessage {
 			mainThread.addScheduledTask(new Runnable(){
 				@Override
 				public void run(){
-					LogHelper.info("ValuesPacket recieved");
+					//LogHelper.info("ValuesPacket recieved");
 					ValueManager manager = ValueManager.getManager(Minecraft.getMinecraft().theWorld);
 					manager.setBean(message.getBean());
 				}

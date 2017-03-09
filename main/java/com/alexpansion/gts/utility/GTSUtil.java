@@ -132,14 +132,22 @@ public class GTSUtil {
 
 	public static ArrayList<Item> getAllSellableItems() {
 		ArrayList<Item> items = new ArrayList<Item>();
+		for (Item key : baseValueMap.keySet()) {
+			items.add(key);
+		}
+		return items;
+	}
+	
+	public static ArrayList<Item> getAllBuyableItems() {
+		ArrayList<Item> items = new ArrayList<Item>();
 		for (Item key : valueSoldMap.keySet()) {
 			items.add(key);
 		}
 		return items;
 	}
 
-	public static ArrayList<Item> getAllSellableItems(int limit) {
-		ArrayList<Item> items = getAllSellableItems();
+	public static ArrayList<Item> getAllBuyableItems(int limit) {
+		ArrayList<Item> items = getAllBuyableItems();
 		ArrayList<Item> newItems = new ArrayList<Item>();
 		for (Item item : items) {
 			if (getValue(item) <= limit) {
@@ -149,8 +157,8 @@ public class GTSUtil {
 		return newItems;
 	}
 
-	public static ArrayList<Item> getAllSellableItemsSorted(int limit){
-		ArrayList<Item> oldList = getAllSellableItems(limit);
+	public static ArrayList<Item> getAllBuyableItemsSorted(int limit){
+		ArrayList<Item> oldList = getAllBuyableItems(limit);
 		ArrayList<Item> newList = new ArrayList<Item>();
 		while(oldList.size()>0){
 			Double top = (double) 0;
