@@ -1,6 +1,6 @@
 package com.alexpansion.gts.inventory;
 
-import com.alexpansion.gts.utility.ValueManager;
+import com.alexpansion.gts.value.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Slot;

@@ -9,8 +9,8 @@ import com.alexpansion.gts.handler.TraderItemHandler;
 import com.alexpansion.gts.init.ModItems;
 import com.alexpansion.gts.item.IValueContainer;
 import com.alexpansion.gts.utility.LogHelper;
-import com.alexpansion.gts.utility.SItem;
-import com.alexpansion.gts.utility.ValueManager;
+import com.alexpansion.gts.value.SItem;
+import com.alexpansion.gts.value.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;

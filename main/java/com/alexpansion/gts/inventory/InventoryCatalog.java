@@ -7,8 +7,8 @@ import com.alexpansion.gts.handler.ConfigurationHandler;
 import com.alexpansion.gts.item.ItemCatalog;
 import com.alexpansion.gts.item.ItemCreditCard;
 import com.alexpansion.gts.utility.LogHelper;
-import com.alexpansion.gts.utility.SItem;
-import com.alexpansion.gts.utility.ValueManager;
+import com.alexpansion.gts.value.SItem;
+import com.alexpansion.gts.value.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;

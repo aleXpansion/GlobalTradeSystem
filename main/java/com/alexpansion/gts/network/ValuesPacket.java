@@ -1,7 +1,7 @@
 package com.alexpansion.gts.network;
 
-import com.alexpansion.gts.utility.ValueManager;
-import com.alexpansion.gts.utility.ValuesBean;
+import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.ValuesBean;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;

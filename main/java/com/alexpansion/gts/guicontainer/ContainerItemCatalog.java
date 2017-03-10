@@ -2,8 +2,8 @@ package com.alexpansion.gts.guicontainer;
 
 import com.alexpansion.gts.inventory.InventoryCatalog;
 import com.alexpansion.gts.inventory.SlotCatalogOutput;
-import com.alexpansion.gts.utility.SItem;
-import com.alexpansion.gts.utility.ValueManager;
+import com.alexpansion.gts.value.SItem;
+import com.alexpansion.gts.value.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.InventoryPlayer;

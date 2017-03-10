@@ -2,6 +2,9 @@ package com.alexpansion.gts.utility;
 
 import java.util.List;
 
+import com.alexpansion.gts.value.SItem;
+import com.alexpansion.gts.value.ValueManager;
+
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
