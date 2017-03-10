@@ -23,7 +23,7 @@ public class ValueManagerClient extends ValueManager {
 		}
 		// TODO add config for refresh time
 		if (timeSinceUpdate > 1000) {
-			LogHelper.info("Requesting ValuesBean");
+			//LogHelper.info("Requesting ValuesBean");
 			GlobalTradeSystem.network.sendToServer(new ValuesRequestPacket());
 			lastUpdate = Calendar.getInstance();
 		}

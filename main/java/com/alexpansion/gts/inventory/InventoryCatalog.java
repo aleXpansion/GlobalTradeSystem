@@ -6,13 +6,12 @@ import com.alexpansion.gts.exceptions.ValueOverflowException;
 import com.alexpansion.gts.handler.ConfigurationHandler;
 import com.alexpansion.gts.item.ItemCatalog;
 import com.alexpansion.gts.item.ItemCreditCard;
-import com.alexpansion.gts.utility.GTSUtil;
 import com.alexpansion.gts.utility.LogHelper;
+import com.alexpansion.gts.utility.SItem;
 import com.alexpansion.gts.utility.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -199,9 +198,9 @@ public class InventoryCatalog implements IInventory {
 	}
 
 	private boolean sellItem() {
-		if (inventory[0] != null && manager.canISell(inventory[0].getItem())) {
+		if (inventory[0] != null && manager.canISell(SItem.getSItem(inventory[0]))) {
 			ItemStack stack = inventory[0];
-			Item item = stack.getItem();
+			SItem item = SItem.getSItem(stack);
 			ItemCatalog catalog = (ItemCatalog) invItem.getItem();
 			double value = manager.getValue(item)*ConfigurationHandler.saleMultiplier;
 			if (value + catalog.getValue(invItem) + change <= catalog.getLimit()) {
@@ -210,7 +209,7 @@ public class InventoryCatalog implements IInventory {
 					change = (value + change) % 1;
 					decrStackSize(0, 1);
 					if (!worldObj.isRemote) {
-						GTSUtil.addValueSold(item, value, worldObj);
+						manager.addValueSold(SItem.getSItem(stack), value, worldObj);
 					}
 					refreshSellables();
 					return true;
@@ -236,16 +235,16 @@ public class InventoryCatalog implements IInventory {
 			int size = INV_SIZE;
 			int targetValue = getStoredValue();
 			if (getStackInSlot(1) != null) {
-				Item target = getStackInSlot(1).getItem();
+				SItem target = SItem.getSItem(getStackInSlot(1));
 				if (target != null && manager.getValue(target) < targetValue) {
-					targetValue = (int) manager.getValue(target) + 1;
+					targetValue = (int)(double) manager.getValue(target) + 1;
 				}
 			}
-			ArrayList<Item> items = GTSUtil.getAllBuyableItemsSorted(targetValue);
+			ArrayList<SItem> items = manager.getAllBuyableItemsSorted(targetValue);
 			int slot = 2;
-			for (Item item : items) {
+			for (SItem item : items) {
 				if (manager.getValue(item) <= getStoredValue() && slot < size) {
-					inventory[slot] = new ItemStack(item);
+					inventory[slot] = item.getStack(1);
 					slot++;
 				}
 			}
@@ -262,14 +261,14 @@ public class InventoryCatalog implements IInventory {
 			LogHelper.info("buyItem was called");
 			ItemCatalog catalog = (ItemCatalog) invItem.getItem();
 			if (getStackInSlot(slot) != null) {
-				Item toSell = getStackInSlot(slot).getItem();
+				SItem toSell = SItem.getSItem(getStackInSlot(slot));
 				if (manager.canISell(toSell)) {
 					int toRemove = (int) (manager.getValue(toSell) - change);
-					change = (manager.getValue(getStackInSlot(slot).getItem()) - change) % 1;
+					change = (manager.getValue(toSell) - change) % 1;
 					try {
 						catalog.removeValue(invItem, toRemove);
 						if (!worldObj.isRemote) {
-							GTSUtil.addValueSold(toSell, 0 - manager.getValue(toSell), worldObj);
+							manager.addValueSold(toSell, 0 - manager.getValue(toSell), worldObj);
 						}
 					} catch (ValueOverflowException e) {
 						LogHelper.error("VOE in InventoryCatalog.buyItem");

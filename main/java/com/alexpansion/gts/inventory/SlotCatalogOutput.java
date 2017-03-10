@@ -30,7 +30,7 @@ public class SlotCatalogOutput extends Slot {
 	public void onPickupFromSlot(EntityPlayer playerIn, ItemStack stack)
     {
 		this.putStack(stack);
-		if(manager.getValue(stack.getItem())>inventory.getStoredValue()&&!world.isRemote){
+		if(manager.getValue(stack)>inventory.getStoredValue()&&!world.isRemote){
 			this.putStack(null);
 			formerStack = null;
 			return;

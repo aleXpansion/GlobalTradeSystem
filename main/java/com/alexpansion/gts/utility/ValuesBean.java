@@ -23,12 +23,13 @@ public class ValuesBean {
 		String[] basePairs = maps[0].split(", ");
 		baseMap = new HashMap<SItem, Integer>();
 		valueMap = new HashMap<SItem, Double>();
+		try{
 		for (String pair : basePairs) {
 			String[] kv = pair.split("=");
-			baseMap.put(SItem.getSItem(kv[0]), Integer.valueOf(kv[1]));
+			SItem key = SItem.getSItem(kv[0]);
+			baseMap.put(key, Integer.valueOf(kv[1]));
 		}
 		String[] valuePairs = maps[1].split(", ");
-		try{
 		for (String pair : valuePairs) {
 			String[] kv = pair.split("=");
 			SItem key = SItem.getSItem(kv[0]);
@@ -37,6 +38,9 @@ public class ValuesBean {
 		}
 		}catch(NullPointerException e){
 			LogHelper.error("NPE in ValuesBean.<init>");
+			//e.printStackTrace();
+		}catch(IndexOutOfBoundsException e){
+			LogHelper.error("IOOBE in ValuesBean.<init>");
 		}
 	}
 

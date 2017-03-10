@@ -8,8 +8,8 @@ import com.alexpansion.gts.handler.ConfigurationHandler;
 import com.alexpansion.gts.handler.TraderItemHandler;
 import com.alexpansion.gts.init.ModItems;
 import com.alexpansion.gts.item.IValueContainer;
-import com.alexpansion.gts.utility.GTSUtil;
 import com.alexpansion.gts.utility.LogHelper;
+import com.alexpansion.gts.utility.SItem;
 import com.alexpansion.gts.utility.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -19,7 +19,6 @@ import net.minecraft.inventory.ContainerChest;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.InventoryLargeChest;
 import net.minecraft.inventory.ItemStackHelper;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
@@ -42,7 +41,7 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 	private double change;
 	private String itemInfo;
 	private String itemInfo2;
-	private Item lastSold;
+	private SItem lastSold;
 	private TraderItemHandler handler;
 	private ValueManager manager;
 
@@ -50,10 +49,6 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 		this();
 		worldObj = worldIn;
 		manager = ValueManager.getManager(worldIn);
-		// TODO remove this - it shouldn't break anything
-		if (!GTSUtil.areValuesLoaded()) {
-			GTSUtil.loadValues(this.worldObj);
-		}
 	}
 
 	public TileEntityTrader() {
@@ -292,7 +287,7 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 	 */
 	public boolean isItemValidForSlot(int index, ItemStack stack) {
 		if (index == 0) {
-			return manager.canIBuy(stack.getItem());
+			return manager.canIBuy(SItem.getSItem(stack));
 		}
 		if (index == 1) {
 			return stack.getItem() instanceof IValueContainer;
@@ -325,9 +320,9 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 
 	private void checkItems() {
 		ItemStack target = chestContents[0];
-		Item toBuy = null;
+		SItem toBuy = null;
 		if (target != null) {
-			toBuy = target.getItem();
+			toBuy = SItem.getSItem(target);
 		}
 
 		if (!this.worldObj.isRemote) {
@@ -491,14 +486,14 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 		}
 	}
 
-	private void sellItem(Item ignore) {
+	private void sellItem(SItem toBuy) {
 
 		// for every stack in the selling row
 		for (int i = 2; i <= 10; i++) {
 
 			// if it's neither null nor ignore
-			if (chestContents[i] != null && chestContents[i].getItem() != ignore) {
-				Item item = chestContents[i].getItem();
+			if (chestContents[i] != null && !toBuy.equals(chestContents[i])) {
+				SItem item = SItem.getSItem(chestContents[i]);
 				if (manager.canISell(item)) {
 					double itemValue = manager.getValue(item) * ConfigurationHandler.saleMultiplier;
 
@@ -526,21 +521,21 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 						chestContents[i].stackSize--;
 					}
 
-					GTSUtil.addValueSold(item, itemValue, this.worldObj);
+					manager.addValueSold(item, itemValue, this.worldObj);
 					return;
 				}
 			}
 		}
 	}
 
-	private void buyItem(Item toBuy) {
+	private void buyItem(SItem toBuy) {
 		if (manager == null) {
 			return;
 		}
 
 		if (manager.canISell(toBuy) && !manager.canIBuy(toBuy)) {
 			if (worldObj != null) {
-				GTSUtil.addValueSold(toBuy, 0, worldObj);
+				manager.addValueSold(toBuy, 0, worldObj);
 			} else {
 				LogHelper.error("worldObj is null in buyItem()");
 			}
@@ -569,13 +564,13 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 			for (int i = 11; i <= 28; i++) {
 
 				// check that it's not null and contains the target item
-				if (chestContents[i] != null && chestContents[i].getItem() == toBuy) {
+				if (chestContents[i] != null && toBuy.equals(chestContents[i])) {
 					if (chestContents[i].getItem() == null) {
 						LogHelper.error("ItemStack with null item");
 					} else {
 						if (chestContents[i].stackSize < chestContents[i].getMaxStackSize()) {
 							chestContents[i].stackSize++;
-							GTSUtil.addValueSold(toBuy, 0 - value, this.worldObj);
+							manager.addValueSold(toBuy, 0 - value, this.worldObj);
 							removeCredits(value);
 							return;
 						}
@@ -587,7 +582,7 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 			// valid stack with enough room
 			for (int i = 11; i <= 28; i++) {
 				if (chestContents[i] == null) {
-					chestContents[i] = new ItemStack(toBuy);
+					chestContents[i] = toBuy.getStack(1);
 					removeCredits(value);
 					return;
 				}
@@ -622,10 +617,10 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 		return 0;
 	}
 
-	public void updateInfo(Item item) {
-		if (item != null) {
-			itemInfo = "B: " + item.getItemStackDisplayName(new ItemStack(item));
-			itemInfo2 = "V: " + toRoundedString(manager.getValue(item)) + ", " + GTSUtil.getValuePercentage(item) + "%";
+	public void updateInfo(SItem toBuy) {
+		if (toBuy != null) {
+			itemInfo = "B: " + toBuy.getDisplayName();
+			itemInfo2 = "V: " + toRoundedString(manager.getValue(toBuy));
 		} else {
 			itemInfo = "B:";
 			itemInfo2 = "V:";
@@ -654,7 +649,7 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 		return itemInfo2;
 	}
 
-	public Item getLastSold() {
+	public SItem getLastSold() {
 		return lastSold;
 	}
 

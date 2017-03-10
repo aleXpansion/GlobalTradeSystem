@@ -2,6 +2,7 @@ package com.alexpansion.gts.guicontainer;
 
 import com.alexpansion.gts.inventory.InventoryCatalog;
 import com.alexpansion.gts.inventory.SlotCatalogOutput;
+import com.alexpansion.gts.utility.SItem;
 import com.alexpansion.gts.utility.ValueManager;
 
 import net.minecraft.entity.player.EntityPlayer;
@@ -71,7 +72,7 @@ public class ContainerItemCatalog extends Container {
 
 				itemInv.buyItem(fromSlot);
 				int i = 0;
-				while (itemInv.getStoredValue() > manager.getValue(current.getItem())
+				while (itemInv.getStoredValue() > manager.getValue(current)
 						&& current.stackSize < current.getMaxStackSize() && i < 64) {
 					current.stackSize++;
 					itemInv.buyItem(fromSlot);
@@ -84,7 +85,7 @@ public class ContainerItemCatalog extends Container {
 					return null;
 				}
 			} else {
-				if (manager.canISell(current.getItem())) {
+				if (manager.canISell(SItem.getSItem(current))) {
 					if (!this.mergeItemStack(current, 0, 1, false)) {
 						return null;
 					}

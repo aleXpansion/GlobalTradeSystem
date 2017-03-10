@@ -1,88 +1,14 @@
 package com.alexpansion.gts.utility;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import com.alexpansion.gts.handler.ConfigurationHandler;
-import com.alexpansion.gts.item.IValueContainer;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.world.World;
 import net.minecraftforge.fml.common.registry.GameRegistry;
 
 public class GTSUtil {
 
 	public static HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
-	public static HashMap<Item, Integer> valueSoldMap = new HashMap<Item, Integer>();
-	public static HashMap<Item, Double> changeMap = new HashMap<Item, Double>();
-	public static HashMap<Item, Double> valueMap = new HashMap<Item, Double>();
-	public static int totalValueSold = 0;
-	private static boolean valuesLoaded = false;
-	private static int calcCount = 0;
-	private static Item toRemove = null;
-
-	@Deprecated
-	public static boolean canISell(Item item) {
-		return baseValueMap.containsKey(item);
-	}
-
 	
-	@Deprecated
-	public static double getValue(Item item) {
-		if (!canISell(item)) {
-			return 0;
-		}
-		if (!valueMap.containsKey(item)) {
-			calculateValue(item);
-		}
-		return valueMap.get(item);
-	}
-
-	public static void calculateValues() {
-		LogHelper.info("recalculating all values");
-		for (Item key : valueSoldMap.keySet()) {
-			calculateValue(key);
-		}
-		if(toRemove != null){
-			valueSoldMap.remove(toRemove);
-			toRemove = null;
-		}
-		calcCount = 0;
-	}
-
-	public static void calculateValue(Item item) {
-		if (totalValueSold == 0) {
-			totalValueSold = 1;
-		}
-		if (valueSoldMap.containsKey(item)) {
-			int rampUp = ConfigurationHandler.rampUpCredits;
-			double multiplier = ConfigurationHandler.depreciationMultiplier;
-			// multiplier = (totalValueSold / 15000) + 1;
-			multiplier = 1;
-			rampUp = 10000;
-			int valueSold = valueSoldMap.get(item);
-			if(baseValueMap.get(item)==null){
-				toRemove = item;
-				return;
-			}
-			double newValue = baseValueMap.get(item);
-			double loss = 0;
-			if (totalValueSold < rampUp) {
-				newValue = ((rampUp - totalValueSold) / (double) rampUp) * newValue
-						+ (totalValueSold / (double) rampUp) * ((totalValueSold - valueSold) / (totalValueSold));
-			} else {
-				loss = newValue * ((valueSold) / ((double) totalValueSold)) * multiplier;
-				newValue -= loss;
-			}
-			// LogHelper.info(item.getUnlocalizedName() + " is worth " +
-			// newValue);
-			valueMap.put(item, newValue);
-		} else if (baseValueMap.containsKey(item)) {
-			int base = baseValueMap.get(item);
-			valueMap.put(item, (double) base);
-		}
-	}
-
 	public static void addSellableItem(Item item, int value) {
 		baseValueMap.put(item, value);
 	}
@@ -104,80 +30,6 @@ public class GTSUtil {
 		return output;
 	}
 	
-	@Deprecated
-	public static int getBaseValue(Item item){
-		if(baseValueMap.containsKey(item)){
-			return baseValueMap.get(item);
-		}else{
-			return 0;
-		}
-	}
-	/**
-	 * Gets the value in credits of a given stack. This only works for items
-	 * that store credits, such as credits and credit cards. If the item is not
-	 * recognized, returns 0.
-	 * 
-	 * @param stack
-	 *            The stack to be examined
-	 * @return int The value of the examined stack, in credits
-	 */
-	@Deprecated
-	public static int getValue(ItemStack stack) {
-		if (stack != null && stack.getItem() instanceof IValueContainer) {
-			return ((IValueContainer) stack.getItem()).getValue(stack);
-		} else {
-			return 0;
-		}
-	}
-
-	public static ArrayList<Item> getAllSellableItems() {
-		ArrayList<Item> items = new ArrayList<Item>();
-		for (Item key : baseValueMap.keySet()) {
-			items.add(key);
-		}
-		return items;
-	}
-	
-	public static ArrayList<Item> getAllBuyableItems() {
-		ArrayList<Item> items = new ArrayList<Item>();
-		for (Item key : valueSoldMap.keySet()) {
-			items.add(key);
-		}
-		return items;
-	}
-
-	public static ArrayList<Item> getAllBuyableItems(int limit) {
-		ArrayList<Item> items = getAllBuyableItems();
-		ArrayList<Item> newItems = new ArrayList<Item>();
-		for (Item item : items) {
-			if (getValue(item) <= limit) {
-				newItems.add(item);
-			}
-		}
-		return newItems;
-	}
-
-	public static ArrayList<Item> getAllBuyableItemsSorted(int limit){
-		ArrayList<Item> oldList = getAllBuyableItems(limit);
-		ArrayList<Item> newList = new ArrayList<Item>();
-		while(oldList.size()>0){
-			Double top = (double) 0;
-			Item topItem = null;
-			for(Item item:oldList){
-				if(getValue(item)>top){
-					top = getValue(item);
-					topItem = item;
-				}
-			}
-			if(topItem == null){
-				LogHelper.error("topItem was null in GTSUtil.getAllSellableItems");
-				return newList;
-			}
-			newList.add(topItem);
-			oldList.remove(topItem);
-		}
-		return newList;
-	}
 	
 	public static void initItemValues() {
 		addSellableItemById(1, 1);
@@ -310,52 +162,7 @@ public class GTSUtil {
 		addSellableItem(Item.getItemById(id), value);
 	}
 
-	public static void addValueSold(Item item, int value, World world) {
-		ValueSavedData data = ValueSavedData.get(world);
-		if (!valueSoldMap.containsKey(item)) {
-			valueSoldMap.put(item, value);
-		} else {
-			valueSoldMap.put(item, valueSoldMap.get(item) + value);
-		}
-		totalValueSold += value;
-		LogHelper.info("Total value is now at " + totalValueSold);
-		LogHelper.info("Added " + value + " value to " + item.getUnlocalizedName() + " for a total of "
-				+ valueSoldMap.get(item) + ". "
-				+ (int) Math.floor((double) valueSoldMap.get(item) / totalValueSold * 100)
-				+ " percent of total sales.");
-
-		calculateValue(item);
-		data.saveValues(valueSoldMap);
-		data.setTotal(totalValueSold);
-
-	}
-
-	public static double getValuePercentage(Item item) {
-		if (!canIBuy(item)) {
-			return 0;
-		} else {
-			return Math.floor(((double) valueSoldMap.get(item) / totalValueSold * 100) * 100) / 100;
-		}
-	}
-
-	public static void addValueSold(Item item, double value, World world) {
-		if (changeMap.containsKey(item)) {
-			value += changeMap.get(item);
-		}
-		if (value > 1 || value < -1) {
-			addValueSold(item, (int) value, world);
-		}
-		changeMap.put(item, value % 1);
-		if (calcCount++ > 5) {
-			calculateValues();
-		}
-	}
-
-	@Deprecated
-	public static boolean canIBuy(Item item) {
-		return valueSoldMap.containsKey(item);
-	}
-
+	
 	public static void updateBaseValues(String[] input) {
 		HashMap<Item, Integer> newMap = new HashMap<Item, Integer>();
 
@@ -390,22 +197,6 @@ public class GTSUtil {
 	
 	public static void addSellableItemByRegistryName(String name,int value){
 		addSellableItem(getItemFromRegistryName(name),value);
-	}
-
-	public static void loadValues(World world) {
-		valuesLoaded = true;
-		ValueSavedData data = ValueSavedData.get(world);
-		if (!data.areValuesLoaded()) {
-			valuesLoaded = false;
-			data.markDirty();
-		} else {
-			valueSoldMap = data.getValues();
-			totalValueSold = data.getTotal();
-		}
-	}
-
-	public static boolean areValuesLoaded() {
-		return valuesLoaded;
 	}
 
 }
