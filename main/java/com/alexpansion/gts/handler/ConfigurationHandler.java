@@ -3,7 +3,7 @@ package com.alexpansion.gts.handler;
 import java.io.File;
 
 import com.alexpansion.gts.reference.Reference;
-import com.alexpansion.gts.utility.GTSUtil;
+import com.alexpansion.gts.value.BaseValueManager;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -43,7 +43,7 @@ public class ConfigurationHandler {
 		depreciationMultiplier = configuration.getFloat("depreciationMultiplier", DEPRECIATION_CATAGORY, 2, 0, 100,
 				"The multiplier used when calculating depreciation. Note: If this is less than 0, value will increase over time.");
 		
-		configValues = configuration.getStringList("Values", DEPRECIATION_CATAGORY, GTSUtil.getDefaultValues(), "The base values for all the items.");
+		configValues = configuration.getStringList("Values", DEPRECIATION_CATAGORY, BaseValueManager.getDefaultValues(), "The base values for all the items.");
 		
 		saleMultiplier = configuration.getFloat("Sale Multiplier", DEPRECIATION_CATAGORY, (float) 0.9, 0, 1, "Multiplier applied when selling items.");
 		
@@ -51,7 +51,7 @@ public class ConfigurationHandler {
 			configuration.save();
 		}
 		
-		GTSUtil.updateBaseValues(configValues);
+		BaseValueManager.updateBaseValues(configValues);
 
 	}
 }

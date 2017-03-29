@@ -1,16 +1,22 @@
-package com.alexpansion.gts.utility;
+package com.alexpansion.gts.value;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.alexpansion.gts.utility.LogHelper;
+
 import net.minecraft.item.Item;
-import net.minecraftforge.fml.common.registry.GameRegistry;
 
-public class GTSUtil {
+public class BaseValueManager {
 
-	public static HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
-	
-	public static void addSellableItem(Item item, int value) {
-		baseValueMap.put(item, value);
+	static HashMap<SItem, Integer> baseValueMap = new HashMap<SItem, Integer>();
+
+	public static void addSellableItem(SItem item, int value) {
+		if (item != null) {
+			baseValueMap.put(item, value);
+		} else {
+			LogHelper.error("Null item in BaseValueManager.addSellableItem!");
+		}
 	}
 
 	public static String[] getDefaultValues() {
@@ -18,21 +24,23 @@ public class GTSUtil {
 		String[] output = new String[baseValueMap.size()];
 
 		int i = 0;
-		for (Map.Entry<Item, Integer> pair : baseValueMap.entrySet()) {
+		for (Map.Entry<SItem, Integer> pair : baseValueMap.entrySet()) {
 			if (pair.getKey() != null) {
-				output[i] = pair.getKey().getRegistryName() + "," + pair.getValue();
+				output[i] = pair.getKey().toString() + "," + pair.getValue();
+				i++;
 			} else {
-				output[i] = "null";
+				// output[i] = "null";
 			}
-			i++;
 		}
 
 		return output;
 	}
-	
-	
+
 	public static void initItemValues() {
-		addSellableItemById(1, 1);
+		addVarietiesById(1, 0, 6, 1);
+		addVarietiesById(351,5,14,8);
+		addSellableItem(SItem.getSItem("minecraft:dye/15"),48);
+		addSellableItem(SItem.getSItem("minecraft:dye/4"),864);
 		addSellableItemById(2, 1);
 		addSellableItemById(3, 1);
 		addSellableItemById(4, 1);
@@ -130,48 +138,64 @@ public class GTSUtil {
 		addSellableItemById(162, 32);
 		addSellableItemById(165, 216);
 		addSellableItemById(264, 8192);
-		addSellableItemByRegistryName("minecraft:gunpowder",192);
-		addSellableItemByRegistryName("minecraft:feather",48);
-		addSellableItemByRegistryName("minecraft:string",12);
-		addSellableItemByRegistryName("minecraft:apple",128);
-		addSellableItemByRegistryName("minecraft:hopper",1344);
-		addSellableItemByRegistryName("minecraft:coal_block",1152);
-		addSellableItemByRegistryName("minecraft:clay_ball",64);
-		addSellableItemByRegistryName("minecraft:iron_ingot",256);
-		addSellableItemByRegistryName("minecraft:rotten_flesh",24);
-		addSellableItemByRegistryName("minecraft:reeds",32);
-		addSellableItemByRegistryName("minecraft:flint",4);
-		addSellableItemByRegistryName("minecraft:redstone",64);
-		addSellableItemByRegistryName("minecraft:stick",4);
-		addSellableItemByRegistryName("minecraft:coal",128);
-		addSellableItemByRegistryName("minecraft:wheat",24);
-		addSellableItemByRegistryName("minecraft:wheat_seeds",16);
-		addSellableItemByRegistryName("minecraft:arrow",14);
-		addSellableItemByRegistryName("minecraft:bone",96);
-		addSellableItemByRegistryName("minecraft:gold_ingot",2048);
-		addSellableItemByRegistryName("minecraft:paper",32);
-		addSellableItemByRegistryName("minecraft:sugar",32);
-		addSellableItemByRegistryName("minecraft:book",96);
-		addSellableItemByRegistryName("minecraft:leather",64);
-		addSellableItemByRegistryName("minecraft:beef",64);
-		addSellableItemByRegistryName("minecraft:cooked_beef",64);
-		addSellableItemByRegistryName("minecraft:bread",72);
+		addSellableItemByRegistryName("minecraft:gunpowder", 192);
+		addSellableItemByRegistryName("minecraft:feather", 48);
+		addSellableItemByRegistryName("minecraft:string", 12);
+		addSellableItemByRegistryName("minecraft:apple", 128);
+		addSellableItemByRegistryName("minecraft:hopper", 1344);
+		addSellableItemByRegistryName("minecraft:coal_block", 1152);
+		addSellableItemByRegistryName("minecraft:clay_ball", 64);
+		addSellableItemByRegistryName("minecraft:iron_ingot", 256);
+		addSellableItemByRegistryName("minecraft:rotten_flesh", 24);
+		addSellableItemByRegistryName("minecraft:reeds", 32);
+		addSellableItemByRegistryName("minecraft:flint", 4);
+		addSellableItemByRegistryName("minecraft:redstone", 64);
+		addSellableItemByRegistryName("minecraft:stick", 4);
+		addSellableItemByRegistryName("minecraft:coal", 128);
+		addSellableItemByRegistryName("minecraft:wheat", 24);
+		addSellableItemByRegistryName("minecraft:wheat_seeds", 16);
+		addSellableItemByRegistryName("minecraft:arrow", 14);
+		addSellableItemByRegistryName("minecraft:bone", 96);
+		addSellableItemByRegistryName("minecraft:gold_ingot", 2048);
+		addSellableItemByRegistryName("minecraft:paper", 32);
+		addSellableItemByRegistryName("minecraft:sugar", 32);
+		addSellableItemByRegistryName("minecraft:book", 96);
+		addSellableItemByRegistryName("minecraft:leather", 64);
+		addSellableItemByRegistryName("minecraft:beef", 64);
+		addSellableItemByRegistryName("minecraft:cooked_beef", 64);
+		addSellableItemByRegistryName("minecraft:bread", 72);
 	}
 
 	public static void addSellableItemById(int id, int value) {
-		addSellableItem(Item.getItemById(id), value);
+		addSellableItemById(id, 0, value);
 	}
 
-	
+	public static void addSellableItemById(int id, int meta, int value) {
+		Item item = Item.getItemById(id);
+		if (item == null) {
+			LogHelper.error("Null item returned for id: " + id);
+		} else {
+			addSellableItem(SItem.getSItem(item, meta), value);
+		}
+	}
+
+	public static void addSellableItemByRegistryName(String name, int value) {
+		addSellableItem(SItem.getSItem(name + "/0"), value);
+	}
+
+	public static void addSellableItemByRegistryName(String name, int meta, int value) {
+		addSellableItem(SItem.getSItem(name + "/" + meta), value);
+	}
+
 	public static void updateBaseValues(String[] input) {
-		HashMap<Item, Integer> newMap = new HashMap<Item, Integer>();
+		HashMap<SItem, Integer> newMap = new HashMap<SItem, Integer>();
 
 		for (String line : input) {
 			if ("null".equalsIgnoreCase(line)) {
 				continue;
 			}
 			String[] values = line.split(",");
-			Item key = getItemFromRegistryName(values[0]);
+			SItem key = SItem.getSItem(values[0]);
 			if (key != null) {
 				newMap.put(key, Integer.parseInt(values[1]));
 			}
@@ -181,23 +205,10 @@ public class GTSUtil {
 
 	}
 
-	@SuppressWarnings("deprecation")
-	public static Item getItemFromRegistryName(String name) {
-		try {
-			String[] splitName = name.split(":");
-			return GameRegistry.findItem(splitName[0], splitName[1]);
-		} catch (NullPointerException e) {
-			LogHelper.error("NPE in getItemFromUnlocalizedName with value: " + name);
-			return null;
-		} catch (IndexOutOfBoundsException e){
-			LogHelper.error("IOOB Exception in getItemFromRegistryName. Input:"+name);
-			return null;
+	public static void addVarietiesById(int id, int min, int max, int value) {
+		for (int i = min; i <= max; i++) {
+			addSellableItemById(id, i, value);
 		}
-	}
-	
-	
-	public static void addSellableItemByRegistryName(String name,int value){
-		addSellableItem(getItemFromRegistryName(name),value);
 	}
 
 }
