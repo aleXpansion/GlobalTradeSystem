@@ -226,6 +226,8 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 
 		if (manager != null) {
 			checkItems();
+		}else{
+			manager = ValueManager.getManager(worldObj);
 		}
 
 		if (!this.worldObj.isRemote && this.numPlayersUsing != 0 && (this.ticksSinceSync + i + j + k) % 200 == 0) {
@@ -492,7 +494,7 @@ public class TileEntityTrader extends TileEntity implements ITickable, IInventor
 		for (int i = 2; i <= 10; i++) {
 
 			// if it's neither null nor ignore
-			if (chestContents[i] != null && !toBuy.equals(chestContents[i])) {
+			if (chestContents[i] != null && (toBuy==null ||!toBuy.equals(chestContents[i]))) {
 				SItem item = SItem.getSItem(chestContents[i]);
 				if (manager.canISell(item)) {
 					double itemValue = manager.getValue(item) * ConfigurationHandler.saleMultiplier;
