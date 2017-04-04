@@ -28,9 +28,6 @@ public class ValuesBean {
 		try{
 		for (String pair : basePairs) {
 			String[] kv = pair.split("=");
-			if(kv[0].contains(":stone/")){
-				LogHelper.info("found stone");
-			}
 			SItem key = SItem.getSItem(kv[0]);
 			baseMap.put(key, Integer.valueOf(kv[1]));
 		}
