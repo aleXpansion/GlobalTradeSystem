@@ -1,16 +1,15 @@
 package com.alexpansion.gts.handler;
 
-import com.alexpansion.gts.tileentity.TileEntityTrader;
-
+import com.alexpansion.gts.tileentity.TileEntityGTS;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.items.ItemHandlerHelper;
 import net.minecraftforge.items.ItemStackHandler;
 
-public class TraderItemHandler extends ItemStackHandler {
+public class GTSItemHandler extends ItemStackHandler {
 
-	private TileEntityTrader te;
+	private TileEntityGTS te;
 
-	public TraderItemHandler(TileEntityTrader te) {
+	public GTSItemHandler(TileEntityGTS te) {
 		this.te = te;
 	}
 
@@ -26,8 +25,8 @@ public class TraderItemHandler extends ItemStackHandler {
 
 	@Override
 	public ItemStack insertItem(int slot, ItemStack stack, boolean simulate) {
-		// check if it's in the selling row
-		if (slot >= 2 && slot <= 20) {
+		// check if it's in the selling slots
+		if (slot >= te.sellSlotFirst && slot <= te.sellSlotLast) {
 
 			// check for null or size 0 stacks.
 			if (stack == null || stack.stackSize == 0) {
@@ -68,7 +67,8 @@ public class TraderItemHandler extends ItemStackHandler {
 
 	@Override
 	public ItemStack extractItem(int slot, int amount, boolean simulate) {
-		if (slot >= 11 && slot <= 28) {
+		
+		if (slot >= te.buySlotFirst && slot <= te.buySlotLast) {
 			if (amount == 0) {
 				return null;
 			}
