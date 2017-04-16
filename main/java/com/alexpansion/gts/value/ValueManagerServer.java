@@ -44,8 +44,6 @@ public class ValueManagerServer extends ValueManager {
 			totalValueSold = data.getTotal();
 		}
 
-		// load the base values from GTSUtil
-		// TODO move this logic here
 		baseValueMap = BaseValueManager.baseValueMap;
 
 		calculateValues();
@@ -107,12 +105,6 @@ public class ValueManagerServer extends ValueManager {
 			valueSoldMap.put(item, valueSoldMap.get(item) + value);
 		}
 		totalValueSold += value;
-		LogHelper.info("Total value is now at " + totalValueSold);
-		LogHelper.info("Added " + value + " value to " + item.getUnlocalizedName() + " for a total of "
-				+ valueSoldMap.get(item) + ". "
-				+ (int) Math.floor((double) valueSoldMap.get(item) / totalValueSold * 100)
-				+ " percent of total sales.");
-
 		calculateValue(item);
 		data.saveValues(valueSoldMap);
 		data.setTotal(totalValueSold);

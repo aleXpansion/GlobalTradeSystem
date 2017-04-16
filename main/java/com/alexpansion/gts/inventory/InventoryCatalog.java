@@ -228,7 +228,6 @@ public class InventoryCatalog implements IInventory {
 
 	public void refreshSellables() {
 		if (!worldObj.isRemote) {
-			LogHelper.info("refreshSellables was called");
 			if (getStoredValue() == 0) {
 				return;
 			}
@@ -258,7 +257,6 @@ public class InventoryCatalog implements IInventory {
 
 	public void buyItem(int slot) {
 		//if (!worldObj.isRemote) {
-			LogHelper.info("buyItem was called");
 			ItemCatalog catalog = (ItemCatalog) invItem.getItem();
 			if (getStackInSlot(slot) != null) {
 				SItem toSell = SItem.getSItem(getStackInSlot(slot));
@@ -274,7 +272,7 @@ public class InventoryCatalog implements IInventory {
 						LogHelper.error("VOE in InventoryCatalog.buyItem");
 						e.printStackTrace();
 					}
-					// refreshSellables();
+					refreshSellables();
 				}
 			//}
 		}
