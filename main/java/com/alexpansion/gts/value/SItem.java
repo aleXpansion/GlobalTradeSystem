@@ -49,7 +49,7 @@ public class SItem {
 			int meta = Integer.valueOf(metaString);
 			return getSItem(item, meta);
 		} else {
-			LogHelper.error("GetSItem(string) got a string without metadata");
+			LogHelper.error("GetSItem(string) got a string without metadata. String: "+inString);
 			return getSItem(GTSUtil.getItemFromRegistryName(splitString[0]),0);
 		}
 	}

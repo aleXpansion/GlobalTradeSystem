@@ -91,8 +91,8 @@ public class ValueSavedData extends WorldSavedData {
 		if (instance == null) {
 			instance = new ValueSavedData();
 			storage.setData(DATA_NAME, instance);
+			valuesLoaded = true;
 		}
-
 		return instance;
 	}
 
