@@ -3,8 +3,8 @@
   "modid": "gts",
   "name": "Global Trade System",
   "description": "Sell stuff, buy stuff",
-  "version": "1.10.2-0.3.1",
-  "mcversion": "1.10.2",
+  "version": "1.11-0.3.1",
+  "mcversion": "1.11",
   "authorList": ["Alexpansion"],
   "credits": "I'd like to thank my mother and father.",
   "url": "https://github.com/aleXpansion/GlobalTradeSystem"
