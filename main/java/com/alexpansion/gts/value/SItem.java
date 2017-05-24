@@ -53,6 +53,11 @@ public class SItem {
 			return getSItem(GTSUtil.getItemFromRegistryName(splitString[0]),0);
 		}
 	}
+	
+	public static SItem getSItem(String registryName,int meta){
+			Item item = GTSUtil.getItemFromRegistryName(registryName);
+			return getSItem(item, meta);
+	}
 
 	private SItem(Item item, int inMeta) {
 		wrappedItem = item;
