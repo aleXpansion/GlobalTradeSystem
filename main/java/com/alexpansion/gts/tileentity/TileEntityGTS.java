@@ -618,6 +618,7 @@ public abstract class TileEntityGTS extends TileEntity implements ITickable, IIn
 			for (int i = 11; i <= 28; i++) {
 				if (contents[i] == null) {
 					contents[i] = toBuy.getStack(1);
+					manager.addValueSold(toBuy, 0 - value, this.worldObj);
 					removeCredits(value);
 					return;
 				}
