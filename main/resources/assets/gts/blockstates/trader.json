@@ -1,5 +1,10 @@
 {
     "variants": {
-        "": { "model": "gts:block/trader" }
+        "facing=north": { "model": "gts:block/trader" },
+        "facing=south": { "model": "gts:block/trader", "y": 180 },
+        "facing=west": { "model": "gts:block/trader", "y": 270 },
+        "facing=east": { "model": "gts:block/trader", "y": 90 },
+        "facing=up": { "model": "gts:block/trader", "x": -90 },
+        "facing=down": { "model": "gts:block/trader", "x": 90 }
     }
 }

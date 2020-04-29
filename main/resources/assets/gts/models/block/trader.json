@@ -6,7 +6,7 @@
       "up": "gts:block/trader",
       "east": "gts:block/trader",
       "west": "gts:block/trader",
-      "north": "gts:block/trader",
+      "north": "gts:block/trader_front",
       "south": "gts:block/trader"
   }
 }
