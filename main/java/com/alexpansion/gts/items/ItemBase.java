@@ -10,4 +10,8 @@ public class ItemBase extends Item{
         super( new Item.Properties().group(ModSetup.GROUP));
     }
 
+    public ItemBase(Properties prop){
+        super(prop.group(ModSetup.GROUP));
+    }
+
 }
