@@ -6,9 +6,6 @@ import com.alexpansion.gts.setup.ModSetup;
 import com.alexpansion.gts.setup.ServerProxy;
 import com.alexpansion.gts.util.RegistryHandler;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
@@ -24,7 +21,8 @@ public class GlobalTradeSystem {
     public static ModSetup SETUP = new ModSetup();
 
     // Directly reference a log4j logger.
-    private static final Logger LOGGER = LogManager.getLogger();
+    //commented out so I stop getting warnings, left it in in case I need it later.
+    //private static final Logger LOGGER = LogManager.getLogger();
 
     public static final String MOD_ID = "gts";
 
