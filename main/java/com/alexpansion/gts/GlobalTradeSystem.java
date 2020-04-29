@@ -1,19 +1,17 @@
 package com.alexpansion.gts;
 
-import com.alexpansion.gts.proxy.ClientProxy;
-import com.alexpansion.gts.proxy.IProxy;
-import com.alexpansion.gts.proxy.ServerProxy;
+import com.alexpansion.gts.setup.ClientProxy;
+import com.alexpansion.gts.setup.IProxy;
+import com.alexpansion.gts.setup.ModSetup;
+import com.alexpansion.gts.setup.ServerProxy;
 import com.alexpansion.gts.util.RegistryHandler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.DistExecutor;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
@@ -22,6 +20,8 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 public class GlobalTradeSystem {
 
     public static IProxy PROXY = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
+
+    public static ModSetup SETUP = new ModSetup();
 
     // Directly reference a log4j logger.
     private static final Logger LOGGER = LogManager.getLogger();
@@ -39,14 +39,9 @@ public class GlobalTradeSystem {
     }
 
     private void setup(final FMLCommonSetupEvent event){
-        
+        SETUP.init();
+        PROXY.init();
     }
 
-    public static final ItemGroup TAB = new ItemGroup("gts") {
     
-        @Override
-        public ItemStack createIcon() {
-            return new ItemStack(RegistryHandler.CREDIT.get());
-        }
-    };
 }

@@ -3,6 +3,7 @@ package com.alexpansion.gts.util;
 import com.alexpansion.gts.GlobalTradeSystem;
 import com.alexpansion.gts.blocks.BlockTrader;
 import com.alexpansion.gts.items.ItemBase;
+import com.alexpansion.gts.setup.ModSetup;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
@@ -24,7 +25,7 @@ public class RegistryHandler {
     }
     //Blocks
     public static final RegistryObject<BlockTrader> TRADER = BLOCKS.register("trader", BlockTrader::new);
-    public static final RegistryObject<Item> TRADER_ITEM = ITEMS.register("trader", () -> new BlockItem(TRADER.get(), new Item.Properties().group(GlobalTradeSystem.TAB)));
+    public static final RegistryObject<Item> TRADER_ITEM = ITEMS.register("trader", () -> new BlockItem(TRADER.get(), new Item.Properties().group(ModSetup.GROUP)));
 
     //Items
     public static final RegistryObject<Item> CATALOG = ITEMS.register("catalog", ItemBase::new);
