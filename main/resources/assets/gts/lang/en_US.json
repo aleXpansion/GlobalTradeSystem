@@ -2,5 +2,6 @@
     "item.gts.catalog":"Catalog",
     "item.gts.credit":"Credit",
     "itemGroup.gts":"Global Trade System",
-    "block.gts.trader":"Trader"
+    "block.gts.trader":"Trader",
+    "block.gts.power_plant":"Power Plant"
 }

@@ -2,6 +2,7 @@ package com.alexpansion.gts.util;
 
 import com.alexpansion.gts.GlobalTradeSystem;
 import com.alexpansion.gts.blocks.BlockTrader;
+import com.alexpansion.gts.blocks.PowerPlant;
 import com.alexpansion.gts.items.ItemBase;
 import com.alexpansion.gts.items.ItemCatalog;
 import com.alexpansion.gts.setup.ModSetup;
@@ -26,7 +27,12 @@ public class RegistryHandler {
     }
     //Blocks
     public static final RegistryObject<BlockTrader> TRADER = BLOCKS.register("trader", BlockTrader::new);
-    public static final RegistryObject<Item> TRADER_ITEM = ITEMS.register("trader", () -> new BlockItem(TRADER.get(), new Item.Properties().group(ModSetup.GROUP)));
+    public static final RegistryObject<Item> TRADER_ITEM = ITEMS.register("trader", 
+        () -> new BlockItem(TRADER.get(), new Item.Properties().group(ModSetup.GROUP)));
+
+    public static final RegistryObject<PowerPlant> POWER_PLANT = BLOCKS.register("power_plant", PowerPlant::new);
+    public static final RegistryObject<Item> POWER_PLANT_ITEM = ITEMS.register("power_plant", 
+        () -> new BlockItem(POWER_PLANT.get(), new Item.Properties().group(ModSetup.GROUP)));
 
     //Items
     public static final RegistryObject<Item> CATALOG = ITEMS.register("catalog", ItemCatalog::new);

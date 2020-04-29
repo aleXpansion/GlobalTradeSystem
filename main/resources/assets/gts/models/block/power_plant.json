@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+      "particle": "gts:block/power_plant",
+      "down": "gts:block/power_plant",
+      "up": "gts:block/power_plant",
+      "east": "gts:block/power_plant",
+      "west": "gts:block/power_plant",
+      "north": "gts:block/power_plant_front",
+      "south": "gts:block/power_plant"
+  }
+}
