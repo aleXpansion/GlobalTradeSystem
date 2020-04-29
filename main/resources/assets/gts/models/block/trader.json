@@ -1,0 +1,12 @@
+{
+  "parent": "block/cube",
+  "textures": {
+      "particle": "gts:block/trader",
+      "down": "gts:block/trader",
+      "up": "gts:block/trader",
+      "east": "gts:block/trader",
+      "west": "gts:block/trader",
+      "north": "gts:block/trader",
+      "south": "gts:block/trader"
+  }
+}

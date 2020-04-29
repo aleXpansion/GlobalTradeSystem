@@ -1,5 +1,7 @@
 package com.alexpansion.gts.proxy;
 
-public interface IProxy {
+import net.minecraft.world.World;
 
+public interface IProxy {
+    World getClientWorld();
 }

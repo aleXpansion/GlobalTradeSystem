@@ -1,0 +1,19 @@
+{
+    "type": "minecraft:crafting_shaped",
+    "pattern": [
+      "xxx",
+      "x#x",
+      "xxx"
+    ],
+    "key": {
+      "x": {
+        "tag": "minecraft:planks"
+      },
+      "#": {
+        "item": "gts:credit"
+      }
+    },
+    "result": {
+      "item": "gts:trader"
+    }
+  }
