@@ -17,7 +17,7 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 // The value here should match an entry in the META-INF/mods.toml file
 @Mod("gts")
-public class GlobalTradeSystem {
+public class GTS {
 
     public static IProxy PROXY = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
 
@@ -29,7 +29,7 @@ public class GlobalTradeSystem {
 
     public static final String MOD_ID = "gts";
 
-    public GlobalTradeSystem() {
+    public GTS() {
         // Register the setup method for modloading
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::setup);
 
