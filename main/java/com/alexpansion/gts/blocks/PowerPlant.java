@@ -63,11 +63,10 @@ public class PowerPlant extends Block {
         builder.add(BlockStateProperties.FACING);
     }
 
-    //onBlockActivated
-    //this is a right click, left click is onBlockClicked
+    
     @Override
     @SuppressWarnings("deprecation")
-    public ActionResultType func_225533_a_(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
+    public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
         if(!world.isRemote){
             TileEntity tile = world.getTileEntity(pos);
             if(tile instanceof INamedContainerProvider){
@@ -76,7 +75,7 @@ public class PowerPlant extends Block {
                 throw new IllegalStateException("Our named container provider is missing!");
             }
         }
-        return super.func_225533_a_(state, world, pos, player, hand, trace);
+        return super.onBlockActivated(state, world, pos, player, hand, trace);
     }
 
 

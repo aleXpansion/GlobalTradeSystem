@@ -3,6 +3,7 @@ package com.alexpansion.gts.blocks;
 import com.alexpansion.gts.GTS;
 import com.mojang.blaze3d.systems.RenderSystem;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.util.ResourceLocation;
@@ -24,8 +25,9 @@ public class PowerPlantScreen extends ContainerScreen<PowerPlantContainer> {
     }
 
     @Override
+    @SuppressWarnings("resource")
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        //drawString(Minecraft.getInstance().fontRenderer, "Energy: " + container.getEnergy(), 10, 10, 0xffffff);
+        drawString(Minecraft.getInstance().fontRenderer, "Energy: " + container.getEnergy(), 10, 10, 0xffffff);
     }
 
     @Override
