@@ -1,4 +1,4 @@
-package com.alexpansion.gts.item;
+package com.alexpansion.gts.items;
 
 import com.alexpansion.gts.exceptions.ValueOverflowException;
 import net.minecraft.item.ItemStack;

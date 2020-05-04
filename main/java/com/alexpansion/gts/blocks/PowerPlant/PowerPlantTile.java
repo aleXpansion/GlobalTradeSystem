@@ -1,4 +1,4 @@
-package com.alexpansion.gts.blocks;
+package com.alexpansion.gts.blocks.PowerPlant;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -8,7 +8,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
@@ -33,7 +32,6 @@ import com.alexpansion.gts.util.RegistryHandler;
 
 public class PowerPlantTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
-    public static TileEntityType<PowerPlantTile> TYPE;
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
 
@@ -109,7 +107,10 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
             CompoundNBT invTag = ((INBTSerializable<CompoundNBT>) h).serializeNBT();
             tag.put("inv", invTag);
         });
-        energy.ifPresent(h -> tag.putInt("energy", h.getEnergyStored()));
+        energy.ifPresent(h -> {
+            CompoundNBT compound = ((INBTSerializable<CompoundNBT>) h).serializeNBT();
+            tag.put("energy", compound);
+        });
         return super.write(tag);
     }
 

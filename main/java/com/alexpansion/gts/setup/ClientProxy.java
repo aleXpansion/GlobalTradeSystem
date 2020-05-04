@@ -1,6 +1,7 @@
 package com.alexpansion.gts.setup;
 
-import com.alexpansion.gts.blocks.PowerPlantScreen;
+import com.alexpansion.gts.blocks.PowerPlant.PowerPlantScreen;
+import com.alexpansion.gts.blocks.Trader.TraderScreen;
 import com.alexpansion.gts.util.RegistryHandler;
 
 import net.minecraft.client.Minecraft;
@@ -19,6 +20,7 @@ public class ClientProxy implements IProxy {
 	@Override
 	public void init() {
 		ScreenManager.registerFactory(RegistryHandler.POWER_PLANT_CONTAINER.get(), PowerPlantScreen::new);
+		ScreenManager.registerFactory(RegistryHandler.TRADER_CONTAINER.get(), TraderScreen::new);
 	}
 
 	@Override

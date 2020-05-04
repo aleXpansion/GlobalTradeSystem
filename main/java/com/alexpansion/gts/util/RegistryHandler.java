@@ -1,9 +1,11 @@
 package com.alexpansion.gts.util;
 
-import com.alexpansion.gts.blocks.BlockTrader;
-import com.alexpansion.gts.blocks.PowerPlant;
-import com.alexpansion.gts.blocks.PowerPlantContainer;
-import com.alexpansion.gts.blocks.PowerPlantTile;
+import com.alexpansion.gts.blocks.Trader.BlockTrader;
+import com.alexpansion.gts.blocks.Trader.TraderContainer;
+import com.alexpansion.gts.blocks.PowerPlant.PowerPlant;
+import com.alexpansion.gts.blocks.PowerPlant.PowerPlantContainer;
+import com.alexpansion.gts.blocks.PowerPlant.PowerPlantTile;
+import com.alexpansion.gts.blocks.Trader.TraderTile;
 import com.alexpansion.gts.items.ItemBase;
 import com.alexpansion.gts.items.ItemCatalog;
 import com.alexpansion.gts.setup.ModSetup;
@@ -41,7 +43,13 @@ public class RegistryHandler {
     public static final RegistryObject<BlockTrader> TRADER = BLOCKS.register("trader", BlockTrader::new);
     public static final RegistryObject<Item> TRADER_ITEM = ITEMS.register("trader", 
         () -> new BlockItem(TRADER.get(), new Item.Properties().group(ModSetup.GROUP)));
-
+    public static final RegistryObject<TileEntityType<TraderTile>> TRADER_TILE = TILES.register("trader",
+        () -> TileEntityType.Builder.create(TraderTile::new, TRADER.get()).build(null));
+    public static final RegistryObject<ContainerType<TraderContainer>> TRADER_CONTAINER = CONTAINERS.register("trader", 
+    () -> IForgeContainerType.create((windowId, inv, data) -> {
+            BlockPos pos = data.readBlockPos();
+            return new TraderContainer(windowId, PROXY.getClientWorld(), pos, inv);
+        }));
 
     public static final RegistryObject<PowerPlant> POWER_PLANT = BLOCKS.register("power_plant", PowerPlant::new);
     public static final RegistryObject<Item> POWER_PLANT_ITEM = ITEMS.register("power_plant", 

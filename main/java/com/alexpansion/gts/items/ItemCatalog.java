@@ -1,11 +1,9 @@
 package com.alexpansion.gts.items;
 
-import net.minecraft.item.Item;
+public class ItemCatalog extends ItemCreditCard{
 
-public class ItemCatalog extends ItemBase {
-
-    public ItemCatalog(){
-        super(new Item.Properties()
-            .maxStackSize(1));
+    public ItemCatalog() {
+        super(5000);
     }
+
 }

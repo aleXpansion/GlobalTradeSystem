@@ -1,4 +1,4 @@
-package com.alexpansion.gts.blocks;
+package com.alexpansion.gts.blocks.PowerPlant;
 
 import com.alexpansion.gts.GTS;
 import com.mojang.blaze3d.systems.RenderSystem;

@@ -1,4 +1,4 @@
-package com.alexpansion.gts.blocks;
+package com.alexpansion.gts.blocks.PowerPlant;
 
 
 import javax.annotation.Nullable;

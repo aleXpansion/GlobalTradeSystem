@@ -25,6 +25,6 @@ public class ValueOverflowException extends Exception {
 	}
 
 	public String getMessage(){
-		return "Overflow: A stack of "+stack.stackSize+ " "+stack.getUnlocalizedName()+" plus a remaining value of"+excessValue;
+		return "Overflow: A stack of "+stack.getCount()+ " "+stack.getDisplayName()+" plus a remaining value of"+excessValue;
 	}
 }
