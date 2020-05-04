@@ -2,6 +2,7 @@ package com.alexpansion.gts.blocks.Trader;
 
 import javax.annotation.Nullable;
 
+import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.util.RegistryHandler;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -64,7 +65,16 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
 
             @Override
             public boolean isItemValid(int slot, ItemStack stack) {
-                return stack.getItem() == RegistryHandler.CREDIT.get();
+                //if it's the credit slot, only something that can store credits
+                if(slot == 1){
+                    return stack.getItem() instanceof IValueContainer;
+                //if it's the target slot or a selling slot, allow anything
+                }else if(slot <=10){
+                    return true;
+                //if it's the purchase buffer, don't allow anything
+                }else{
+                    return false;
+                }
             }
         };
 
