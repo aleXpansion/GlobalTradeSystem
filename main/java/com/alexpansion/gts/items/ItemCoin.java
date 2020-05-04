@@ -1,38 +1,38 @@
-package com.alexpansion.gts.item;
+package com.alexpansion.gts.items;
 
+import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.exceptions.ValueOverflowException;
-import com.alexpansion.gts.utility.LogHelper;
 
 import net.minecraft.item.ItemStack;
 
-public class ItemCoin extends ItemGTS implements IValueContainer{
+public class ItemCoin extends ItemBase implements IValueContainer{
 
 	public ItemCoin() {
-		super("credit");
+		super();
 	}
 
 	@Override
 	public int getValue(ItemStack stack) {
 		if(stack.getItem()!= this){
-			LogHelper.error("W04");
+			GTS.LOGGER.error("W04");
 			return 0;
 		}
-		return stack.stackSize;
+		return stack.getCount();
 	}
 
 	@Override
 	public ItemStack addValue(ItemStack stack, int toAdd) throws ValueOverflowException {
 		if(stack == null || stack.getItem()!= this){
-			LogHelper.error("W05");
+			GTS.LOGGER.error("W05");
 			return null;
 		}
-		int space = stack.getMaxStackSize()-stack.stackSize;
+		int space = stack.getMaxStackSize()-stack.getCount();
 		if(toAdd>space){
 			toAdd -= space;
-			stack.stackSize = stack.getMaxStackSize();
+			stack.setCount(stack.getMaxStackSize());
 			throw new ValueOverflowException(stack,toAdd);
 		}else{
-			stack.stackSize += toAdd;
+			stack.setCount(stack.getCount() + toAdd);
 		}
 		return stack;
 		
@@ -41,18 +41,18 @@ public class ItemCoin extends ItemGTS implements IValueContainer{
 	@Override
 	public ItemStack removeValue(ItemStack stack, int toRemove) throws ValueOverflowException {
 		if(stack == null ||stack.getItem()!= this){
-			LogHelper.error("W06");
+			GTS.LOGGER.error("W06");
 			return null;
 		}
-		if(toRemove > stack.stackSize){
-			toRemove -= stack.stackSize;
-			stack.stackSize = 0;
+		if(toRemove > stack.getCount()){
+			toRemove -= stack.getCount();
+			stack.setCount(0); 
 			throw new ValueOverflowException(stack,toRemove);
-		}else if(toRemove == stack.stackSize){
-			stack = null;
-			return null;
+		}else if(toRemove == stack.getCount()){
+			stack = ItemStack.EMPTY;
+			return stack;
 		}else{
-			stack.stackSize -= toRemove;
+			stack.setCount(stack.getCount()-toRemove);
 			return stack;
 		}
 		
@@ -65,7 +65,7 @@ public class ItemCoin extends ItemGTS implements IValueContainer{
 
 	@Override
 	public int getSpace(ItemStack stack) {
-		return 64-stack.stackSize;
+		return 64-stack.getCount();
 	}
 
 

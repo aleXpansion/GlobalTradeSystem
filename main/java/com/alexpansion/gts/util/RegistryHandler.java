@@ -6,8 +6,8 @@ import com.alexpansion.gts.blocks.PowerPlant.PowerPlant;
 import com.alexpansion.gts.blocks.PowerPlant.PowerPlantContainer;
 import com.alexpansion.gts.blocks.PowerPlant.PowerPlantTile;
 import com.alexpansion.gts.blocks.Trader.TraderTile;
-import com.alexpansion.gts.items.ItemBase;
 import com.alexpansion.gts.items.ItemCatalog;
+import com.alexpansion.gts.items.ItemCoin;
 import com.alexpansion.gts.setup.ModSetup;
 
 import static com.alexpansion.gts.GTS.MOD_ID;
@@ -64,5 +64,5 @@ public class RegistryHandler {
 
     //Items
     public static final RegistryObject<Item> CATALOG = ITEMS.register("catalog", ItemCatalog::new);
-    public static final RegistryObject<Item> CREDIT = ITEMS.register("credit", ItemBase::new);
+    public static final RegistryObject<Item> CREDIT = ITEMS.register("credit", ItemCoin::new);
 }
