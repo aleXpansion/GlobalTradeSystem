@@ -3,12 +3,14 @@ package com.alexpansion.gts.setup;
 import com.alexpansion.gts.blocks.PowerPlant.PowerPlantScreen;
 import com.alexpansion.gts.blocks.Trader.TraderScreen;
 import com.alexpansion.gts.items.Catalog.CatalogScreen;
+import com.alexpansion.gts.tools.TooltipHandler;
 import com.alexpansion.gts.util.RegistryHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.world.World;
+import net.minecraftforge.common.MinecraftForge;
 
 public class ClientProxy implements IProxy {
 
@@ -23,6 +25,7 @@ public class ClientProxy implements IProxy {
 		ScreenManager.registerFactory(RegistryHandler.POWER_PLANT_CONTAINER.get(), PowerPlantScreen::new);
 		ScreenManager.registerFactory(RegistryHandler.TRADER_CONTAINER.get(), TraderScreen::new);
 		ScreenManager.registerFactory(RegistryHandler.CATALOG_CONTAINER.get(), CatalogScreen::new);
+        MinecraftForge.EVENT_BUS.register(new TooltipHandler());
 	}
 
 	@Override
