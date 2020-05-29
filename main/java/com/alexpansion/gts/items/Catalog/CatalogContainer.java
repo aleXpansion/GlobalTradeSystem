@@ -97,6 +97,7 @@ public class CatalogContainer extends ContainerGTS {
             if(itemValue <= space){
                 int toSell = Math.min(sellStack.getCount(), (int)(space/itemValue));
                 change += itemValue * toSell;
+                vm.addValueSold(item, itemValue * toSell, world);
                 if(change > 1 ){
                     value += (int)change;
                     change = change %1;
