@@ -25,11 +25,15 @@ public class TooltipHandler {
             tooltip.add(new StringTextComponent("Value Stored: "+value));
         }else{
             ValueManager vm = ValueManager.getVM(e.getEntity().world);
-            double value = vm.getValue(stack);
-            value = (value*100);
-            value = Math.floor(value) /100;
+            if(vm.canISell(stack.getItem())){
+                double value = vm.getValue(stack);
+                int baseValue = vm.getBaseValue(stack.getItem());
+                value = (value*100);
+                value = Math.floor(value) /100;
 
-            tooltip.add(new StringTextComponent("Value: "+ value));
+                tooltip.add(new StringTextComponent("Value: "+ value));
+                tooltip.add(new StringTextComponent("Base Value: "+ baseValue));
+            }
         }
     }
     
