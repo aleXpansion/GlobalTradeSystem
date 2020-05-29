@@ -70,7 +70,11 @@ public abstract class ValueManager {
 	}
 
 	public int getBaseValue(Item target) {
-		return getBean().getBaseMap().get(target);
+		if( !canISell(target)){
+			return 0;
+		}else{
+			return getBean().getBaseMap().get(target);
+		}
 	}
 
 	public boolean canISell(Item item) {
