@@ -45,7 +45,7 @@ public class ValueManagerServer extends ValueManager {
 			totalValueSold = data.getTotal();
 		}
 
-		baseValueMap = BaseValueManager.baseValueMap;
+		baseValueMap = data.getBaseValues();
 
 		calculateValues();
 	}
@@ -124,6 +124,18 @@ public class ValueManagerServer extends ValueManager {
 		if (calcCount++ > 5) {
 			calculateValues();
 		}
+	}
+
+	//sets the base value of the given item. If value is 0 or less, removes base value for that item.
+	public void setBaseValue(Item key, int value){
+		ValueSavedData data = ValueSavedData.get((ServerWorld) world);
+		if(value > 0){
+			baseValueMap.put(key, value);
+			calculateValue(key);
+		}else if(baseValueMap.containsKey(key)){
+			baseValueMap.remove(key);
+		}
+		data.setBaseValue(key,value);
 	}
 
 }

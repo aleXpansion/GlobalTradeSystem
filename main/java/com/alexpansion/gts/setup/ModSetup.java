@@ -20,6 +20,7 @@ public class ModSetup {
     };
     
     public void init(){
+        MinecraftForge.EVENT_BUS.register(new ForgeEventHandlers());
         MinecraftForge.EVENT_BUS.register(new TooltipHandler());
         Networking.registerMessages();
         BaseValueManager.initItemValues();
