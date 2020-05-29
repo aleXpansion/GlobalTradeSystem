@@ -17,8 +17,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.World;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.api.distmarker.OnlyIn;
 
 public class CatalogScreen extends ContainerScreen<CatalogContainer>{
 
@@ -142,9 +140,6 @@ public class CatalogScreen extends ContainerScreen<CatalogContainer>{
     }
 
 
-    
-
-    @OnlyIn(Dist.CLIENT)
     static class LockedSlot extends Slot{
         public LockedSlot(IInventory inventoryIn, int index, int xPosition, int yPosition) {
             super(inventoryIn, index, xPosition, yPosition);
