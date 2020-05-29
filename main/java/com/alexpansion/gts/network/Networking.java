@@ -17,16 +17,6 @@ public class Networking {
             , () -> "1.0", s -> true, s -> true);
 
         INSTANCE.registerMessage(nextID(),
-            PacketOpenGui.class,
-            PacketOpenGui::toBytes,
-            PacketOpenGui::new,
-            PacketOpenGui::handle);
-        INSTANCE.registerMessage(nextID(),
-            PacketSpawn.class,
-            PacketSpawn::toBytes,
-            PacketSpawn::new,
-            PacketSpawn::handle);
-        INSTANCE.registerMessage(nextID(),
             ValuesPacket.class,
             ValuesPacket::toBytes,
             ValuesPacket::new,
