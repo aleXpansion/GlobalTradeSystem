@@ -3,20 +3,31 @@ package com.alexpansion.gts.value;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.alexpansion.gts.utility.LogHelper;
+import com.alexpansion.gts.GTS;
 
 import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public class BaseValueManager {
 
-	static HashMap<SItem, Integer> baseValueMap = new HashMap<SItem, Integer>();
+	static HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
+	
+	private static IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
 
-	public static void addSellableItem(SItem item, int value) {
+	public static void addSellableItem(Item item, int value) {
 		if (item != null) {
 			baseValueMap.put(item, value);
 		} else {
-			LogHelper.error("Null item in BaseValueManager.addSellableItem!");
+			GTS.LOGGER.error("Null item in BaseValueManager.addSellableItem!");
 		}
+	}
+
+	public static void addSellableItem(String name,int value){
+		ResourceLocation rl = new ResourceLocation(name);
+		Item item = itemReg.getValue(rl);
+		addSellableItem(item, value);
 	}
 
 	public static String[] getDefaultValues() {
@@ -24,7 +35,7 @@ public class BaseValueManager {
 		String[] output = new String[baseValueMap.size()];
 
 		int i = 0;
-		for (Map.Entry<SItem, Integer> pair : baseValueMap.entrySet()) {
+		for (Map.Entry<Item, Integer> pair : baseValueMap.entrySet()) {
 			if (pair.getKey() != null) {
 				output[i] = pair.getKey().toString() + "," + pair.getValue();
 				i++;
@@ -35,8 +46,13 @@ public class BaseValueManager {
 
 		return output;
 	}
-
+	
 	public static void initItemValues() {
+		GTS.LOGGER.info("init values");
+		addSellableItem("minecraft:dirt", 1);
+		addSellableItem("minecraft:cobblestone", 1);
+	}
+		/*
 		addVarietiesById(1, 0, 6, 1);
 		addVarietiesById(351, 5, 14, 8);
 		addSellableItem(SItem.getSItem("minecraft:dye/15"), 48);
@@ -219,7 +235,8 @@ public class BaseValueManager {
 		addSellableItemByRegistryName("minecraft:cooked_beef", 64);
 		addSellableItemByRegistryName("minecraft:bread", 72);
 	}
-
+	*/
+	/*
 	public static void addSellableItemById(int id, int value) {
 		addSellableItemById(id, 0, value);
 	}
@@ -268,5 +285,5 @@ public class BaseValueManager {
 	public static void addVarietiesById(int id, int max, int value) {
 		addVarietiesById(id, 0, max, value);
 	}
-
+*/
 }

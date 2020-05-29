@@ -3,22 +3,27 @@ package com.alexpansion.gts.value;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Supplier;
 
-import com.alexpansion.gts.reference.Reference;
-import com.alexpansion.gts.utility.LogHelper;
+import com.alexpansion.gts.GTS;
 
-import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldSavedData;
-import net.minecraft.world.storage.MapStorage;
+import net.minecraft.item.Item;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.storage.DimensionSavedDataManager;
+import net.minecraft.world.storage.WorldSavedData;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
-public class ValueSavedData extends WorldSavedData {
+public class ValueSavedData extends WorldSavedData implements Supplier<ValueSavedData>{
 
-	private static final String DATA_NAME = Reference.MOD_ID + "ValueData";
+	private static final String DATA_NAME = GTS.MOD_ID + "ValueData";
 
-	private HashMap<SItem, Integer> valueSoldMap = new HashMap<SItem, Integer>();
+	private HashMap<Item, Integer> valueSoldMap = new HashMap<Item, Integer>();
 	private int total = 0;
 	private static boolean valuesLoaded = false;
+	private IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
 
 	public ValueSavedData(String name) {
 		super(name);
@@ -29,40 +34,40 @@ public class ValueSavedData extends WorldSavedData {
 	}
 
 	@Override
-	public void readFromNBT(NBTTagCompound nbt) {
-		HashMap<SItem, Integer> newMap = new HashMap<SItem, Integer>();
-		Set<String> keys = nbt.getKeySet();
+	public void read(CompoundNBT nbt) {
+		HashMap<Item, Integer> newMap = new HashMap<Item, Integer>();
+		Set<String> keys = nbt.keySet();
 		for (String key : keys) {
 			if ("total".equals(key)) {
-				total = nbt.getInteger(key);
+				total = nbt.getInt(key);
 			} else {
-				SItem itemKey = SItem.getSItem(key);
-				Integer value = nbt.getInteger(key);
+				Item itemKey = itemReg.getValue(new ResourceLocation(key));
+				Integer value = nbt.getInt(key);
 				newMap.put(itemKey, value);
 			}
 		}
 		valueSoldMap = newMap;
-		LogHelper.info("readFromNBT was just called!");
+		GTS.LOGGER.info("readFromNBT was just called!");
 		valuesLoaded = true;
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound nbt) {
-		for (Map.Entry<SItem, Integer> pair : valueSoldMap.entrySet()) {
+	public CompoundNBT write(CompoundNBT nbt) {
+		for (Map.Entry<Item, Integer> pair : valueSoldMap.entrySet()) {
 			if (pair.getKey() != null) {
-				nbt.setInteger(pair.getKey().toString(), pair.getValue());
+				nbt.putInt(pair.getKey().toString(), pair.getValue());
 			}
 		}
-		nbt.setInteger("total", total);
+		nbt.putInt("total", total);
 		return nbt;
 	}
 
-	public void saveValues(HashMap<SItem, Integer> map) {
+	public void saveValues(HashMap<Item, Integer> map) {
 		valueSoldMap = map;
 		markDirty();
 	}
 
-	public void saveValue(SItem key, Integer value) {
+	public void saveValue(Item key, Integer value) {
 		valueSoldMap.put(key, value);
 		markDirty();
 	}
@@ -76,7 +81,7 @@ public class ValueSavedData extends WorldSavedData {
 		markDirty();
 	}
 
-	public HashMap<SItem, Integer> getValues() {
+	public HashMap<Item, Integer> getValues() {
 		return valueSoldMap;
 	}
 
@@ -84,16 +89,21 @@ public class ValueSavedData extends WorldSavedData {
 		return valuesLoaded;
 	}
 
-	public static ValueSavedData get(World world) {
+	public static ValueSavedData get(ServerWorld world) {
 
-		MapStorage storage = world.getMapStorage();
-		ValueSavedData instance = (ValueSavedData) storage.getOrLoadData(ValueSavedData.class, DATA_NAME);
+		DimensionSavedDataManager storage = world.getSavedData();
+		ValueSavedData instance = storage.get( new ValueSavedData(), DATA_NAME);
 		if (instance == null) {
 			instance = new ValueSavedData();
-			storage.setData(DATA_NAME, instance);
+			storage.set(instance);
 			valuesLoaded = true;
 		}
 		return instance;
+	}
+
+	@Override
+	public ValueSavedData get() {
+		return this;
 	}
 
 }

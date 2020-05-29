@@ -2,14 +2,26 @@ package com.alexpansion.gts.value;
 
 import java.util.HashMap;
 
-import com.alexpansion.gts.utility.LogHelper;
+import com.alexpansion.gts.GTS;
+
+import net.minecraft.item.Item;
+import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.IForgeRegistry;
 
 public class ValuesBean {
 
-	private HashMap<SItem, Integer> baseMap;
-	private HashMap<SItem, Double> valueMap;
+	private HashMap<Item, Integer> baseMap;
+	private HashMap<Item, Double> valueMap;
 
-	public ValuesBean(HashMap<SItem, Integer> baseMapIn, HashMap<SItem, Double> valueMapIn) {
+	private IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
+
+	public ValuesBean(){
+		baseMap = new HashMap<Item, Integer>();
+		valueMap = new HashMap<Item, Double>();
+	}
+
+	public ValuesBean(HashMap<Item, Integer> baseMapIn, HashMap<Item, Double> valueMapIn) {
 		baseMap = baseMapIn;
 		valueMap = valueMapIn;
 	}
@@ -23,34 +35,45 @@ public class ValuesBean {
 			maps[i] = sb.toString();
 		}
 		String[] basePairs = maps[0].split(", ");
-		baseMap = new HashMap<SItem, Integer>();
-		valueMap = new HashMap<SItem, Double>();
+		baseMap = new HashMap<Item, Integer>();
+		valueMap = new HashMap<Item, Double>();
 		try{
 		for (String pair : basePairs) {
 			String[] kv = pair.split("=");
-			SItem key = SItem.getSItem(kv[0]);
+			if(kv.length < 2){
+				baseMap = new HashMap<Item, Integer>();
+				return;
+			}
+			ResourceLocation rl = new ResourceLocation(kv[0]);
+			Item key = itemReg.getValue(rl);
 			baseMap.put(key, Integer.valueOf(kv[1]));
 		}
 		String[] valuePairs = maps[1].split(", ");
 		for (String pair : valuePairs) {
 			String[] kv = pair.split("=");
-			SItem key = SItem.getSItem(kv[0]);
+			if(kv.length < 2){
+				valueMap = new HashMap<Item, Double>();
+				return;
+			}
+			ResourceLocation rl = new ResourceLocation(kv[0]);
+			Item key = itemReg.getValue(rl);
 			double value = Double.valueOf(kv[1]);
 			valueMap.put(key, value);
 		}
 		}catch(NullPointerException e){
-			LogHelper.error("NPE in ValuesBean.<init>");
+			GTS.LOGGER.error("NPE in ValuesBean.<init>");
 			//e.printStackTrace();
 		}catch(IndexOutOfBoundsException e){
-			LogHelper.error("IOOBE in ValuesBean.<init>");
+			GTS.LOGGER.error("IOOBE in ValuesBean.<init>");
+			e.printStackTrace();
 		}
 	}
 
-	public HashMap<SItem, Integer> getBaseMap() {
+	public HashMap<Item, Integer> getBaseMap() {
 		return baseMap;
 	}
 
-	public HashMap<SItem, Double> getValueMap() {
+	public HashMap<Item, Double> getValueMap() {
 		return valueMap;
 	}
 

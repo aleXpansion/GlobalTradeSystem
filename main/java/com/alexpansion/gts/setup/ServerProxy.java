@@ -19,6 +19,11 @@ public class ServerProxy implements IProxy {
 		throw new IllegalStateException("Only run this on the client!");
 	}
 
+	@Override
+	public boolean isRemote() {
+		return false;
+	}
+
 	
 
 }

@@ -2,39 +2,40 @@ package com.alexpansion.gts.value;
 
 import java.util.HashMap;
 
-import com.alexpansion.gts.handler.ConfigurationHandler;
-import com.alexpansion.gts.utility.LogHelper;
+import com.alexpansion.gts.GTS;
 
+import net.minecraft.item.Item;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 public class ValueManagerServer extends ValueManager {
 
-	public static HashMap<SItem, Integer> baseValueMap = new HashMap<SItem, Integer>();
-	public HashMap<SItem, Integer> valueSoldMap = new HashMap<SItem, Integer>();
-	public HashMap<SItem, Double> changeMap = new HashMap<SItem, Double>();
-	public HashMap<SItem, Double> valueMap;
+	public static HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
+	public HashMap<Item, Integer> valueSoldMap = new HashMap<Item, Integer>();
+	public HashMap<Item, Double> changeMap = new HashMap<Item, Double>();
+	public HashMap<Item, Double> valueMap;
 	public int totalValueSold = 0;
 	private boolean valuesLoaded = false;
 	private int calcCount = 0;
-	private SItem toRemove = null;
+	private Item toRemove = null;
 
-	public ValueManagerServer(World inWorld) {
-		super(inWorld);
-		valueMap = new HashMap<SItem, Double>();
+	public ValueManagerServer(World world) {
+		super(world);
+		valueMap = new HashMap<Item, Double>();
 		loadValues();
 	}
 
 	@Override
 	public ValuesBean getBean() {
 		if (!valuesLoaded) {
-			loadValues();
+			loadValues(); 
 		}
 		return new ValuesBean(baseValueMap, valueMap);
 	}
 
 	private void loadValues() {
 		valuesLoaded = true;
-		ValueSavedData data = ValueSavedData.get(world);
+		ValueSavedData data = ValueSavedData.get((ServerWorld) world);
 		if (!data.areValuesLoaded()) {
 			valuesLoaded = false;
 			data.markDirty();
@@ -50,8 +51,8 @@ public class ValueManagerServer extends ValueManager {
 	}
 
 	public void calculateValues() {
-		LogHelper.info("recalculating all values");
-		for (SItem key : valueSoldMap.keySet()) {
+		GTS.LOGGER.info("recalculating all values");
+		for (Item key : valueSoldMap.keySet()) {
 			calculateValue(key);
 		}
 		if (toRemove != null) {
@@ -61,19 +62,19 @@ public class ValueManagerServer extends ValueManager {
 		calcCount = 0;
 	}
 
-	public void calculateValue(SItem item) {
+	public void calculateValue(Item item) {
 		if (totalValueSold == 0) {
 			totalValueSold = 1;
 		}
 		if (valueMap == null) {
-			valueMap = new HashMap<SItem, Double>();
+			valueMap = new HashMap<Item, Double>();
 		}
 		if (valueSoldMap.containsKey(item)) {
-			int rampUp = ConfigurationHandler.rampUpCredits;
-			double multiplier = ConfigurationHandler.depreciationMultiplier;
+			//int rampUp = ConfigurationHandler.rampUpCredits;
+			//double multiplier = ConfigurationHandler.depreciationMultiplier;
 			// multiplier = (totalValueSold / 15000) + 1;
-			multiplier = 1;
-			rampUp = 120;
+			double multiplier = 1;
+			int rampUp = 120;
 			int valueSold = valueSoldMap.get(item);
 			if (baseValueMap.get(item) == null) {
 				toRemove = item;
@@ -98,8 +99,8 @@ public class ValueManagerServer extends ValueManager {
 		}
 	}
 
-	public void addValueSold(SItem item, int value, World world) {
-		ValueSavedData data = ValueSavedData.get(world);
+	public void addValueSold(Item item, int value, World world) {
+		ValueSavedData data = ValueSavedData.get((ServerWorld) world);
 		if (!valueSoldMap.containsKey(item)) {
 			valueSoldMap.put(item, value);
 		} else {
@@ -112,11 +113,11 @@ public class ValueManagerServer extends ValueManager {
 
 	}
 
-	public void addValueSold(SItem item, double value, World world) {
+	public void addValueSold(Item item, double value, World world) {
 		if (changeMap.containsKey(item)) {
 			value += changeMap.get(item);
 		}
-		if (value > 1 || value < -1) {
+		if (value >= 1 || value <= -1) {
 			addValueSold(item, (int) value, world);
 		}
 		changeMap.put(item, value % 1);

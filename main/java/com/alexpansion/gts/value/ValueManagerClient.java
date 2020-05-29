@@ -1,7 +1,7 @@
 package com.alexpansion.gts.value;
 
 import java.util.Calendar;
-import com.alexpansion.gts.GlobalTradeSystem;
+import com.alexpansion.gts.network.Networking;
 import com.alexpansion.gts.network.ValuesRequestPacket;
 
 import net.minecraft.world.World;
@@ -10,8 +10,8 @@ public class ValueManagerClient extends ValueManager {
 
 	private Calendar lastUpdate = Calendar.getInstance();
 
-	public ValueManagerClient(World inWorld) {
-		super(inWorld);
+	public ValueManagerClient(World world) {
+		super(world);
 	}
 
 	public ValuesBean getBean() {
@@ -21,11 +21,13 @@ public class ValueManagerClient extends ValueManager {
 		}else{
 			timeSinceUpdate = Long.MAX_VALUE;
 		}
-		// TODO add config for refresh time
 		if (timeSinceUpdate > 1000) {
 			//LogHelper.info("Requesting ValuesBean");
-			GlobalTradeSystem.network.sendToServer(new ValuesRequestPacket());
+			Networking.INSTANCE.sendToServer(new ValuesRequestPacket());
 			lastUpdate = Calendar.getInstance();
+		}
+		if(bean == null){
+			bean = new ValuesBean();
 		}
 		return bean;
 

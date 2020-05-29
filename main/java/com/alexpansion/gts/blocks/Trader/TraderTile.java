@@ -6,6 +6,7 @@ import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.exceptions.ValueOverflowException;
 import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.util.RegistryHandler;
+import com.alexpansion.gts.value.ValueManager;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -34,25 +35,38 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
     private int bufferSlotLast = 28;
     private int valueTransferSpeed = 1;
 
+    private Double change;
+
+    private ValueManager vm;
+
     private LazyOptional<ItemStackHandler> handler = LazyOptional.of(this::createHandler);
 
     public TraderTile() {
         super(RegistryHandler.TRADER_TILE.get());
+        change = 0.0;
     }
 
     @Override
     public void tick() {
+
+        if(world.isRemote){
+            return;
+        }else{
+            vm = ValueManager.getVM(world);
+        }
+
+        //GTS.LOGGER.info("TraderTile tick");
         ItemStackHandler h = handler.orElseThrow(() -> new RuntimeException("Trader's handler is missing!"));
         
         ItemStack targetStack = h.getStackInSlot(targetSlot);
 
         //if there's an item in the target slot, buy more of them.
+        buy:
         if(!targetStack.isEmpty()){
-            // get the value of the target stack. Currently using 1 as a placeholder
-            int targetValue = 1;
+            Double targetValue = vm.getValue(targetStack);
 
             if (targetValue > getValue()) {
-                return;
+                break buy;
             }
 
             // add one of the target item to the sold buffer
@@ -68,6 +82,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
             if (newStack.isEmpty()) {
                 try {
                     removeValue(targetValue);
+                    vm.addValueSold(targetStack.getItem(), 0-targetValue, world);
                 } catch (ValueOverflowException e) {
                     //this will only throw if we try to extract more than it has. We check for this above, so it should never happen.
                     e.printStackTrace();
@@ -96,14 +111,14 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
                     }
                 }
             }else{
-                //this is where I would get the value of the item I'm considering selling. Again, I'm using 1 as a placeholder
-                int value = 1;
+                Double value = vm.getValue(stack);
 
                 if(getSpace() >= value){
                     int count = stack.getCount() -1;
 
                     try {
                         addValue(value);
+                        vm.addValueSold(stack.getItem(),value,world);
                     } catch (ValueOverflowException e) {
                         e.printStackTrace();
                         return;
@@ -140,6 +155,17 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
         }
     }
 
+    private void addValue(Double toAdd) throws ValueOverflowException{
+        change += toAdd%1;
+        if(change > 1){
+            change --;
+            toAdd ++;
+        }
+        if(toAdd >= 1){
+            addValue(toAdd.intValue());
+        }
+    }
+
     private void addValue(int toAdd) throws ValueOverflowException{
         ItemStackHandler h = handler.orElseThrow(() -> new RuntimeException("Trader's handler is missing!"));
         //handler.ifPresent(h ->{
@@ -158,6 +184,20 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
             }
             h.setStackInSlot(creditSlot, creditStack);
         //});
+    }
+
+    private void removeValue(Double toRemove) throws ValueOverflowException{
+        int outRemove;
+        if(toRemove%1 <= change){
+            change -= toRemove;
+            outRemove = toRemove.intValue();
+        }else{
+            change += 1-toRemove%1;
+            outRemove = toRemove.intValue()+1;
+        }
+        if(outRemove > 0){
+            removeValue(outRemove);
+        }
     }
 
     private void removeValue(int toRemove) throws ValueOverflowException{

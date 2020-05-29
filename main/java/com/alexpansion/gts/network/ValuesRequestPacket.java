@@ -1,48 +1,30 @@
 package com.alexpansion.gts.network;
 
-import com.alexpansion.gts.GlobalTradeSystem;
+import java.util.function.Supplier;
+
 import com.alexpansion.gts.value.ValueManager;
 import com.alexpansion.gts.value.ValuesBean;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.util.IThreadListener;
-import net.minecraft.world.WorldServer;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.PacketDistributor;
 
-public class ValuesRequestPacket implements IMessage {
+public class ValuesRequestPacket{
 	
-	public ValuesRequestPacket() {}
+	public ValuesRequestPacket(){}
 
-	@Override
-	public void fromBytes(ByteBuf buf) {
-
+	public ValuesRequestPacket(PacketBuffer buf) {
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-
+	public void toBytes(PacketBuffer buf) {
 	}
 
-	public static class Handler implements IMessageHandler<ValuesRequestPacket,IMessage>{
-
-		@Override
-		public IMessage onMessage(ValuesRequestPacket message, final MessageContext ctx) {
-			final EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-			IThreadListener mainThread = (WorldServer) player.worldObj;
-			mainThread.addScheduledTask( new Runnable(){
-				@Override
-				public void run(){
-					//EntityPlayerMP player = ctx.getServerHandler().playerEntity;
-					ValueManager manager = ValueManager.getManager(player.worldObj);
-					ValuesBean bean= manager.getBean();
-					GlobalTradeSystem.network.sendTo(new ValuesPacket(bean), player);
-				}
-			});
-			return null;
-		}
-		
-	}
+	public void handle(Supplier<NetworkEvent.Context> ctx) {
+        ctx.get().enqueueWork(() -> {
+			ValueManager vm = ValueManager.getVM(ctx.get().getSender().world);
+			ValuesBean bean = vm.getBean();
+			Networking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> ctx.get().getSender()), new ValuesPacket(bean));
+        });
+        ctx.get().setPacketHandled(true);
+    }
 }

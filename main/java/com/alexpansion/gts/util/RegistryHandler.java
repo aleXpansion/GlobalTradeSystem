@@ -1,13 +1,15 @@
 package com.alexpansion.gts.util;
 
-import com.alexpansion.gts.blocks.Trader.BlockTrader;
+import com.alexpansion.gts.blocks.Trader.TraderBlock;
 import com.alexpansion.gts.blocks.Trader.TraderContainer;
-import com.alexpansion.gts.blocks.PowerPlant.PowerPlant;
+import com.alexpansion.gts.blocks.TileBlock;
+import com.alexpansion.gts.blocks.PowerPlant.PowerPlantBlock;
 import com.alexpansion.gts.blocks.PowerPlant.PowerPlantContainer;
 import com.alexpansion.gts.blocks.PowerPlant.PowerPlantTile;
 import com.alexpansion.gts.blocks.Trader.TraderTile;
-import com.alexpansion.gts.items.ItemCatalog;
+import com.alexpansion.gts.items.Catalog.ItemCatalog;
 import com.alexpansion.gts.items.ItemCoin;
+import com.alexpansion.gts.items.Catalog.CatalogContainer;
 import com.alexpansion.gts.setup.ModSetup;
 
 import static com.alexpansion.gts.GTS.MOD_ID;
@@ -28,7 +30,7 @@ import net.minecraftforge.common.extensions.IForgeContainerType;
 public class RegistryHandler {
 
     public static final DeferredRegister<Item> ITEMS = new DeferredRegister<>(ForgeRegistries.ITEMS, MOD_ID);
-    private static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, MOD_ID);
+    protected static final DeferredRegister<Block> BLOCKS = new DeferredRegister<>(ForgeRegistries.BLOCKS, MOD_ID);
     private static final DeferredRegister<TileEntityType<?>> TILES = new DeferredRegister<>(ForgeRegistries.TILE_ENTITIES, MOD_ID);
     private static final DeferredRegister<ContainerType<?>> CONTAINERS = new DeferredRegister<>(ForgeRegistries.CONTAINERS, MOD_ID);
     
@@ -40,7 +42,7 @@ public class RegistryHandler {
         CONTAINERS.register(FMLJavaModLoadingContext.get().getModEventBus());
     }
     //Blocks
-    public static final RegistryObject<BlockTrader> TRADER = BLOCKS.register("trader", BlockTrader::new);
+    public static final RegistryObject<TileBlock> TRADER = BLOCKS.register("trader", TraderBlock::new);
     public static final RegistryObject<Item> TRADER_ITEM = ITEMS.register("trader", 
         () -> new BlockItem(TRADER.get(), new Item.Properties().group(ModSetup.GROUP)));
     public static final RegistryObject<TileEntityType<TraderTile>> TRADER_TILE = TILES.register("trader",
@@ -51,7 +53,20 @@ public class RegistryHandler {
             return new TraderContainer(windowId, PROXY.getClientWorld(), pos, inv);
         }));
 
-    public static final RegistryObject<PowerPlant> POWER_PLANT = BLOCKS.register("power_plant", PowerPlant::new);
+    //Blocks
+    /*
+    public static final RegistryObject<TileBlock> MARKET = BLOCKS.register("market", TileBlock::new);
+    public static final RegistryObject<Item> MARKET_ITEM = ITEMS.register("market", 
+        () -> new BlockItem(MARKET.get(), new Item.Properties().group(ModSetup.GROUP)));
+    public static final RegistryObject<TileEntityType<TraderTile>> MARKET_TILE = TILES.register("market",
+        () -> TileEntityType.Builder.create(TraderTile::new, TRADER.get()).build(null));
+    public static final RegistryObject<ContainerType<TraderContainer>> MARKET_CONTAINER = CONTAINERS.register("market", 
+    () -> IForgeContainerType.create((windowId, inv, data) -> {
+            BlockPos pos = data.readBlockPos();
+            return new TraderContainer(windowId, PROXY.getClientWorld(), pos, inv);
+        }));*/
+
+    public static final RegistryObject<TileBlock> POWER_PLANT = BLOCKS.register("power_plant", PowerPlantBlock::new);
     public static final RegistryObject<Item> POWER_PLANT_ITEM = ITEMS.register("power_plant", 
         () -> new BlockItem(POWER_PLANT.get(), new Item.Properties().group(ModSetup.GROUP)));
     public static final RegistryObject<TileEntityType<PowerPlantTile>> POWER_PLANT_TILE = TILES.register("power_plant",
@@ -64,5 +79,10 @@ public class RegistryHandler {
 
     //Items
     public static final RegistryObject<Item> CATALOG = ITEMS.register("catalog", ItemCatalog::new);
+    public static final RegistryObject<ContainerType<CatalogContainer>> CATALOG_CONTAINER = CONTAINERS.register("catalog", 
+        () -> IForgeContainerType.create((windowId,inv,data) -> {
+            return new CatalogContainer(windowId, PROXY.getClientPlayer(), data);
+        }));
     public static final RegistryObject<Item> CREDIT = ITEMS.register("credit", ItemCoin::new);
+
 }

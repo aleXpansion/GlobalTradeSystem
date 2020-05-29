@@ -17,7 +17,11 @@ public abstract class ContainerGTS extends Container {
 
     protected ContainerGTS(ContainerType<?> type, int id, World world,BlockPos pos, PlayerInventory playerInventory) {
         super(type, id);
-        tile = world.getTileEntity(pos);
+        if(pos == null){
+            tile = null;
+        }else{
+            tile = world.getTileEntity(pos);
+        }
         this.playerInventory = new InvWrapper(playerInventory);
     }
 

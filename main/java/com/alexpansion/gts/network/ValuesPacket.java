@@ -1,58 +1,46 @@
 package com.alexpansion.gts.network;
 
+import java.util.function.Supplier;
+
 import com.alexpansion.gts.value.ValueManager;
 import com.alexpansion.gts.value.ValuesBean;
 
-import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
-import net.minecraft.util.IThreadListener;
-import net.minecraftforge.fml.common.network.ByteBufUtils;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
-import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
-import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraft.network.PacketBuffer;
+import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraftforge.fml.network.NetworkEvent.Context;
 
-public class ValuesPacket implements IMessage {
+public class ValuesPacket{
 
 	private ValuesBean bean;
 	
-	public ValuesPacket(){}
 	
 	public ValuesPacket(ValuesBean inBean){
 		bean = inBean;
 	}
 	
 	
-	@Override
-	public void fromBytes(ByteBuf buf) {
-		bean = new ValuesBean(ByteBufUtils.readUTF8String(buf));
-
+	public ValuesPacket(PacketBuffer buf) {
+		bean = new ValuesBean(buf.readString());
 	}
 	
 	public ValuesBean getBean(){
 		return bean;
 	}
 
-	@Override
-	public void toBytes(ByteBuf buf) {
-		ByteBufUtils.writeUTF8String(buf, bean.toString());
-	}
-	
-	public static class Handler implements IMessageHandler<ValuesPacket,IMessage>{
-
-		@Override
-		public IMessage onMessage(final ValuesPacket message, MessageContext ctx) {
-			IThreadListener mainThread = Minecraft.getMinecraft();
-			mainThread.addScheduledTask(new Runnable(){
-				@Override
-				public void run(){
-					//LogHelper.info("ValuesPacket recieved");
-					ValueManager manager = ValueManager.getManager(Minecraft.getMinecraft().theWorld);
-					manager.setBean(message.getBean());
-				}
-			});
-			return null;
+	public void toBytes(PacketBuffer buf) {
+		if(bean == null){
+			bean = new ValuesBean();
 		}
-		
+		buf.writeString(bean.toString());
 	}
+
+	public void handle(Supplier<NetworkEvent.Context> ctx) {
+		Context get = ctx.get();
+        get.enqueueWork(() -> {
+			ValueManager vm = ValueManager.getClientVM();
+			vm.setBean(this.getBean());
+		});
+        ctx.get().setPacketHandled(true);
+    }
 
 }

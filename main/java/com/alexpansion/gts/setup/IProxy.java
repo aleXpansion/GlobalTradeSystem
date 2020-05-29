@@ -8,5 +8,7 @@ public interface IProxy {
 
     World getClientWorld();
 
-	PlayerEntity getClientPlayer();
+    PlayerEntity getClientPlayer();
+    
+    boolean isRemote();
 }

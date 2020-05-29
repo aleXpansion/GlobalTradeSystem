@@ -1,4 +1,4 @@
-package com.alexpansion.gts.blocks.PowerPlant;
+package com.alexpansion.gts.blocks;
 
 
 import javax.annotation.Nullable;
@@ -25,9 +25,9 @@ import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
 
-public class PowerPlant extends Block {
+public abstract class TileBlock extends Block {
 
-    public PowerPlant() {
+    public TileBlock() {
         super(Properties.create(Material.IRON)
             .sound(SoundType.METAL)
             .hardnessAndResistance(2.0f)
@@ -54,9 +54,7 @@ public class PowerPlant extends Block {
 
     @Nullable
     @Override
-    public TileEntity createTileEntity(BlockState state, IBlockReader world){
-        return new PowerPlantTile();
-    }
+    public abstract TileEntity createTileEntity(BlockState state, IBlockReader world);
 
     @Override
     protected void fillStateContainer(StateContainer.Builder<Block, BlockState> builder) {
