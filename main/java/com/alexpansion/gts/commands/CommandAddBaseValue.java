@@ -22,7 +22,7 @@ public class CommandAddBaseValue implements Command<CommandSource> {
     private ValueManagerServer vm;
 
     public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
-        return Commands.literal("base")//.requires(cs -> cs.hasPermissionLevel(0))
+        return Commands.literal("base").requires(cs -> cs.hasPermissionLevel(2))
             .then(Commands.argument("value", IntegerArgumentType.integer())
                 .then(Commands.argument("item", ItemArgument.item())
                     .executes((CommandSource)->{
