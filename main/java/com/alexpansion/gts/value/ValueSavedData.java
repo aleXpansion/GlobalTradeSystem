@@ -60,6 +60,10 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 	public CompoundNBT write(CompoundNBT nbt) {
 		for (Map.Entry<Item, Integer> pair : valueSoldMap.entrySet()) {
 			if (pair.getKey() != null) {
+				if(pair.getValue() == null){
+					GTS.LOGGER.error("Null value in VSD for " +pair.getKey().toString()+" writing to NBT.");
+					continue;
+				}
 				String values = pair.getValue().toString() +","+baseValueMap.get(pair.getKey()).toString();
 				nbt.putString(pair.getKey().toString(), values);
 			}
