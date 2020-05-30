@@ -123,7 +123,7 @@ public class CatalogContainer extends ContainerGTS {
         ValueManager vm = ValueManager.getVM(world);
         itemList.clear();
         ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
-        ArrayList<Item> buyable = vm.getAllBuyableItems();
+        ArrayList<Item> buyable = vm.getAllBuyableItemsSorted(Integer.MAX_VALUE);
         for(Item i : buyable){
             stacks.add(new ItemStack(i));
         }
@@ -206,6 +206,10 @@ public class CatalogContainer extends ContainerGTS {
     }
 
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
+        ItemStack stack = getSlot(index).getStack();
+        if(index > 38 && !stack.isEmpty() && vm.canISell(stack.getItem())){
+            putStackInSlot(index, sellItem(stack));
+        }
         return ItemStack.EMPTY;
     }
 
