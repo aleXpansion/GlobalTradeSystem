@@ -24,15 +24,17 @@ public class TooltipHandler {
             int value = item.getValue(stack);
             tooltip.add(new StringTextComponent("Value Stored: "+value));
         }else{
-            ValueManager vm = ValueManager.getVM(e.getEntity().world);
-            if(vm.canISell(stack.getItem())){
-                double value = vm.getValue(stack);
-                int baseValue = vm.getBaseValue(stack.getItem());
-                value = (value*100);
-                value = Math.floor(value) /100;
-
-                tooltip.add(new StringTextComponent("Value: "+ value));
-                tooltip.add(new StringTextComponent("Base Value: "+ baseValue));
+            if(e.getEntity() != null){
+                ValueManager vm = ValueManager.getVM(e.getEntity().world);
+                if(vm.canISell(stack.getItem())){
+                    double value = vm.getValue(stack);
+                    int baseValue = vm.getBaseValue(stack.getItem());
+                    value = (value*100);
+                    value = Math.floor(value) /100;
+    
+                    tooltip.add(new StringTextComponent("Value: "+ value));
+                    tooltip.add(new StringTextComponent("Base Value: "+ baseValue));
+                }
             }
         }
     }
