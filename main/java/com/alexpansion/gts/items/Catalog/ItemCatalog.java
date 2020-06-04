@@ -13,7 +13,7 @@ import net.minecraftforge.fml.network.NetworkHooks;
 public class ItemCatalog extends ItemCreditCard{
 
     public ItemCatalog() {
-        super(5000);
+        super(50000);
     }
 
     public ActionResult<ItemStack> onItemRightClick(World world, PlayerEntity player, Hand hand) {

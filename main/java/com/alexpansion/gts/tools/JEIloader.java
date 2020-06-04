@@ -54,7 +54,7 @@ public class JEIloader implements IModPlugin {
         return input.getValue(vm);
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes","unchecked"})
     public void loadRecipes(){
         if(manager == null){
             return;
