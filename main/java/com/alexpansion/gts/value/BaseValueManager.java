@@ -1,11 +1,14 @@
 package com.alexpansion.gts.value;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.alexpansion.gts.GTS;
 
 import net.minecraft.item.Item;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -13,7 +16,7 @@ import net.minecraftforge.registries.IForgeRegistry;
 public class BaseValueManager {
 
 	static HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
-	
+
 	private static IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
 
 	public static void addSellableItem(Item item, int value) {
@@ -24,7 +27,7 @@ public class BaseValueManager {
 		}
 	}
 
-	public static void addSellableItem(String name,int value){
+	public static void addSellableItem(String name, int value) {
 		ResourceLocation rl = new ResourceLocation(name);
 		Item item = itemReg.getValue(rl);
 		addSellableItem(item, value);
@@ -46,11 +49,19 @@ public class BaseValueManager {
 
 		return output;
 	}
+
+	public static void addTagValue(Tag<Item> tag, int value) {
+		Collection<Item> items = tag.getAllElements();
+		for(Item item:items){
+			addSellableItem(item, value);
+		}
+	}
 	
 	public static void initItemValues() {
 		GTS.LOGGER.info("init values");
 		addSellableItem("minecraft:dirt", 1);
 		addSellableItem("minecraft:cobblestone", 1);
+		addTagValue(ItemTags.LOGS, 32);
 	}
 		/*
 		addVarietiesById(1, 0, 6, 1);

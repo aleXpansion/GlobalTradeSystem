@@ -28,6 +28,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 
 	public ValueSavedData(String name) {
 		super(name);
+		BaseValueManager.initItemValues();
 		baseValueMap = BaseValueManager.baseValueMap;
 	}
 
@@ -62,6 +63,10 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 			if (pair.getKey() != null) {
 				if(pair.getValue() == null){
 					GTS.LOGGER.error("Null value in VSD for " +pair.getKey().toString()+" writing to NBT.");
+					continue;
+				}
+				if(baseValueMap == null){
+					GTS.LOGGER.error("Null baseValueMap in VSD.");
 					continue;
 				}
 				String values = pair.getValue().toString() +","+baseValueMap.get(pair.getKey()).toString();
