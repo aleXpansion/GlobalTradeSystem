@@ -30,6 +30,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 		super(name);
 		BaseValueManager.initItemValues();
 		baseValueMap = BaseValueManager.baseValueMap;
+		markDirty();
 	}
 
 	public ValueSavedData() {
@@ -59,7 +60,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 
 	@Override
 	public CompoundNBT write(CompoundNBT nbt) {
-		for (Map.Entry<Item, Integer> pair : valueSoldMap.entrySet()) {
+		for (Map.Entry<Item, Integer> pair : baseValueMap.entrySet()) {
 			if (pair.getKey() != null) {
 				if(pair.getValue() == null){
 					GTS.LOGGER.error("Null value in VSD for " +pair.getKey().toString()+" writing to NBT.");
@@ -69,7 +70,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 					GTS.LOGGER.error("Null baseValueMap in VSD.");
 					continue;
 				}
-				String values = pair.getValue().toString() +","+baseValueMap.get(pair.getKey()).toString();
+				String values = valueSoldMap.get(pair.getKey()).toString() +","+pair.getValue().toString();
 				nbt.putString(pair.getKey().toString(), values);
 			}
 		}
