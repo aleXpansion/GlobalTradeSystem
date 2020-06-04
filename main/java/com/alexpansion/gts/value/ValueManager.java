@@ -3,6 +3,7 @@ package com.alexpansion.gts.value;
 import java.util.ArrayList;
 
 import com.alexpansion.gts.GTS;
+import com.alexpansion.gts.tools.JEIloader;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -15,6 +16,7 @@ public abstract class ValueManager {
 	protected World world;
 	private static ValueManager clientInstance;
 	private static ValueManager serverInstance;
+	private ArrayList<Item> nonBuyable = new ArrayList<Item>();
 
 	public ValueManager(World world) {
 		this.world = world;
@@ -78,6 +80,30 @@ public abstract class ValueManager {
 	}
 
 	public boolean canISell(Item item) {
+		//if we haven't loaded values yet, return false for now
+		if(getBean() == null){
+			return false;
+		}
+		//If we have a base value for it, return true
+		if(getBean().getBaseMap().containsKey(item)){
+			return true;
+		}
+		//if it's been cached as unbuyable, return false
+		if(nonBuyable.contains(item)){
+			return false;
+		}
+		if(!world.isRemote && JEIloader.isLoaded()){
+			int value = JEIloader.getCrafingValue(this,item);
+			if(value <= 0){
+				nonBuyable.add(item);
+				return false;
+			}else{
+				ValueManagerServer server = (ValueManagerServer) serverInstance;
+				server.setBaseValue(item, value);
+				return true;
+			}
+		}
+
 		if (getBean() != null) {
 			return getBean().getBaseMap().containsKey(item);
 		} else {
