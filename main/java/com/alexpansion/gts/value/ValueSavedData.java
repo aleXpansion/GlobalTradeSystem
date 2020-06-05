@@ -49,7 +49,10 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 			} else {
 				Item itemKey = itemReg.getValue(new ResourceLocation(key));
 				String[] values = nbt.getString(key).split(",");
-				newSoldMap.put(itemKey, Integer.parseInt(values[0]));
+				int sold = Integer.parseInt(values[0]);
+				if(sold > 0){
+					newSoldMap.put(itemKey, Integer.parseInt(values[0]));
+				}
 				newBaseMap.put(itemKey, Integer.parseInt(values[1]));
 			}
 		}
@@ -70,7 +73,9 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 					GTS.LOGGER.error("Null baseValueMap in VSD.");
 					continue;
 				}
-				String values = valueSoldMap.get(pair.getKey()).toString() +","+pair.getValue().toString();
+				Integer value = valueSoldMap.get(pair.getKey());
+				value = value==null ? 0 : value;
+				String values = value +","+pair.getValue().toString();
 				nbt.putString(pair.getKey().toString(), values);
 			}
 		}
