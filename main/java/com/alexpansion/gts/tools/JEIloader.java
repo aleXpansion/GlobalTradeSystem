@@ -124,13 +124,13 @@ public class JEIloader implements IModPlugin {
                 int ingValue = 0;
                 for(ItemStack stack:stacks){
                     int itemValue = vm.getBaseValue(stack.getItem()) * stack.getCount();
-                    if(ingValue == 0 || itemValue <ingValue){
+                    if(ingValue == 0 || (itemValue != 0 && itemValue <ingValue)){
                         ingValue = itemValue;
                     }
                 }
                 //if this is still zero, none of the possible inputs for this slot have a value. That means we
                 //won't be able to calculate a value, so just stop here and return 0;
-                if(ingValue == 0){
+                if(stacks.size() > 0 && ingValue == 0){
                     return 0;
                 }else{
                     value += ingValue;

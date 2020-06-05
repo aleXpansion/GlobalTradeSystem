@@ -50,7 +50,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 				Item itemKey = itemReg.getValue(new ResourceLocation(key));
 				String[] values = nbt.getString(key).split(",");
 				int sold = Integer.parseInt(values[0]);
-				if(sold > 0){
+				if(sold != 0){
 					newSoldMap.put(itemKey, Integer.parseInt(values[0]));
 				}
 				newBaseMap.put(itemKey, Integer.parseInt(values[1]));

@@ -9,6 +9,7 @@ import com.alexpansion.gts.GTS;
 import net.minecraft.item.Item;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagCollection;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
@@ -52,9 +53,16 @@ public class BaseValueManager {
 
 	public static void addTagValue(Tag<Item> tag, int value) {
 		Collection<Item> items = tag.getAllElements();
-		for(Item item:items){
+		for (Item item : items) {
 			addSellableItem(item, value);
 		}
+	}
+
+	public static void addTagValue(String tagString, int value) {
+		TagCollection<Item> tags = ItemTags.getCollection();
+		ResourceLocation rl = new ResourceLocation(tagString);
+		Tag<Item> tag = tags.get(rl);
+		addTagValue(tag, value);
 	}
 	
 	public static void initItemValues() {
@@ -64,6 +72,7 @@ public class BaseValueManager {
 		addTagValue(ItemTags.SAPLINGS, 32);
 		addTagValue(ItemTags.SMALL_FLOWERS, 16);
 		addTagValue(ItemTags.WOOL, 48);
+		addTagValue("forge:cobblestone", 1);
 		addSellableItem("minecraft:dirt", 1);
 		addSellableItem("minecraft:cobblestone", 1);
 		addSellableItem("minecraft:gunpowder", 192);
@@ -88,6 +97,9 @@ public class BaseValueManager {
 		addSellableItem("minecraft:lapis_ore", 864);
 		addSellableItem("minecraft:diamond_ore", 8192);
 		addSellableItem("minecraft:andesite", 1);
+		addSellableItem("minecraft:diorite", 1);
+		addSellableItem("minecraft:granite", 1);
+		addSellableItem("minecraft:gravel", 1);
 	}
 	
 	/*
