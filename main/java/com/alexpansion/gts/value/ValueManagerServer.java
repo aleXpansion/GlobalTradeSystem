@@ -1,8 +1,10 @@
 package com.alexpansion.gts.value;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.alexpansion.gts.GTS;
+import com.alexpansion.gts.tools.JEIloader;
 
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
@@ -18,9 +20,13 @@ public class ValueManagerServer extends ValueManager {
 	private boolean valuesLoaded = false;
 	private int calcCount = 0;
 	private Item toRemove = null;
+	private ArrayList<Item> nonBuyable = new ArrayList<Item>();
 
 	public ValueManagerServer(World world) {
 		super(world);
+		if(world.isRemote){
+			GTS.LOGGER.error("Client world sent to ValueManagerServer.");
+		}
 		valueMap = new HashMap<Item, Double>();
 		loadValues();
 	}
@@ -97,6 +103,31 @@ public class ValueManagerServer extends ValueManager {
 			int base = baseValueMap.get(item);
 			valueMap.put(item, (double) base);
 		}
+	}
+
+	@Override
+	public boolean canISell(Item item) {
+		//If we have a base value for it, return true
+		if(baseValueMap.containsKey(item)){
+			return true;
+		}
+		//if it's been cached as unbuyable, return false
+		if(nonBuyable.contains(item)){
+			return false;
+		}
+		//If JEI is installed and loaded, use it to calculate the value
+		if(JEIloader.isLoaded()){
+			int value = JEIloader.getCrafingValue(this,item);
+			if(value <= 0){
+				nonBuyable.add(item);
+				return false;
+			}else{
+				setBaseValue(item, value);
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	public void addValueSold(Item item, int value, World world) {

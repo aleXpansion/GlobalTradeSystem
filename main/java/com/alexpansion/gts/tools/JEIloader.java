@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.ValueManagerServer;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
@@ -45,13 +46,25 @@ public class JEIloader implements IModPlugin {
         loaded = true;
     }
 
-    public static int getCrafingValue(ValueManager vm, Item item) {
+    private static ArrayList<Item> checking = new ArrayList<Item>();
+
+    public static int getCrafingValue(ValueManagerServer vm, Item item) {
         if(!itemList.containsKey(item)){
             return 0;
         }
+        int value;
+        //Checking for loops. If it's in here, that means this is a circular dependancy, just return 0 for this one.
+        if(checking.contains(item)){
+            return 0;
+        }
+        checking.add(item);
+
         RecipeWrapper input = itemList.get(item);
+        value = input.getValue(vm);
+
+        checking.remove(item);
         
-        return input.getValue(vm);
+        return value;
     }
 
     @SuppressWarnings({"rawtypes","unchecked"})
