@@ -1,9 +1,10 @@
 package com.alexpansion.gts.value;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
-
+import java.util.List;
+import com.alexpansion.gts.Config;
 import com.alexpansion.gts.GTS;
 
 import net.minecraft.item.Item;
@@ -17,6 +18,8 @@ import net.minecraftforge.registries.IForgeRegistry;
 public class BaseValueManager {
 
 	static HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
+	static ArrayList<String> itemDefaults = new ArrayList<String>();
+	static ArrayList<String> tagDefaults = new ArrayList<String>();
 
 	private static IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
 
@@ -34,22 +37,6 @@ public class BaseValueManager {
 		addSellableItem(item, value);
 	}
 
-	public static String[] getDefaultValues() {
-		initItemValues();
-		String[] output = new String[baseValueMap.size()];
-
-		int i = 0;
-		for (Map.Entry<Item, Integer> pair : baseValueMap.entrySet()) {
-			if (pair.getKey() != null) {
-				output[i] = pair.getKey().toString() + "," + pair.getValue();
-				i++;
-			} else {
-				// output[i] = "null";
-			}
-		}
-
-		return output;
-	}
 
 	public static void addTagValue(Tag<Item> tag, int value) {
 		Collection<Item> items = tag.getAllElements();
@@ -64,62 +51,67 @@ public class BaseValueManager {
 		Tag<Item> tag = tags.get(rl);
 		addTagValue(tag, value);
 	}
-	
-	public static void initItemValues() {
-		addTagValue(ItemTags.LOGS, 32);
-		addTagValue(ItemTags.LEAVES, 1);
-		addTagValue(ItemTags.SAND, 1);
-		addTagValue(ItemTags.SAPLINGS, 32);
-		addTagValue(ItemTags.SMALL_FLOWERS, 16);
-		addTagValue(ItemTags.WOOL, 48);
-		addTagValue("forge:cobblestone", 1);
-		addSellableItem("minecraft:dirt", 1);
-		addSellableItem("minecraft:cobblestone", 1);
-		addSellableItem("minecraft:gunpowder", 192);
-		addSellableItem("minecraft:feather", 48);
-		addSellableItem("minecraft:string", 12);
-		addSellableItem("minecraft:apple", 128);
-		addSellableItem("minecraft:iron_ore", 256);
-		addSellableItem("minecraft:rotten_flesh", 24);
-		addSellableItem("minecraft:reeds", 32);
-		addSellableItem("minecraft:clay_ball", 64);
-		addSellableItem("minecraft:flint", 4);
-		addSellableItem("minecraft:redstone_ore", 64);
-		addSellableItem("minecraft:coal_ore", 128);
-		addSellableItem("minecraft:wheat", 24);
-		addSellableItem("minecraft:wheat_seeds", 16);
-		addSellableItem("minecraft:bone", 96);
-		addSellableItem("minecraft:gold_ore", 2048);
-		addSellableItem("minecraft:leather", 64);
-		addSellableItem("minecraft:beef", 64);
-		addSellableItem("minecraft:pumpkin", 144);
-		addSellableItem("minecraft:sweet_berries", 16);
-		addSellableItem("minecraft:lapis_ore", 864);
-		addSellableItem("minecraft:diamond_ore", 8192);
-		addSellableItem("minecraft:andesite", 1);
-		addSellableItem("minecraft:diorite", 1);
-		addSellableItem("minecraft:granite", 1);
-		addSellableItem("minecraft:gravel", 1);
+
+	public static ArrayList<String> getTagDefaults(){
+		return tagDefaults;
 	}
-	
-	/*
 
-	public static void updateBaseValues(String[] input) {
-		HashMap<SItem, Integer> newMap = new HashMap<SItem, Integer>();
+	public static ArrayList<String> getItemDefaults(){
+		return itemDefaults;
+	}
 
-		for (String line : input) {
-			if ("null".equalsIgnoreCase(line)) {
-				continue;
-			}
-			String[] values = line.split(",");
-			SItem key = SItem.getSItem(values[0]);
-			if (key != null) {
-				newMap.put(key, Integer.parseInt(values[1]));
-			}
+	public static void loadTagDefaults(List<String>inTags){
+		for(String line : inTags){
+			String[] splitLine = line.split(",");
+			addTagValue(splitLine[0], Integer.parseInt(splitLine[1]));
 		}
-
-		baseValueMap = newMap;
-
 	}
-*/
+
+	public static void loadItemDefaults(List<String>inTags){
+		for(String line : inTags){
+			String[] splitLine = line.split(",");
+			addSellableItem(splitLine[0], Integer.parseInt(splitLine[1].trim()));
+		}
+	}
+
+	public static void initItemValues(){
+		loadTagDefaults(Config.DEFAULT_TAG_VALUES.get());
+		loadItemDefaults(Config.DEFAULT_ITEM_VALUES.get());
+	}
+
+	public static void initDefaultValues() {
+		tagDefaults.add("minecraft:logs,32");
+		tagDefaults.add("minecraft:leaves,1");
+		tagDefaults.add("minecraft:sand,1");
+		tagDefaults.add("minecraft:saplings,32");
+		tagDefaults.add("minecraft:small_flowers,16");
+		tagDefaults.add("minecraft:wool,48");
+		tagDefaults.add("forge:cobblestone,1");
+		itemDefaults.add("minecraft:dirt, 1");
+		itemDefaults.add("minecraft:gunpowder, 192");
+		itemDefaults.add("minecraft:feather, 48");
+		itemDefaults.add("minecraft:string, 12");
+		itemDefaults.add("minecraft:apple, 128");
+		itemDefaults.add("minecraft:iron_ore, 256");
+		itemDefaults.add("minecraft:rotten_flesh, 24");
+		itemDefaults.add("minecraft:reeds, 32");
+		itemDefaults.add("minecraft:clay_ball, 64");
+		itemDefaults.add("minecraft:flint, 4");
+		itemDefaults.add("minecraft:redstone_ore, 64");
+		itemDefaults.add("minecraft:coal_ore, 128");
+		itemDefaults.add("minecraft:wheat, 24");
+		itemDefaults.add("minecraft:wheat_seeds, 16");
+		itemDefaults.add("minecraft:bone, 96");
+		itemDefaults.add("minecraft:gold_ore, 2048");
+		itemDefaults.add("minecraft:leather, 64");
+		itemDefaults.add("minecraft:beef, 64");
+		itemDefaults.add("minecraft:pumpkin, 144");
+		itemDefaults.add("minecraft:sweet_berries, 16");
+		itemDefaults.add("minecraft:lapis_ore, 864");
+		itemDefaults.add("minecraft:diamond_ore, 8192");
+		itemDefaults.add("minecraft:andesite, 1");
+		itemDefaults.add("minecraft:diorite, 1");
+		itemDefaults.add("minecraft:granite, 1");
+		itemDefaults.add("minecraft:gravel, 1");
+	}
 }

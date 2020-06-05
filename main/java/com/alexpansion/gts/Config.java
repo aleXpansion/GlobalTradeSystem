@@ -1,5 +1,9 @@
 package com.alexpansion.gts;
 
+import java.util.List;
+
+import com.alexpansion.gts.value.BaseValueManager;
+
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
@@ -11,10 +15,14 @@ public class Config{
     public static final String CATEGORY_GENERAL = "general";
     public static final String CATEGORY_POWER = "power";
     public static final String SUBCATEGORY_POWER_PLANT = "power_plant";
+    public static final String CATEGORY_VALUES = "values";
+    public static final String SUBCATEGORY_DEFAULT_VALUES = "default_values";
 
     public static ForgeConfigSpec COMMON_CONFIG;
     public static ForgeConfigSpec CLIENT_CONFIG;
 
+    public static ForgeConfigSpec.ConfigValue<List<String>> DEFAULT_ITEM_VALUES;
+    public static ForgeConfigSpec.ConfigValue<List<String>> DEFAULT_TAG_VALUES;
     public static ForgeConfigSpec.IntValue POWER_PLANT_MAXPOWER;
     public static ForgeConfigSpec.IntValue POWER_PLANT_GENERATE;
     public static ForgeConfigSpec.IntValue POWER_PLANT_SEND;
@@ -25,6 +33,10 @@ public class Config{
 
         ForgeConfigSpec.Builder COMMON_BUILDER = new ForgeConfigSpec.Builder();
         ForgeConfigSpec.Builder CLIENT_BUILDER = new ForgeConfigSpec.Builder();
+
+        COMMON_BUILDER.comment("Value Settings").push(CATEGORY_VALUES);
+
+        setupDefaultValuesConfig(COMMON_BUILDER);
 
         COMMON_BUILDER.comment("General settings").push(CATEGORY_GENERAL);
         COMMON_BUILDER.pop();
@@ -53,6 +65,23 @@ public class Config{
                 .defineInRange("ticks", 20, 0, Integer.MAX_VALUE);
 
         COMMON_BUILDER.pop();
+    }
+
+    private static void setupDefaultValuesConfig(ForgeConfigSpec.Builder COMMON_BUILDER){
+        COMMON_BUILDER.comment("Default Value settings. These are only run on world load, can be overriden by commands")
+                .push(SUBCATEGORY_DEFAULT_VALUES);
+
+        BaseValueManager.initDefaultValues();
+        
+        DEFAULT_ITEM_VALUES = COMMON_BUILDER.comment("Default item values")
+                .define("default_item_values", BaseValueManager.getItemDefaults());
+                
+        DEFAULT_TAG_VALUES = COMMON_BUILDER.comment("Default tagvalues")
+                .define("default_tag_values", BaseValueManager.getTagDefaults());
+
+                
+        COMMON_BUILDER.pop();
+
     }
 
     @SubscribeEvent
