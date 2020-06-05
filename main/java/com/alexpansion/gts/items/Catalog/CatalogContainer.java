@@ -88,19 +88,24 @@ public class CatalogContainer extends ContainerGTS {
             value--;
         }
         stack.setCount(toBuy);
+        vm.addValueSold(stack.getItem(), 0-(itemValue*toBuy), world);
         return stack;
     }
 
-    //attempts to sell the items in the given stack. Returns the remaining items, or an empty stack if all were sold.
     public ItemStack sellItem(ItemStack sellStack){
+        return sellItem(sellStack,sellStack.getCount());
+    }
+
+    //attempts to sell the items in the given stack. Returns the remaining items, or an empty stack if all were sold.
+    public ItemStack sellItem(ItemStack sellStack, int max){
         Item item = sellStack.getItem();
         double itemValue = vm.getValue(sellStack);
         if(!vm.canISell(item)){
             return sellStack;
         }else{
-            int space = ((IValueContainer)stack.getItem()).getSpace(stack);
+            int space = ((IValueContainer)stack.getItem()).getLimit() - value;
             if(itemValue <= space){
-                int toSell = Math.min(sellStack.getCount(), (int)(space/itemValue));
+                int toSell = Math.min(max, (int)(space/itemValue));
                 change += itemValue * toSell;
                 vm.addValueSold(item, itemValue * toSell, world);
                 if(change > 1 ){
@@ -199,7 +204,13 @@ public class CatalogContainer extends ContainerGTS {
                 }
                 return mouseStack;
             }else{
-                ItemStack newStack = sellItem(mouseStack);
+                ItemStack newStack;
+                //dragType 1 means the right mouse button was used.
+                if(dragType == 1){
+                    newStack = sellItem(mouseStack,1);
+                }else{
+                    newStack = sellItem(mouseStack);
+                }
                 player.inventory.setItemStack(newStack);
                 return newStack;
             }

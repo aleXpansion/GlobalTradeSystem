@@ -124,7 +124,7 @@ public class JEIloader implements IModPlugin {
                 int ingValue = 0;
                 for(ItemStack stack:stacks){
                     int itemValue = vm.getBaseValue(stack.getItem()) * stack.getCount();
-                    if(itemValue > ingValue){
+                    if(ingValue == 0 || itemValue <ingValue){
                         ingValue = itemValue;
                     }
                 }
