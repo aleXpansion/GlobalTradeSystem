@@ -74,7 +74,9 @@ public class BaseValueManager {
 		}
 	}
 
+	//reloads all base values from config
 	public static void initItemValues(){
+		baseValueMap.clear(); 
 		loadTagDefaults(Config.DEFAULT_TAG_VALUES.get());
 		loadItemDefaults(Config.DEFAULT_ITEM_VALUES.get());
 	}
@@ -87,6 +89,7 @@ public class BaseValueManager {
 		tagDefaults.add("minecraft:small_flowers,16");
 		tagDefaults.add("minecraft:wool,48");
 		tagDefaults.add("forge:cobblestone,1");
+		tagDefaults.add("forge:stone,1");
 		itemDefaults.add("minecraft:dirt, 1");
 		itemDefaults.add("minecraft:gunpowder, 192");
 		itemDefaults.add("minecraft:feather, 48");
@@ -94,7 +97,7 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:apple, 128");
 		itemDefaults.add("minecraft:iron_ore, 256");
 		itemDefaults.add("minecraft:rotten_flesh, 24");
-		itemDefaults.add("minecraft:reeds, 32");
+		itemDefaults.add("minecraft:sugar_cane, 32");
 		itemDefaults.add("minecraft:clay_ball, 64");
 		itemDefaults.add("minecraft:flint, 4");
 		itemDefaults.add("minecraft:redstone_ore, 64");
@@ -109,9 +112,6 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:sweet_berries, 16");
 		itemDefaults.add("minecraft:lapis_ore, 864");
 		itemDefaults.add("minecraft:diamond_ore, 8192");
-		itemDefaults.add("minecraft:andesite, 1");
-		itemDefaults.add("minecraft:diorite, 1");
-		itemDefaults.add("minecraft:granite, 1");
 		itemDefaults.add("minecraft:gravel, 1");
 	}
 }

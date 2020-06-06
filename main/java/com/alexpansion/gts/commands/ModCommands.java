@@ -11,6 +11,7 @@ public class ModCommands {
         dispatcher.register(
                 Commands.literal(GTS.MOD_ID)
                         .then(CommandAddBaseValue.register(dispatcher))
+                        .then(CommandResetValues.register(dispatcher))
         );
 
     }

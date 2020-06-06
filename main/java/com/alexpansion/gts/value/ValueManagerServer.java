@@ -169,4 +169,12 @@ public class ValueManagerServer extends ValueManager {
 		data.setBaseValue(key,value);
 	}
 
+	public void resetValues(){
+		GTS.LOGGER.info("Resetting Values");
+		BaseValueManager.initItemValues();
+		nonBuyable.clear();
+		baseValueMap = BaseValueManager.baseValueMap;
+		calculateValues();
+	}
+
 }
