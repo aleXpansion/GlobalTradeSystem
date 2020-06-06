@@ -117,12 +117,19 @@ public abstract class ValueManager {
 		while(oldList.size()>0){
 			Double top = (double) 0;
 			Item topItem = null;
+			ArrayList<Item> badList = new ArrayList<Item>();
 			for(Item item:oldList){
+				Double value = getValue(item);
+				if(value == 0.0){
+					badList.add(item);
+					continue;
+				}
 				if(getValue(item)>top){
 					top = getValue(item);
 					topItem = item;
 				}
 			}
+			oldList.removeAll(badList);
 			if(topItem == null){
 				GTS.LOGGER.error("topItem was null in ValueManager.getAllSellableItems");
 				return newList;
