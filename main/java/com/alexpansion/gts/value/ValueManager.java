@@ -9,18 +9,16 @@ import net.minecraft.world.World;
 
 public abstract class ValueManager {
 
-	protected ValuesBean bean;
 
 	protected World world;
-	private static ValueManager clientInstance;
-	private static ValueManager serverInstance;
+	private static ValueManagerClient clientInstance;
+	private static ValueManagerServer serverInstance;
 
 	public ValueManager(World world) {
 		this.world = world;
-		bean = getBean();
 	}
 
-	public static ValueManager getClientVM(){
+	public static ValueManagerClient getClientVM(){
 		if(clientInstance != null){
 			return clientInstance;
 		}else{
@@ -54,9 +52,7 @@ public abstract class ValueManager {
 	
 	public abstract ValuesBean getBean();
 
-	public void setBean(ValuesBean inBean) {
-		bean = inBean;
-	}
+	
 
 	public Double getValue(Item target) {
 		if (!canISell(target)) {
@@ -85,7 +81,7 @@ public abstract class ValueManager {
 	}
 
 	public boolean canIBuy(Item item) {
-		if (bean != null) {
+		if (getBean() != null) {
 			return getBean().getValueMap().containsKey(item);
 		} else {
 			return false;

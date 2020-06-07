@@ -82,7 +82,7 @@ public class ValueManagerServer extends ValueManager {
 			double multiplier = 1;
 			int rampUp = 120;
 			int valueSold = valueSoldMap.get(item);
-			if (baseValueMap.get(item) == null) {
+			if (baseValueMap.get(item) == null && getCrafingValue(item) == 0) {
 				toRemove = item;
 				return;
 			}
@@ -116,18 +116,21 @@ public class ValueManagerServer extends ValueManager {
 			return false;
 		}
 		//If JEI is installed and loaded, use it to calculate the value
+		return getCrafingValue(item) != 0;
+	}
+
+	private int getCrafingValue(Item item){
 		if(JEIloader.isLoaded()){
 			int value = JEIloader.getCrafingValue(this,item);
 			if(value <= 0){
 				nonBuyable.add(item);
-				return false;
+				return 0;
 			}else{
 				setBaseValue(item, value);
-				return true;
+				return value;
 			}
 		}
-
-		return false;
+		return 0;
 	}
 
 	public void addValueSold(Item item, int value, World world) {

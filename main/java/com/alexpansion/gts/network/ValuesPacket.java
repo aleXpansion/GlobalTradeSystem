@@ -3,6 +3,7 @@ package com.alexpansion.gts.network;
 import java.util.function.Supplier;
 
 import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.ValueManagerClient;
 import com.alexpansion.gts.value.ValuesBean;
 
 import net.minecraft.network.PacketBuffer;
@@ -37,7 +38,7 @@ public class ValuesPacket{
 	public void handle(Supplier<NetworkEvent.Context> ctx) {
 		Context get = ctx.get();
         get.enqueueWork(() -> {
-			ValueManager vm = ValueManager.getClientVM();
+			ValueManagerClient vm = ValueManager.getClientVM();
 			vm.setBean(this.getBean());
 		});
         ctx.get().setPacketHandled(true);

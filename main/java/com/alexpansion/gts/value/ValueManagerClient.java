@@ -7,11 +7,17 @@ import com.alexpansion.gts.network.ValuesRequestPacket;
 import net.minecraft.world.World;
 
 public class ValueManagerClient extends ValueManager {
+	private ValuesBean bean;
 
 	private Calendar lastUpdate = Calendar.getInstance();
 
 	public ValueManagerClient(World world) {
 		super(world);
+		getBean();
+	}
+
+	public void setBean(ValuesBean inBean) {
+		bean = inBean;
 	}
 
 	public ValuesBean getBean() {
@@ -22,7 +28,6 @@ public class ValueManagerClient extends ValueManager {
 			timeSinceUpdate = Long.MAX_VALUE;
 		}
 		if (timeSinceUpdate > 1000) {
-			//LogHelper.info("Requesting ValuesBean");
 			Networking.INSTANCE.sendToServer(new ValuesRequestPacket());
 			lastUpdate = Calendar.getInstance();
 		}
