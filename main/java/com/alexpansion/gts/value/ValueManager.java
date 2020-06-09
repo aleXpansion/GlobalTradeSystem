@@ -112,15 +112,31 @@ public abstract class ValueManager {
 		}
 		return newItems;
 	}
-	
+
+	public ArrayList<Item> getBuyableItemsTargeted(Item target, int amt){
+		ArrayList<Item> allItems = getAllBuyableItems();
+		allItems = sortItems(allItems);
+		if(allItems.size() <= amt || !allItems.contains(target)){
+			return allItems;
+		}
+		int targetIndex = allItems.indexOf(target);
+		int startIndex = Math.max(0,targetIndex - amt/2);
+		ArrayList<Item> outList = new ArrayList<Item>(allItems.subList(startIndex, allItems.size()-1));
+		return outList;
+	}
+
 	public ArrayList<Item> getAllBuyableItemsSorted(int limit){
-		ArrayList<Item> oldList = getAllBuyableItems(limit);
+		ArrayList<Item> rawList = getAllBuyableItems(limit);
+		return sortItems(rawList);
+	}
+	
+	public ArrayList<Item> sortItems(ArrayList<Item> inList){
 		ArrayList<Item> newList = new ArrayList<Item>();
-		while(oldList.size()>0){
+		while(inList.size()>0){
 			Double top = (double) 0;
 			Item topItem = null;
 			ArrayList<Item> badList = new ArrayList<Item>();
-			for(Item item:oldList){
+			for(Item item:inList){
 				Double value = getValue(item);
 				if(value == 0.0){
 					badList.add(item);
@@ -131,13 +147,13 @@ public abstract class ValueManager {
 					topItem = item;
 				}
 			}
-			oldList.removeAll(badList);
+			inList.removeAll(badList);
 			if(topItem == null){
 				GTS.LOGGER.error("topItem was null in ValueManager.getAllBuyableItems");
 				return newList;
 			}
 			newList.add(topItem);
-			oldList.remove(topItem);
+			inList.remove(topItem);
 		}
 		return newList;
 	}

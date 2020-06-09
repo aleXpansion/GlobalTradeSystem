@@ -133,7 +133,8 @@ public class CatalogContainer extends ContainerGTS {
         ValueManager vm = ValueManager.getVM(world);
         itemList.clear();
         ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
-        ArrayList<Item> buyable = vm.getAllBuyableItemsSorted(Integer.MAX_VALUE);
+        ItemStack filterStack = getSlot(1).getStack();
+        ArrayList<Item> buyable = vm.getBuyableItemsTargeted(filterStack.getItem(),36);
         for(Item i : buyable){
             stacks.add(new ItemStack(i));
         }
@@ -183,12 +184,29 @@ public class CatalogContainer extends ContainerGTS {
 
     
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
-        if(slotId >= 0 && slotId < 38){
+        GTS.LOGGER.info("dragType: "+dragType+" clicktype: "+ clickTypeIn.toString());
+        if(slotId == 1){
+            Slot slot = getSlot(slotId);
+            ItemStack mouseStack = player.inventory.getItemStack();
+            if(mouseStack.isEmpty()){
+                slot.putStack(ItemStack.EMPTY);
+            }else if(vm.canIBuy(mouseStack.getItem())){
+                slot.putStack(new ItemStack(mouseStack.getItem(),1));
+                sellItem(mouseStack);
+                player.inventory.setItemStack(ItemStack.EMPTY);
+            }
+            scrollTo(0.0f);
+            return ItemStack.EMPTY;
+        }else if(slotId >=0 && slotId < 38){
             boolean shift = clickTypeIn == ClickType.QUICK_MOVE;
             Slot slot = getSlot(slotId);
             ItemStack stack = slot.getStack();
             ItemStack mouseStack = player.inventory.getItemStack();
             if(mouseStack.getItem() == ItemStack.EMPTY.getItem()){
+                if(clickTypeIn.equals(ClickType.CLONE) && !stack.isEmpty()){
+                    getSlot(1).putStack(new ItemStack(stack.getItem(),1));
+                    return mouseStack;
+                }
                 int amt = shift ? stack.getMaxStackSize():1;
                 stack = buyItem(stack, amt);
                 player.inventory.setItemStack(stack);
