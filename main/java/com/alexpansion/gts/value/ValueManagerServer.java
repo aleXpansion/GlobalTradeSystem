@@ -12,7 +12,7 @@ import net.minecraft.world.server.ServerWorld;
 
 public class ValueManagerServer extends ValueManager {
 
-	public static HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
+	public HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
 	public HashMap<Item, Integer> valueSoldMap = new HashMap<Item, Integer>();
 	public HashMap<Item, Double> changeMap = new HashMap<Item, Double>();
 	public HashMap<Item, Double> valueMap;
@@ -99,9 +99,12 @@ public class ValueManagerServer extends ValueManager {
 			// LogHelper.info(item.getUnlocalizedName() + " is worth " +
 			// newValue);
 			valueMap.put(item, newValue);
-		} else if (baseValueMap.containsKey(item)) {
+		} /*else if (baseValueMap.containsKey(item)) {
 			int base = baseValueMap.get(item);
 			valueMap.put(item, (double) base);
+		}*/else{
+			valueMap.remove(item);
+			return;
 		}
 	}
 
@@ -172,11 +175,13 @@ public class ValueManagerServer extends ValueManager {
 		data.setBaseValue(key,value);
 	}
 
+	
+	@SuppressWarnings("unchecked")
 	public void resetValues(){
 		GTS.LOGGER.info("Resetting Values");
 		BaseValueManager.initItemValues();
 		nonBuyable.clear();
-		baseValueMap = BaseValueManager.baseValueMap;
+		baseValueMap = (HashMap<Item, Integer>) BaseValueManager.baseValueMap.clone();
 		calculateValues();
 	}
 

@@ -52,8 +52,6 @@ public abstract class ValueManager {
 	
 	public abstract ValuesBean getBean();
 
-	
-
 	public Double getValue(Item target) {
 		if (!canISell(target)) {
 			return (double) 0.0;
@@ -77,7 +75,15 @@ public abstract class ValueManager {
 		if(getBean() == null){
 			return false;
 		}
-		return getBean().getBaseMap().containsKey(item);
+		if(getBean().getBaseMap().containsKey(item)){
+			return true;
+		}else{
+			if(getBean().getValueMap().containsKey(item) ){
+				//GTS.LOGGER.info(item.toString()+" has a value but no base value");
+			}
+			return false;
+		}
+		//return getBean().getBaseMap().containsKey(item);
 	}
 
 	public boolean canIBuy(Item item) {
@@ -127,7 +133,7 @@ public abstract class ValueManager {
 			}
 			oldList.removeAll(badList);
 			if(topItem == null){
-				GTS.LOGGER.error("topItem was null in ValueManager.getAllSellableItems");
+				GTS.LOGGER.error("topItem was null in ValueManager.getAllBuyableItems");
 				return newList;
 			}
 			newList.add(topItem);

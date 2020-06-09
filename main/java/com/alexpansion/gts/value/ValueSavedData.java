@@ -110,8 +110,9 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 		return valuesLoaded;
 	}
 
+	@SuppressWarnings("unchecked")
 	public HashMap<Item,Integer> getBaseValues(){
-		return baseValueMap;
+		return (HashMap<Item, Integer>) baseValueMap.clone();
 	}
 
 	//sets the base value of the given item. If value is 0 or less, removes base value for that item.
@@ -139,6 +140,12 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 	@Override
 	public ValueSavedData get() {
 		return this;
+	}
+
+	//overrides the existing base values with the supplied ones.
+	public void setBaseValues(HashMap<Item, Integer> baseValueMapIn) {
+		baseValueMap = baseValueMapIn;
+		markDirty();
 	}
 
 }
