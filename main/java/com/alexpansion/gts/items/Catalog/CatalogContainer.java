@@ -184,7 +184,6 @@ public class CatalogContainer extends ContainerGTS {
 
     
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
-        GTS.LOGGER.info("dragType: "+dragType+" clicktype: "+ clickTypeIn.toString());
         if(slotId == 1){
             Slot slot = getSlot(slotId);
             ItemStack mouseStack = player.inventory.getItemStack();

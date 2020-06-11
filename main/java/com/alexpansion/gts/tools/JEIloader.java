@@ -13,9 +13,6 @@ import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
-import mezz.jei.plugins.vanilla.anvil.AnvilRecipe;
-import mezz.jei.plugins.vanilla.brewing.JeiBrewingRecipe;
-import mezz.jei.plugins.vanilla.cooking.fuel.FuelRecipe;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -92,13 +89,13 @@ public class JEIloader implements IModPlugin {
                         input.add(ingredientList);
                     }
                     itemList.put(output.getItem(), new RecipeWrapper(output.getItem(),output.getCount(), input));
-                }else{
+                }/*else{
                     if(recipe instanceof FuelRecipe ||recipe instanceof JeiBrewingRecipe||recipe instanceof AnvilRecipe){
                         //These recipes aren't currently supported
                     }else{
                         //GTS.LOGGER.error("non-recipe where recipe expected.");
                     }
-                }
+                }*/
             }
         }
         loaded = true;
