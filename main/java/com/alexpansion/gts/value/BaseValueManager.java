@@ -118,8 +118,10 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:diamond_ore, 8192");
 		itemDefaults.add("minecraft:gravel, 1");
 		itemDefaults.add("minecraft:emerald_ore,8192");
-		itemDefaults.add("minecraft:potato:24");
-		itemDefaults.add("minecraft:carrot:24");
-		itemDefaults.add("minecraft:egg:32");
+		itemDefaults.add("minecraft:potato,24");
+		itemDefaults.add("minecraft:carrot,24");
+		itemDefaults.add("minecraft:egg,32");
+		itemDefaults.add("minecraft:lava_bucket,832");
+		itemDefaults.add("minecraft:obsidian,64");
 	}
 }
