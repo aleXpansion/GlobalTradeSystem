@@ -70,7 +70,7 @@ public class CatalogContainer extends ContainerGTS {
         this.scrollTo(0.0F);
     }
 
-
+    @Deprecated
 	public boolean buyItem(ItemStack buyStack){
         ItemStack bought = buyItem(buyStack, 1);
         return !bought.isEmpty();
@@ -145,7 +145,7 @@ public class CatalogContainer extends ContainerGTS {
         if (j < 0) {
             j = 0;
         }
-
+        TMP_INVENTORY.setInventorySlotContents(0, new ItemStack(RegistryHandler.CREDIT.get()));
         for (int k = 0; k < 4; ++k) {
             for (int l = 0; l < 9; ++l) {
                 int i1 = l + (k + j) * 9;
@@ -182,14 +182,47 @@ public class CatalogContainer extends ContainerGTS {
 
     }
 
-    
+    @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
+        //If the spot clicked is not over a slot, this is what is gives as the Id. 
+        if(slotId == -999){
+            return super.slotClick(slotId,dragType,clickTypeIn,player);
+        }
+        boolean shift = clickTypeIn == ClickType.QUICK_MOVE;
+        Slot slot = getSlot(slotId);
+        ItemStack stack = slot.getStack();
+        ItemStack mouseStack = player.inventory.getItemStack();
+        //if you've clicked on the slot with this catalog in it, do nothing.
+        if(this.stack == stack){
+            return mouseStack;
+        }
+        if(slotId == 0){
+            if(value <= 0) return ItemStack.EMPTY;
+            if(mouseStack.isEmpty()){
+                int out = shift ? 64 : 1;
+                if(out > value) out = value;
+
+                value -= out;
+                mouseStack = new ItemStack(RegistryHandler.CREDIT.get(),out);
+            }else if(mouseStack.getItem() instanceof IValueContainer){
+                IValueContainer item = (IValueContainer)mouseStack.getItem();
+                int out = shift ? item.getSpace(mouseStack):1;
+                if(out > value) out = value;
+                try {
+                    mouseStack = item.addValue(mouseStack, out);
+                } catch (ValueOverflowException e) {
+                    // the call to getSpace ensures this will never happen.
+                    e.printStackTrace();
+                }
+                value -= out;
+            }
+            player.inventory.setItemStack(mouseStack);
+            return mouseStack;
+        }
         if(slotId == 1){
-            Slot slot = getSlot(slotId);
-            ItemStack mouseStack = player.inventory.getItemStack();
             if(mouseStack.isEmpty()){
                 slot.putStack(ItemStack.EMPTY);
-            }else if(vm.canIBuy(mouseStack.getItem())){
+            }else if(vm.canISell(mouseStack.getItem())){
                 slot.putStack(new ItemStack(mouseStack.getItem(),1));
                 sellItem(mouseStack);
                 player.inventory.setItemStack(ItemStack.EMPTY);
@@ -197,10 +230,6 @@ public class CatalogContainer extends ContainerGTS {
             scrollTo(0.0f);
             return ItemStack.EMPTY;
         }else if(slotId >=0 && slotId < 38){
-            boolean shift = clickTypeIn == ClickType.QUICK_MOVE;
-            Slot slot = getSlot(slotId);
-            ItemStack stack = slot.getStack();
-            ItemStack mouseStack = player.inventory.getItemStack();
             if(mouseStack.getItem() == ItemStack.EMPTY.getItem()){
                 if(clickTypeIn.equals(ClickType.CLONE) && !stack.isEmpty()){
                     getSlot(1).putStack(new ItemStack(stack.getItem(),1));
@@ -220,6 +249,20 @@ public class CatalogContainer extends ContainerGTS {
                     player.inventory.setItemStack(mouseStack);
                 }
                 return mouseStack;
+            }else if(mouseStack.getItem() instanceof IValueContainer){
+                IValueContainer item = (IValueContainer) mouseStack.getItem();
+                int space = ((IValueContainer)this.stack.getItem()).getLimit() - value;
+                int in = Math.min(item.getValue(mouseStack),space);
+                try {
+                    mouseStack = item.removeValue(mouseStack, in);
+                    value += in;
+                } catch (ValueOverflowException e) {
+                    // this won't happen due to space check above
+                    e.printStackTrace();
+                }
+                player.inventory.setItemStack(mouseStack);
+                return mouseStack;
+
             }else{
                 ItemStack newStack;
                 //dragType 1 means the right mouse button was used.
