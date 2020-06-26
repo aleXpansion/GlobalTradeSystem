@@ -73,6 +73,18 @@ public abstract class ValueManager {
 		}
 	}
 
+	public Double getValue(ItemStack stack){
+		double value = getValue(stack.getItem());
+		if(value != 0){
+			if (stack.isDamageable()){
+				int max = stack.getMaxDamage();
+				int left = max - stack.getDamage();
+				value *= (double)left/(double)max;
+			}
+		}
+		return value;
+	}
+
 	public int getBaseValue(Item target) {
 		ValuesBean bean = getBean();
 		if(bean == null){
@@ -161,10 +173,6 @@ public abstract class ValueManager {
 	}
 
 	public void addValueSold(Item Item, double itemValue, World worldObj) {
-	}
-
-	public double getValue(ItemStack stack){
-		return getValue(stack.getItem());
 	}
 
 }
