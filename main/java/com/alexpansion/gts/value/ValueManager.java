@@ -127,8 +127,8 @@ public abstract class ValueManager {
 		return newItems;
 	}
 
-	public ArrayList<Item> getBuyableItemsTargeted(Item target, int amt){
-		ArrayList<Item> allItems = getAllBuyableItems();
+	public ArrayList<Item> getBuyableItemsTargeted(Item target, int amt, int limit){
+		ArrayList<Item> allItems = getAllBuyableItems(limit);
 		allItems = sortItems(allItems);
 		if(allItems.size() <= amt || !allItems.contains(target)){
 			return allItems;

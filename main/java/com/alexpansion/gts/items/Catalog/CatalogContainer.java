@@ -134,7 +134,7 @@ public class CatalogContainer extends ContainerGTS {
         itemList.clear();
         ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
         ItemStack filterStack = getSlot(1).getStack();
-        ArrayList<Item> buyable = vm.getBuyableItemsTargeted(filterStack.getItem(),36);
+        ArrayList<Item> buyable = vm.getBuyableItemsTargeted(filterStack.getItem(),36,value);
         for(Item i : buyable){
             stacks.add(new ItemStack(i));
         }
