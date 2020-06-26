@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.alexpansion.gts.GTS;
+import com.alexpansion.gts.items.IValueContainer;
+import com.alexpansion.gts.util.RegistryHandler;
+
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -75,6 +78,17 @@ public abstract class ValueManager {
 
 	public Double getValue(ItemStack stack){
 		double value = getValue(stack.getItem());
+		
+		if(stack.getItem() instanceof IValueContainer){
+			IValueContainer item = (IValueContainer)stack.getItem();
+			int held = item.getValue(stack);
+			if(item == RegistryHandler.CREDIT.get()){
+				return (double)held;
+			}else{
+				return value + held;
+			}
+		}
+
 		if(value != 0){
 			if (stack.isDamageable()){
 				int max = stack.getMaxDamage();

@@ -7,6 +7,7 @@ import com.alexpansion.gts.network.BaseValuePacket;
 import com.alexpansion.gts.network.Networking;
 import com.alexpansion.gts.network.ValuesRequestPacket;
 import com.alexpansion.gts.tools.JEIloader;
+import com.alexpansion.gts.util.RegistryHandler;
 
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
@@ -67,6 +68,10 @@ public class ValueManagerClient extends ValueManager {
 	}
 
 	private int getCrafingValue(Item item){
+		if(item == RegistryHandler.CREDIT.get()){
+			sendBaseValue(item, 1);
+			return 1;
+		}
 		if(JEIloader.isLoaded()){
 			int value = JEIloader.getCrafingValue(this,item);
 			if(value <= 0){
