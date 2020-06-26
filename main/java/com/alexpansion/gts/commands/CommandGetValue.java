@@ -10,7 +10,7 @@ import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import net.minecraft.command.CommandSource;
 import net.minecraft.command.Commands;
-import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.server.ServerWorld;
 
@@ -28,8 +28,9 @@ public class CommandGetValue implements Command<CommandSource> {
     public int run(CommandContext<CommandSource> context) throws CommandSyntaxException {
         ServerWorld world = context.getSource().getWorld();
         ValueManagerServer vm = (ValueManagerServer)ValueManager.getVM(world);
-        Item item = context.getSource().asPlayer().getHeldItemMainhand().getItem();
-        StringTextComponent message = new StringTextComponent(item.toString()+" value: "+vm.getValue(item)+", base: "+vm.getValue(item));
+        ItemStack stack = context.getSource().asPlayer().getHeldItemMainhand();
+        StringTextComponent message = new StringTextComponent(stack.getItem().toString()
+            +" value: "+vm.getValue(stack)+", base: "+vm.getBaseValue(stack.getItem()));
         context.getSource().sendFeedback(message, true);
         return 0;
     }

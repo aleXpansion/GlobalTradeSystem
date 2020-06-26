@@ -63,7 +63,7 @@ public abstract class ValueManager {
 	
 	public abstract ValuesBean getBean();
 
-	public Double getValue(Item target) {
+	private Double getValue(Item target) {
 		if (!canISell(target)) {
 			return (double) 0.0;
 		} else if (!canIBuy(target)) {
