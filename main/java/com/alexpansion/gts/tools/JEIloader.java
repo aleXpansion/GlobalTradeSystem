@@ -6,8 +6,6 @@ import java.util.List;
 
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValueManagerServer;
-
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -45,7 +43,7 @@ public class JEIloader implements IModPlugin {
 
     private static ArrayList<Item> checking = new ArrayList<Item>();
 
-    public static int getCrafingValue(ValueManagerServer vm, Item item) {
+    public static int getCrafingValue(ValueManager vm, Item item) {
         if(!itemList.containsKey(item)){
             return 0;
         }
@@ -89,13 +87,7 @@ public class JEIloader implements IModPlugin {
                         input.add(ingredientList);
                     }
                     itemList.put(output.getItem(), new RecipeWrapper(output.getItem(),output.getCount(), input));
-                }/*else{
-                    if(recipe instanceof FuelRecipe ||recipe instanceof JeiBrewingRecipe||recipe instanceof AnvilRecipe){
-                        //These recipes aren't currently supported
-                    }else{
-                        //GTS.LOGGER.error("non-recipe where recipe expected.");
-                    }
-                }*/
+                }
             }
         }
         loaded = true;
@@ -120,6 +112,7 @@ public class JEIloader implements IModPlugin {
             for(ArrayList<ItemStack> stacks : input){
                 int ingValue = 0;
                 for(ItemStack stack:stacks){
+                    if(stack.isEmpty()){continue;}
                     int itemValue = vm.getBaseValue(stack.getItem()) * stack.getCount();
                     if(ingValue == 0 || (itemValue != 0 && itemValue <ingValue)){
                         ingValue = itemValue;

@@ -26,5 +26,10 @@ public class Networking {
             ValuesRequestPacket::toBytes,
             ValuesRequestPacket::new,
             ValuesRequestPacket::handle);
+        INSTANCE.registerMessage(nextID(),
+            BaseValuePacket.class,
+            BaseValuePacket::toBytes,
+            BaseValuePacket::new,
+            BaseValuePacket::handle);
     }
 }

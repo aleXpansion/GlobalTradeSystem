@@ -1,11 +1,8 @@
 package com.alexpansion.gts.value;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.tools.JEIloader;
-
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
@@ -20,7 +17,6 @@ public class ValueManagerServer extends ValueManager {
 	private boolean valuesLoaded = false;
 	private int calcCount = 0;
 	private Item toRemove = null;
-	private ArrayList<Item> nonBuyable = new ArrayList<Item>();
 
 	public ValueManagerServer(World world) {
 		super(world);
@@ -82,7 +78,7 @@ public class ValueManagerServer extends ValueManager {
 			double multiplier = 1;
 			int rampUp = 120;
 			int valueSold = valueSoldMap.get(item);
-			if (baseValueMap.get(item) == null && getCrafingValue(item) == 0) {
+			if (baseValueMap.get(item) == null) {
 				toRemove = item;
 				return;
 			}
@@ -110,31 +106,9 @@ public class ValueManagerServer extends ValueManager {
 
 	@Override
 	public boolean canISell(Item item) {
-		//If we have a base value for it, return true
-		if(baseValueMap.containsKey(item)){
-			return true;
-		}
-		//if it's been cached as unbuyable, return false
-		if(nonBuyable.contains(item)){
-			return false;
-		}
-		//If JEI is installed and loaded, use it to calculate the value
-		return getCrafingValue(item) != 0;
+		return baseValueMap.containsKey(item);
 	}
 
-	private int getCrafingValue(Item item){
-		if(JEIloader.isLoaded()){
-			int value = JEIloader.getCrafingValue(this,item);
-			if(value <= 0){
-				nonBuyable.add(item);
-				return 0;
-			}else{
-				setBaseValue(item, value);
-				return value;
-			}
-		}
-		return 0;
-	}
 
 	public void addValueSold(Item item, int value, World world) {
 		ValueSavedData data = ValueSavedData.get((ServerWorld) world);
@@ -180,7 +154,6 @@ public class ValueManagerServer extends ValueManager {
 	public void resetValues(){
 		GTS.LOGGER.info("Resetting Values");
 		BaseValueManager.initItemValues();
-		nonBuyable.clear();
 		baseValueMap = (HashMap<Item, Integer>) BaseValueManager.baseValueMap.clone();
 		calculateValues();
 	}

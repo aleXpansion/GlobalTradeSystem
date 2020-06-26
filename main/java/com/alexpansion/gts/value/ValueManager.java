@@ -1,11 +1,13 @@
 package com.alexpansion.gts.value;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.alexpansion.gts.GTS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
+import net.minecraft.world.server.ServerWorld;
 
 public abstract class ValueManager {
 
@@ -26,6 +28,16 @@ public abstract class ValueManager {
 			return null;
 		}
 	}
+
+	public static ValueManagerServer getVM(ServerWorld world){
+		if (serverInstance != null) {
+			return serverInstance;
+		}
+		else{
+			serverInstance = new ValueManagerServer(world);
+			return serverInstance;
+		}
+	}
 	
 	public static ValueManager getVM(World world) {
 
@@ -41,7 +53,6 @@ public abstract class ValueManager {
 				return serverInstance;
 			}
 			else{
-				
 				serverInstance = new ValueManagerServer(world);
 				return serverInstance;
 			}
@@ -63,28 +74,19 @@ public abstract class ValueManager {
 	}
 
 	public int getBaseValue(Item target) {
-		if( !canISell(target)){
+		ValuesBean bean = getBean();
+		if(bean == null){
 			return 0;
+		}
+		HashMap<Item,Integer> baseMap = bean.getBaseMap();
+		if(baseMap.containsKey(target)){
+			return baseMap.get(target);
 		}else{
-			return getBean().getBaseMap().get(target);
+			return 0;
 		}
 	}
 
-	public boolean canISell(Item item) {
-		//if we haven't loaded values yet, return false for now
-		if(getBean() == null){
-			return false;
-		}
-		if(getBean().getBaseMap().containsKey(item)){
-			return true;
-		}else{
-			if(getBean().getValueMap().containsKey(item) ){
-				//GTS.LOGGER.info(item.toString()+" has a value but no base value");
-			}
-			return false;
-		}
-		//return getBean().getBaseMap().containsKey(item);
-	}
+	public abstract boolean canISell(Item item);
 
 	public boolean canIBuy(Item item) {
 		if (getBean() != null) {

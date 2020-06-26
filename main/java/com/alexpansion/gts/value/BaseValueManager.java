@@ -70,7 +70,11 @@ public class BaseValueManager {
 	public static void loadItemDefaults(List<String>inTags){
 		for(String line : inTags){
 			String[] splitLine = line.split(",");
-			addSellableItem(splitLine[0], Integer.parseInt(splitLine[1].trim()));
+			if(splitLine.length < 2){
+				GTS.LOGGER.error("Improperly formatted line in GTS value config:"+line);
+			}else{
+				addSellableItem(splitLine[0], Integer.parseInt(splitLine[1].trim()));
+			}
 		}
 	}
 
@@ -113,5 +117,9 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:lapis_ore, 864");
 		itemDefaults.add("minecraft:diamond_ore, 8192");
 		itemDefaults.add("minecraft:gravel, 1");
+		itemDefaults.add("minecraft:emerald_ore,8192");
+		itemDefaults.add("minecraft:potato:24");
+		itemDefaults.add("minecraft:carrot:24");
+		itemDefaults.add("minecraft:egg:32");
 	}
 }
