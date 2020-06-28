@@ -189,7 +189,13 @@ public class CatalogContainer extends ContainerGTS {
             return super.slotClick(slotId,dragType,clickTypeIn,player);
         }
         boolean shift = clickTypeIn == ClickType.QUICK_MOVE;
-        Slot slot = getSlot(slotId);
+        Slot slot;
+        try{
+            slot = getSlot(slotId);
+        }catch(Exception e){
+            GTS.LOGGER.error("error in catalogContainer.slotClick for slot " + slotId + "." );
+            return super.slotClick(slotId, dragType, clickTypeIn, player);
+        }
         ItemStack stack = slot.getStack();
         ItemStack mouseStack = player.inventory.getItemStack();
         //if you've clicked on the slot with this catalog in it, do nothing.
