@@ -123,5 +123,36 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:egg,32");
 		itemDefaults.add("minecraft:lava_bucket,832");
 		itemDefaults.add("minecraft:obsidian,64");
+		itemDefaults.add("minecraft:chicken,64");
+		itemDefaults.add("minecraft:beef,64");
+		itemDefaults.add("minecraft:mutton,64");
+		itemDefaults.add("minecraft:porkchop,64");
+		itemDefaults.add("minecraft:rabbit,64");
+		itemDefaults.add("minecraft:fern,1");
+		itemDefaults.add("minecraft:honey_bottle,16");
+		itemDefaults.add("minecraft:honeycomb,16");
+		itemDefaults.add("minecraft:blaze_rod,1536");
+		itemDefaults.add("minecraft:slime_ball,24");
+		itemDefaults.add("minecraft:netherrack,1");
+		itemDefaults.add("minecraft:nether_wart,24");
+		itemDefaults.add("minecraft:milk_bucket,833");
+		itemDefaults.add("minecraft:water_bucket,769");
+		itemDefaults.add("minecraft:ink_sac,16");
+		itemDefaults.add("minecraft:prismarine_crystals,792");
+		itemDefaults.add("minecraft:prismarine_shard,128");
+		itemDefaults.add("minecraft:wet_sponge,2048");
+		itemDefaults.add("minecraft:raw_cod,64");
+		itemDefaults.add("minecraft:spider_eye,64");
+		itemDefaults.add("minecraft:kelp,24");
+		itemDefaults.add("minecraft:cactus,8");
+		itemDefaults.add("minecraft:poisonous_potato,64");
+		itemDefaults.add("minecraft:glowstone_dust,384");
+		itemDefaults.add("minecraft:nether_quartz_ore,512");
+		itemDefaults.add("minecraft:ender_pearl,1024");
+		itemDefaults.add("minecraft:elytra,500000");
+		itemDefaults.add("minecraft:shulker_shell,50000");
+		itemDefaults.add("minecraft:end_stone,8");
+		itemDefaults.add("minecraft:chorus_fruit,8");
+		itemDefaults.add("minecraft:chorus_flower,32");
 	}
 }
