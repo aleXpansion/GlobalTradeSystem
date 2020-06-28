@@ -3,8 +3,8 @@ package com.alexpansion.gts.blocks.Trader;
 import javax.annotation.Nullable;
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.exceptions.ValueOverflowException;
 import com.alexpansion.gts.items.IValueContainer;
+import com.alexpansion.gts.items.ValueStack;
 import com.alexpansion.gts.util.RegistryHandler;
 import com.alexpansion.gts.value.ValueManager;
 
@@ -80,13 +80,8 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
 
             //remove the value from the available credits
             if (newStack.isEmpty()) {
-                try {
-                    removeValue(targetValue);
-                    vm.addValueSold(targetStack.getItem(), 0-targetValue, world);
-                } catch (ValueOverflowException e) {
-                    //this will only throw if we try to extract more than it has. We check for this above, so it should never happen.
-                    e.printStackTrace();
-                }
+                removeValue(targetValue);
+                vm.addValueSold(targetStack.getItem(), 0-targetValue, world);
             }
         }
 
@@ -97,32 +92,21 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
                 continue;
             }
             if(stack.getItem() instanceof IValueContainer){
-                IValueContainer item = (IValueContainer) stack.getItem();
-                if(item.getValue(stack)>0 && getSpace() >0){  
+                ValueStack itemValue = new ValueStack(stack);
+                if(itemValue.getValue()>0 && getSpace() >0){  
                     //get the lowest of transfer speed, credits available in target, and space available.
-                    int toTransfer = Math.min(valueTransferSpeed, Math.min(item.getValue(stack), getSpace()));
-                    try {
-                        stack = item.removeValue(stack, toTransfer);
-                        h.setStackInSlot(slot, stack);
-                        addValue(toTransfer);
-                    } catch (ValueOverflowException e) {
-                        GTS.LOGGER.error("Trader attempted to transfer more than it could.");
-                        e.printStackTrace();
-                    }
+                    int toTransfer = Math.min(valueTransferSpeed, Math.min(itemValue.getValue(), getSpace()));
+                    stack = itemValue.removeValue(toTransfer);
+                    h.setStackInSlot(slot, stack);
+                    addValue(toTransfer);
                 }
             }else{
                 Double value = vm.getValue(stack);
 
                 if(getSpace() >= value){
                     int count = stack.getCount() -1;
-
-                    try {
-                        addValue(value);
-                        vm.addValueSold(stack.getItem(),value,world);
-                    } catch (ValueOverflowException e) {
-                        e.printStackTrace();
-                        return;
-                    }
+                    addValue(value);
+                    vm.addValueSold(stack.getItem(),value,world);
 
                     if(count <= 0){
                         h.setStackInSlot(slot, ItemStack.EMPTY);
@@ -138,24 +122,19 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
         for(int slot = bufferSlotFirst;slot <= bufferSlotLast;slot++){
             ItemStack stack = h.getStackInSlot(slot);
             if(stack.getItem() instanceof IValueContainer){
-                IValueContainer item = (IValueContainer) stack.getItem();
-                if(item.getSpace(stack)>0 && getValue() >0){  
+                ValueStack itemValue = new ValueStack(stack);
+                if(itemValue.getSpace()>0 && getValue() >0){  
                     //get the lowest of transfer speed, credits available, and space available in target stack.
-                    int toTransfer = Math.min(valueTransferSpeed, Math.min(item.getSpace(stack), getValue()));
-                    try {
-                        item.addValue(stack, toTransfer);
-                        h.setStackInSlot(slot, stack);
-                        removeValue(toTransfer);
-                    } catch (ValueOverflowException e) {
-                        GTS.LOGGER.error("Trader attempted to transfer more than it could.");
-                        e.printStackTrace();
-                    }
+                    int toTransfer = Math.min(valueTransferSpeed, Math.min(itemValue.getSpace(), getValue()));
+                    itemValue.addValue(toTransfer);
+                    h.setStackInSlot(slot, stack);
+                    removeValue(toTransfer);
                 }
             }
         }
     }
 
-    private void addValue(Double toAdd) throws ValueOverflowException{
+    private void addValue(Double toAdd){
         change += toAdd%1;
         if(change > 1){
             change --;
@@ -166,27 +145,26 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
         }
     }
 
-    private void addValue(int toAdd) throws ValueOverflowException{
+    private void addValue(int toAdd){
         ItemStackHandler h = handler.orElseThrow(() -> new RuntimeException("Trader's handler is missing!"));
-        //handler.ifPresent(h ->{
             ItemStack creditStack = h.getStackInSlot(creditSlot);
 
             if(creditStack.isEmpty()){
                 if(toAdd > 64){
-                    throw new ValueOverflowException(creditStack, toAdd-64);
+                    GTS.LOGGER.error("Attempted to add more than 64 to empty credit slot in Trader");
+                    toAdd = 64;
                 }
                 creditStack = new ItemStack(RegistryHandler.CREDIT.get(),toAdd);
             }else if(creditStack.getItem() instanceof IValueContainer){
-                IValueContainer item = (IValueContainer) creditStack.getItem();
-                creditStack = item.addValue(creditStack, toAdd);
+                ValueStack item = new ValueStack(creditStack);
+                creditStack = item.addValue(toAdd);
             }else{
-                throw new ValueOverflowException(creditStack, toAdd);
+                GTS.LOGGER.error("Attempted to add value to non-ValueContainer in Trader");
             }
             h.setStackInSlot(creditSlot, creditStack);
-        //});
     }
 
-    private void removeValue(Double toRemove) throws ValueOverflowException{
+    private void removeValue(Double toRemove){
         int outRemove;
         if(toRemove%1 <= change){
             change -= toRemove;
@@ -200,18 +178,18 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
         }
     }
 
-    private void removeValue(int toRemove) throws ValueOverflowException{
+    private void removeValue(int toRemove){
         ItemStackHandler h = handler.orElseThrow(() -> new RuntimeException("Trader's handler is missing!"));
         //handler.ifPresent(h ->{
             ItemStack creditStack = h.getStackInSlot(creditSlot);
 
             if(creditStack.isEmpty()){
-                    throw new ValueOverflowException(creditStack, 0-toRemove);
+                GTS.LOGGER.error("Attempted to remove value from empty stack in Trader");
             }else if(creditStack.getItem() instanceof IValueContainer){
-                IValueContainer item = (IValueContainer) creditStack.getItem();
-                creditStack = item.removeValue(creditStack, toRemove);
+                ValueStack item = new ValueStack(creditStack);
+                creditStack = item.removeValue(toRemove);
             }else{
-                throw new ValueOverflowException(creditStack, 0-toRemove);
+                GTS.LOGGER.error("Attempted to remove value from non-ValueContainer in Trader");
             }
             h.setStackInSlot(creditSlot, creditStack);
         //});
