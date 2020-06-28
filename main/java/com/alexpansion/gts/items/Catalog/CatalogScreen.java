@@ -124,7 +124,7 @@ public class CatalogScreen extends ContainerScreen<CatalogContainer>{
     @Override
     @SuppressWarnings("resource")
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        drawString(Minecraft.getInstance().fontRenderer, "Value Stored: " + container.value, 32, 20, 0xffffff);
+        drawString(Minecraft.getInstance().fontRenderer, "Value Stored: " + container.valueStack.getValue(), 32, 20, 0xffffff);
     }
 
     protected void init(){

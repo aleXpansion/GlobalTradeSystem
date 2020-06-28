@@ -1,8 +1,6 @@
 package com.alexpansion.gts.items;
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.exceptions.ValueOverflowException;
-
 import net.minecraft.item.ItemStack;
 
 public class ItemCoin extends ItemBase implements IValueContainer{
@@ -12,50 +10,26 @@ public class ItemCoin extends ItemBase implements IValueContainer{
 	}
 
 	@Override
+	public ItemStack setValue(ItemStack stack, int value) {
+		if(value > stack.getMaxStackSize()){
+			GTS.LOGGER.error("Attempted to set coin value to "+value+". Max is "+stack.getMaxStackSize()+".");
+			stack.setCount(stack.getMaxStackSize());
+		}else if(value < 0){
+			GTS.LOGGER.error("Attempted to set coin value less than 0");
+			stack = ItemStack.EMPTY;
+		}else{
+			stack.setCount(value);
+		}
+		return stack;
+	}
+
+	@Override
 	public int getValue(ItemStack stack) {
 		if(stack.getItem()!= this){
 			GTS.LOGGER.error("W04");
 			return 0;
 		}
 		return stack.getCount();
-	}
-
-	@Override
-	public ItemStack addValue(ItemStack stack, int toAdd) throws ValueOverflowException {
-		if(stack == null || stack.getItem()!= this){
-			GTS.LOGGER.error("W05");
-			return null;
-		}
-		int space = stack.getMaxStackSize()-stack.getCount();
-		if(toAdd>space){
-			toAdd -= space;
-			stack.setCount(stack.getMaxStackSize());
-			throw new ValueOverflowException(stack,toAdd);
-		}else{
-			stack.setCount(stack.getCount() + toAdd);
-		}
-		return stack;
-		
-	}
-
-	@Override
-	public ItemStack removeValue(ItemStack stack, int toRemove) throws ValueOverflowException {
-		if(stack == null ||stack.getItem()!= this){
-			GTS.LOGGER.error("W06");
-			return null;
-		}
-		if(toRemove > stack.getCount()){
-			toRemove -= stack.getCount();
-			stack.setCount(0); 
-			throw new ValueOverflowException(stack,toRemove);
-		}else if(toRemove == stack.getCount()){
-			stack = ItemStack.EMPTY;
-			return stack;
-		}else{
-			stack.setCount(stack.getCount()-toRemove);
-			return stack;
-		}
-		
 	}
 
 	@Override

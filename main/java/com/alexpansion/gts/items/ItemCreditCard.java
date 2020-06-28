@@ -2,8 +2,6 @@ package com.alexpansion.gts.items;
 
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.exceptions.ValueOverflowException;
-
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
@@ -30,8 +28,15 @@ public class ItemCreditCard extends ItemBase implements IValueContainer{
 	public ItemCreditCard(){
 		this(1000);
 	}
+
+	@Override
+	public ItemStack setValue(ItemStack stack, int value) {
+		stack.getTag().putInt(VALUE_KEY, value);
+		updateDisplay(stack);
+		return stack;
+	}
 	
-	public ItemStack addValue(ItemStack stack,int toAdd)throws ValueOverflowException{
+	public ItemStack addValue(ItemStack stack,int toAdd){
 		if(stack.getItem()!= this){
 			GTS.LOGGER.error("W01");
 			return null;
@@ -41,8 +46,7 @@ public class ItemCreditCard extends ItemBase implements IValueContainer{
 			toAdd -= (limit-value);
 			value = limit;
 			stack.getTag().putInt(VALUE_KEY, limit);
-			updateDisplay(stack);
-			throw new ValueOverflowException(stack,toAdd);
+			GTS.LOGGER.error("attempted to add "+toAdd+" to card with room for "+(limit-value)+".");
 		}else{
 			stack.getTag().putInt(VALUE_KEY, value+toAdd);
 		}
@@ -60,21 +64,6 @@ public class ItemCreditCard extends ItemBase implements IValueContainer{
 		}
 		return stack.getTag().getInt(VALUE_KEY);
 		
-	}
-
-	@Override
-	public ItemStack removeValue(ItemStack stack, int toRemove) throws ValueOverflowException {
-		int value = getValue(stack);
-		if(stack.getItem()!= this){
-			GTS.LOGGER.error("W03");
-			return null;
-		}if(toRemove>value){
-			stack.getTag().putInt(VALUE_KEY, 0);
-			throw new ValueOverflowException(stack,toRemove-getValue(stack));
-		}
-		stack.getTag().putInt(VALUE_KEY, value-toRemove);
-		updateDisplay(stack);
-		return stack;
 	}
 	
 	private void updateDisplay(ItemStack stack){
