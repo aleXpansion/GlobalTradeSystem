@@ -28,7 +28,7 @@ public class CatalogContainer extends ContainerGTS {
 
     public final NonNullList<ItemStack> itemList = NonNullList.create();
     
-    static final Inventory TMP_INVENTORY = new Inventory(38);
+    private Inventory TMP_INVENTORY = new Inventory(38);
     public ValueStack valueStack;
     public double change;
     private ValueManager vm;
@@ -54,7 +54,7 @@ public class CatalogContainer extends ContainerGTS {
         int value = valueStack.getValue();
         change -= inValue;
         if(change < 0){
-            value -= (int)change -1;
+            value += (int)change -1;
             change = change%1 +1;
         }
         valueStack.setValue(value);
@@ -97,6 +97,10 @@ public class CatalogContainer extends ContainerGTS {
 
     public ItemStack buyItem(ItemStack stack,int amt){
         double itemValue = vm.getValue(stack);
+        if(amt > 1){
+            double mult = 1 + (double)amt/500;
+            itemValue *= mult;
+        }
         int toBuy = Math.min(amt, (int)(valueStack.getValue()/itemValue));
         if(toBuy <= 0){
             return ItemStack.EMPTY;
@@ -104,6 +108,7 @@ public class CatalogContainer extends ContainerGTS {
         removeValue( itemValue * toBuy);
         stack.setCount(toBuy);
         vm.addValueSold(stack.getItem(), 0-(itemValue*toBuy), world);
+        scrollTo(0.0F);
         return stack;
     }
 
@@ -122,15 +127,19 @@ public class CatalogContainer extends ContainerGTS {
             int space = ((IValueContainer)stack.getItem()).getLimit() - valueStack.getValue();
             if(itemValue <= space){
                 int toSell = Math.min(max, (int)(space/itemValue));
+                if(toSell < 0){
+                    GTS.LOGGER.error("Selling a negative number.");
+                }
                 addValue(itemValue * toSell * mult);
                 vm.addValueSold(item, itemValue * toSell * mult, world);
+                scrollTo(0.0F);
                 if(toSell < sellStack.getCount()){
                     sellStack.setCount(sellStack.getCount() - toSell);
                     return sellStack;
                 }else{
-                    return ItemStack.EMPTY;
+                    sellStack = ItemStack.EMPTY;
                 }
-
+                return sellStack;
             }else{
                 return sellStack;
             }
@@ -173,7 +182,8 @@ public class CatalogContainer extends ContainerGTS {
     @Override
     public ItemStack slotClick(int slotId, int dragType, ClickType clickTypeIn, PlayerEntity player) {
         //If the spot clicked is not over a slot, this is what is gives as the Id. 
-        if(slotId == -999){
+        //-999 means it's outside the GUI, -1 is in the GUI but not over a slot
+        if(slotId == -999 || slotId == -1){
             return super.slotClick(slotId,dragType,clickTypeIn,player);
         }
         boolean shift = clickTypeIn == ClickType.QUICK_MOVE;
@@ -190,6 +200,7 @@ public class CatalogContainer extends ContainerGTS {
         if(this.stack == stack){
             return mouseStack;
         }
+        //This is the credit slot, grab a credit or fill a valueContainer
         if(slotId == 0){
             int value = valueStack.getValue();
             if(value <= 0) return ItemStack.EMPTY;
@@ -209,6 +220,7 @@ public class CatalogContainer extends ContainerGTS {
             player.inventory.setItemStack(mouseStack);
             return mouseStack;
         }
+        //This is the target slot. Set the target to that item
         if(slotId == 1){
             if(mouseStack.isEmpty()){
                 slot.putStack(ItemStack.EMPTY);
@@ -219,6 +231,7 @@ public class CatalogContainer extends ContainerGTS {
             }
             scrollTo(0.0f);
             return ItemStack.EMPTY;
+        //The rest of the slots. Buy the selected item, or sell anything else.
         }else if(slotId >=0 && slotId < 38){
             if(mouseStack.getItem() == ItemStack.EMPTY.getItem()){
                 if(clickTypeIn.equals(ClickType.CLONE) && !stack.isEmpty()){
