@@ -137,6 +137,7 @@ public class CatalogContainer extends ContainerGTS {
                 }
                 addValue(itemValue * toSell * mult);
                 vm.addValueSold(item, itemValue * toSell * mult, world);
+                scrollTo(0.0F);
                 if(toSell < sellStack.getCount()){
                     sellStack.setCount(sellStack.getCount() - toSell);
                     return sellStack;
