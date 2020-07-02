@@ -91,6 +91,7 @@ public class BaseValueManager {
 		tagDefaults.add("minecraft:sand,1");
 		tagDefaults.add("minecraft:saplings,32");
 		tagDefaults.add("minecraft:small_flowers,16");
+		tagDefaults.add("minecraft:tall_flowers,32");
 		tagDefaults.add("minecraft:wool,48");
 		tagDefaults.add("forge:cobblestone,1");
 		tagDefaults.add("forge:stone,1");
@@ -153,6 +154,11 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:shulker_shell,50000");
 		itemDefaults.add("minecraft:end_stone,8");
 		itemDefaults.add("minecraft:chorus_fruit,8");
+		itemDefaults.add("minecraft:lily_pad,8");
 		itemDefaults.add("minecraft:chorus_flower,32");
+		itemDefaults.add("minecraft:melon_slice,16");
+		itemDefaults.add("minecraft:beetroot,16");
+		itemDefaults.add("minecraft:beetroot_seeds,16");
+		itemDefaults.add("minecraft:cocoa_beans,16");
 	}
 }

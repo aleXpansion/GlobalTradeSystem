@@ -60,6 +60,12 @@ public class CatalogContainer extends ContainerGTS {
         valueStack.setValue(value);
     }
 
+    @Override
+    public void detectAndSendChanges() {
+        scrollTo(0.0F);
+        super.detectAndSendChanges();
+    }
+
     public CatalogContainer(int windowId,PlayerEntity player, ItemStack stack) {
         super(RegistryHandler.CATALOG_CONTAINER.get(), windowId, player.world, null, player.inventory);
         world = player.world;
@@ -106,10 +112,9 @@ public class CatalogContainer extends ContainerGTS {
             return ItemStack.EMPTY;
         }
         removeValue( itemValue * toBuy);
-        stack.setCount(toBuy);
+        ItemStack outStack = new ItemStack(stack.getItem(),toBuy);
         vm.addValueSold(stack.getItem(), 0-(itemValue*toBuy), world);
-        scrollTo(0.0F);
-        return stack;
+        return outStack;
     }
 
     public ItemStack sellItem(ItemStack sellStack){
@@ -132,7 +137,6 @@ public class CatalogContainer extends ContainerGTS {
                 }
                 addValue(itemValue * toSell * mult);
                 vm.addValueSold(item, itemValue * toSell * mult, world);
-                scrollTo(0.0F);
                 if(toSell < sellStack.getCount()){
                     sellStack.setCount(sellStack.getCount() - toSell);
                     return sellStack;
@@ -233,17 +237,18 @@ public class CatalogContainer extends ContainerGTS {
             return ItemStack.EMPTY;
         //The rest of the slots. Buy the selected item, or sell anything else.
         }else if(slotId >=0 && slotId < 38){
-            if(mouseStack.getItem() == ItemStack.EMPTY.getItem()){
+            if(mouseStack.getItem() == ItemStack.EMPTY.getItem() & stack.getItem() != ItemStack.EMPTY.getItem()){
+                //This is the middle click, set the target to the selected item.
                 if(clickTypeIn.equals(ClickType.CLONE) && !stack.isEmpty()){
                     getSlot(1).putStack(new ItemStack(stack.getItem(),1));
+                    scrollTo(0.0F);
                     return mouseStack;
                 }
                 int amt = shift ? stack.getMaxStackSize():1;
-                stack = buyItem(stack, amt);
-                player.inventory.setItemStack(stack);
-                scrollTo(0.0f);
-                return stack;
-            }else if(mouseStack.getItem() == stack.getItem()){
+                mouseStack = buyItem(stack, amt);
+                player.inventory.setItemStack(mouseStack);
+                return mouseStack;
+            }else if(mouseStack.getItem() == stack.getItem() && !stack.isEmpty()){
                 if(mouseStack.getCount() < mouseStack.getMaxStackSize()){
                     int oldCount = mouseStack.getCount();
                     int goal = shift ? mouseStack.getMaxStackSize():oldCount+1;
@@ -283,11 +288,11 @@ public class CatalogContainer extends ContainerGTS {
 
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         ItemStack stack = getSlot(index).getStack();
+        if(stack.getItem() == RegistryHandler.CATALOG.get()){
+            return ItemStack.EMPTY;
+        }
         if(index >= 38 && !stack.isEmpty() && vm.canISell(stack.getItem())){
             putStackInSlot(index, sellItem(stack));
-        }else if(index > 1 && index < 38){
-            ItemStack outStack = buyItem(stack, 64);
-            this.mergeItemStack(outStack, 38, 74,false);
         }
         return ItemStack.EMPTY;
     }
