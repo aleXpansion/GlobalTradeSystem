@@ -60,7 +60,7 @@ public class JEIloader implements IModPlugin {
         value = 0;
         for(RecipeWrapper input : inputs){
             int inputValue = input.getValue(vm);
-            if(value == 0 || inputValue < value){
+            if(inputValue != 0 && (value == 0 || inputValue < value)){
                 value = inputValue;
             }
         }
