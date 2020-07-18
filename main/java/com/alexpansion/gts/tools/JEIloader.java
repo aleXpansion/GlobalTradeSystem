@@ -23,7 +23,7 @@ public class JEIloader implements IModPlugin {
 
     private static IRecipeManager manager;
     private static boolean loaded = false;
-    private static HashMap<Item,RecipeWrapper> itemList;
+    private static HashMap<Item,ArrayList<RecipeWrapper>> itemList;
 
     public JEIloader() {
     }
@@ -35,6 +35,7 @@ public class JEIloader implements IModPlugin {
 
     @Override
     public void onRuntimeAvailable(IJeiRuntime jeiRuntime) {
+        GTS.LOGGER.info("Loading JEI runtime.");
         IJeiRuntime runtime = jeiRuntime;
         manager = runtime.getRecipeManager();
         loadRecipes();
@@ -54,9 +55,15 @@ public class JEIloader implements IModPlugin {
         }
         checking.add(item);
 
-        RecipeWrapper input = itemList.get(item);
-        value = input.getValue(vm);
 
+        ArrayList<RecipeWrapper> inputs = itemList.get(item);
+        value = 0;
+        for(RecipeWrapper input : inputs){
+            int inputValue = input.getValue(vm);
+            if(inputValue != 0 && (value == 0 || inputValue < value)){
+                value = inputValue;
+            }
+        }
         checking.remove(item);
         
         return value;
@@ -67,11 +74,10 @@ public class JEIloader implements IModPlugin {
         if(manager == null){
             return;
         }
-        itemList = new HashMap<Item,RecipeWrapper>();
+        itemList = new HashMap<Item,ArrayList<RecipeWrapper>>();
         List<IRecipeCategory> categories = manager.getRecipeCategories();
         for (IRecipeCategory category : categories) {
             List recipes = manager.getRecipes(category);
-            GTS.LOGGER.info("got recipes");
             for (Object recipe : recipes) {
                 if (recipe instanceof IRecipe) {
                     IRecipe irecipe = (IRecipe)recipe;
@@ -86,7 +92,14 @@ public class JEIloader implements IModPlugin {
                         }
                         input.add(ingredientList);
                     }
-                    itemList.put(output.getItem(), new RecipeWrapper(output.getItem(),output.getCount(), input));
+                    RecipeWrapper wrapper = new RecipeWrapper(output.getItem(),output.getCount(), input);
+                    if(itemList.containsKey(output.getItem())){
+                        itemList.get(output.getItem()).add(wrapper);
+                    }else{
+                        ArrayList<RecipeWrapper> list = new ArrayList<RecipeWrapper>();
+                        list.add(wrapper);
+                        itemList.put(output.getItem(), list);
+                    }
                 }
             }
         }
@@ -100,6 +113,7 @@ public class JEIloader implements IModPlugin {
 
     private class RecipeWrapper{
         private int outCount;
+        //These are the ingredients. The out arraylist represents each slotk, the inner which items can go in that slot.
         private ArrayList<ArrayList<ItemStack>> input;
 
         public RecipeWrapper(Item output,int outCount, ArrayList<ArrayList<ItemStack>> input){
@@ -126,7 +140,13 @@ public class JEIloader implements IModPlugin {
                     value += ingValue;
                 }
             }
-            return value/outCount;
+            double rawValue = (double)value/outCount;
+            //round down to a minimum of 1
+            if(rawValue >0 && rawValue < 1){
+                return 1;
+            }else{
+                return (int)rawValue;
+            }
         }
     }
 

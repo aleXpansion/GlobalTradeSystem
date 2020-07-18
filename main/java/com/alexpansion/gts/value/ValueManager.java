@@ -77,6 +77,7 @@ public abstract class ValueManager {
 	}
 
 	public Double getValue(ItemStack stack){
+		if(stack.isEmpty()) return 0.0;
 		double value = getValue(stack.getItem());
 		
 		if(stack.getItem() instanceof IValueContainer){
@@ -134,6 +135,7 @@ public abstract class ValueManager {
 		ArrayList<Item> items = getAllBuyableItems();
 		ArrayList<Item> newItems = new ArrayList<Item>();
 		for (Item item : items) {
+			if(item == ItemStack.EMPTY.getItem()) continue;
 			if (getValue(item) <= limit) {
 				newItems.add(item);
 			}
@@ -149,7 +151,7 @@ public abstract class ValueManager {
 		}
 		int targetIndex = allItems.indexOf(target);
 		int startIndex = Math.max(0,targetIndex - amt/2);
-		ArrayList<Item> outList = new ArrayList<Item>(allItems.subList(startIndex, allItems.size()-1));
+		ArrayList<Item> outList = new ArrayList<Item>(allItems.subList(startIndex, allItems.size()));
 		return outList;
 	}
 
@@ -177,7 +179,6 @@ public abstract class ValueManager {
 			}
 			inList.removeAll(badList);
 			if(topItem == null){
-				GTS.LOGGER.error("topItem was null in ValueManager.getAllBuyableItems");
 				return newList;
 			}
 			newList.add(topItem);

@@ -3,6 +3,7 @@ package com.alexpansion.gts.value;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.network.BaseValuePacket;
 import com.alexpansion.gts.network.Networking;
 import com.alexpansion.gts.network.ValuesRequestPacket;
@@ -72,9 +73,10 @@ public class ValueManagerClient extends ValueManager {
 			sendBaseValue(item, 1);
 			return 1;
 		}
-		if(JEIloader.isLoaded()){
+		if(JEIloader.isLoaded() ){
 			int value = JEIloader.getCrafingValue(this,item);
 			if(value <= 0){
+				GTS.LOGGER.info("unable to find crafing value for: "+item.toString());
 				nonBuyable.add(item);
 				return 0;
 			}else{

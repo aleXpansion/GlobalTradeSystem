@@ -20,8 +20,6 @@ import net.minecraft.world.World;
 
 public class CatalogScreen extends ContainerScreen<CatalogContainer>{
 
-    //private TextFieldWidget searchField;
-
     private ResourceLocation GUI = new ResourceLocation(GTS.MOD_ID, "textures/gui/catalog.png");
 
     private World world;
@@ -35,75 +33,8 @@ public class CatalogScreen extends ContainerScreen<CatalogContainer>{
     }
     
     public void tick() {
-        /*if (this.searchField != null) {
-            this.searchField.tick();
-        }*/
         container.scrollTo(0.0F);
     }
-    
-
-    /*
-    @Override
-    protected void handleMouseClick(@Nullable Slot slotIn, int slotId, int mouseButton, ClickType type) {
-        /*if (this.hasTmpInventory(slotIn)) {
-            this.searchField.setCursorPositionEnd();
-            this.searchField.setSelectionPos(0);
-        }*/
-       
-        /*if (slotIn != null && !slotIn.canTakeStack(this.minecraft.player)) {
-            return;
-        }*/
-        /*PlayerInventory playerInventory = this.minecraft.player.inventory;
-        ItemStack mouseStack = playerInventory.getItemStack();
-
-
-
-        int playerSlotStart = 38;
-        int hotbarStart = 65;
-
-        if(slotIn!= null){
-
-            GTS.LOGGER.info("id: "+slotId);
-            GTS.LOGGER.info("number: "+slotIn.slotNumber);
-            if(slotId >= playerSlotStart){
-                slotId -= 2;
-                playerSlotStart -= 2;
-                hotbarStart -= 2;
-                if(slotId >= hotbarStart){
-                    slotId -= 27;
-                }else if(slotId <= playerSlotStart + 9){
-                    slotId += 9;
-                }
-            }
-            GTS.LOGGER.info("Adjusted: "+slotId);
-            boolean buyslot = slotId >= 2 && slotId < playerSlotStart;
-            ItemStack slotStack = slotIn.getStack();
-            if(mouseStack.isEmpty()){
-                if(buyslot){
-                    if(!container.buyItem(slotStack)){
-                        return;
-                    }
-                }
-                playerInventory.setItemStack(slotStack);
-                if(slotId >= playerSlotStart){
-                    //this.minecraft.playerController.sendSlotPacket(ItemStack.EMPTY, slotId);
-                }
-                slotIn.putStack(ItemStack.EMPTY);
-                this.minecraft.player.container.detectAndSendChanges();
-            }else if(slotStack.isEmpty()){
-                if(!buyslot){
-                    playerInventory.setItemStack(ItemStack.EMPTY);
-                    if(slotId >= playerSlotStart){
-                        //this.minecraft.playerController.sendSlotPacket(mouseStack, slotId);
-                    }
-                    slotIn.putStack(mouseStack);
-                    this.minecraft.player.container.detectAndSendChanges();
-                }
-            }
-            super.handleMouseClick(slotIn, slotId, mouseButton, type);
-        }
-    }*/
-
 
     @Override
     public void render(int mouseX, int mouseY, float partialTicks) {
@@ -124,7 +55,7 @@ public class CatalogScreen extends ContainerScreen<CatalogContainer>{
     @Override
     @SuppressWarnings("resource")
     protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        drawString(Minecraft.getInstance().fontRenderer, "Value Stored: " + container.value, 32, 20, 0xffffff);
+        drawString(Minecraft.getInstance().fontRenderer, "Value Stored: " + container.valueStack.getValue(), 32, 20, 0xffffff);
     }
 
     protected void init(){
@@ -147,12 +78,6 @@ public class CatalogScreen extends ContainerScreen<CatalogContainer>{
 
         public boolean canTakeStack(PlayerEntity playerIn){
             return true;
-            /*
-            if(super.canTakeStack(playerIn) && this.getHasStack()){
-                return this.getStack().getChildTag("CustomCatalogLock") == null;
-            }else{
-                return !this.getHasStack();
-            }*/
         }
     }
 }

@@ -76,7 +76,7 @@ public class ValueManagerServer extends ValueManager {
 			//double multiplier = ConfigurationHandler.depreciationMultiplier;
 			// multiplier = (totalValueSold / 15000) + 1;
 			double multiplier = 1;
-			int rampUp = 120;
+			int rampUp = 1200;
 			int valueSold = valueSoldMap.get(item);
 			if (baseValueMap.get(item) == null) {
 				toRemove = item;
