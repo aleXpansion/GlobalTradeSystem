@@ -2,7 +2,7 @@ package com.alexpansion.gts.blocks.Trader;
 
 import com.alexpansion.gts.blocks.ContainerGTS;
 import com.alexpansion.gts.items.IValueContainer;
-import com.alexpansion.gts.util.RegistryHandler;
+import com.alexpansion.gts.setup.RegistryHandler;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

@@ -4,7 +4,6 @@ import com.alexpansion.gts.blocks.PowerPlant.PowerPlantScreen;
 import com.alexpansion.gts.blocks.Trader.TraderScreen;
 import com.alexpansion.gts.items.Catalog.CatalogScreen;
 import com.alexpansion.gts.tools.TooltipHandler;
-import com.alexpansion.gts.util.RegistryHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.ScreenManager;

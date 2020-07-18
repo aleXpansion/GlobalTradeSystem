@@ -20,7 +20,7 @@ import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.common.util.INBTSerializable;
 
-import static com.alexpansion.gts.util.RegistryHandler.POWER_PLANT_TILE;
+import static com.alexpansion.gts.setup.RegistryHandler.POWER_PLANT_TILE;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 
 import com.alexpansion.gts.Config;
 import com.alexpansion.gts.tools.CustomEnergyStorage;
-import com.alexpansion.gts.util.RegistryHandler;
+import com.alexpansion.gts.setup.RegistryHandler;
 
 public class PowerPlantTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 

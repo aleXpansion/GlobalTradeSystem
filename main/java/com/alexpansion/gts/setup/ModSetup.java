@@ -1,7 +1,6 @@
 package com.alexpansion.gts.setup;
 
 import com.alexpansion.gts.network.Networking;
-import com.alexpansion.gts.util.RegistryHandler;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
