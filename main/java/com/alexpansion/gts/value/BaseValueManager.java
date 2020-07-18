@@ -144,7 +144,7 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:wet_sponge,2048");
 		itemDefaults.add("minecraft:raw_cod,64");
 		itemDefaults.add("minecraft:spider_eye,64");
-		itemDefaults.add("minecraft:kelp,24");
+		itemDefaults.add("minecraft:kelp,8");
 		itemDefaults.add("minecraft:cactus,8");
 		itemDefaults.add("minecraft:poisonous_potato,64");
 		itemDefaults.add("minecraft:glowstone_dust,384");
@@ -160,5 +160,7 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:beetroot,16");
 		itemDefaults.add("minecraft:beetroot_seeds,16");
 		itemDefaults.add("minecraft:cocoa_beans,16");
+		itemDefaults.add("minecraft:red_mushroom,32");
+		itemDefaults.add("minecraft:brown_mushroom,32");
 	}
 }

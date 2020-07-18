@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.items.IValueContainer;
-import com.alexpansion.gts.util.RegistryHandler;
+import com.alexpansion.gts.setup.RegistryHandler;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

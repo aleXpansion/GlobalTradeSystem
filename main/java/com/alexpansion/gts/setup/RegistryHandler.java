@@ -1,4 +1,4 @@
-package com.alexpansion.gts.util;
+package com.alexpansion.gts.setup;
 
 import com.alexpansion.gts.blocks.Trader.TraderBlock;
 import com.alexpansion.gts.blocks.Trader.TraderContainer;
@@ -10,7 +10,6 @@ import com.alexpansion.gts.blocks.Trader.TraderTile;
 import com.alexpansion.gts.items.Catalog.ItemCatalog;
 import com.alexpansion.gts.items.ItemCoin;
 import com.alexpansion.gts.items.Catalog.CatalogContainer;
-import com.alexpansion.gts.setup.ModSetup;
 
 import static com.alexpansion.gts.GTS.MOD_ID;
 import static com.alexpansion.gts.GTS.PROXY;

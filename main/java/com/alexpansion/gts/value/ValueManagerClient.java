@@ -8,7 +8,7 @@ import com.alexpansion.gts.network.BaseValuePacket;
 import com.alexpansion.gts.network.Networking;
 import com.alexpansion.gts.network.ValuesRequestPacket;
 import com.alexpansion.gts.tools.JEIloader;
-import com.alexpansion.gts.util.RegistryHandler;
+import com.alexpansion.gts.setup.RegistryHandler;
 
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
