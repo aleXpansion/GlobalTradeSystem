@@ -7,7 +7,7 @@
 
 modLoader="javafml" #mandatory
 # A version range to match for said mod loader - for regular FML @Mod it will be the forge version
-loaderVersion="[31,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
+loaderVersion="[32,)" #mandatory This is typically bumped every Minecraft version by Forge. See our download page for lists of versions.
 
 # A URL to refer people to when problems occur with this mod
 issueTrackerURL="https://github.com/aleXpansion/GlobalTradeSystem/issues" #optional
@@ -16,7 +16,11 @@ issueTrackerURL="https://github.com/aleXpansion/GlobalTradeSystem/issues" #optio
 # The modid of the mod
 modId="gts" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
+<<<<<<< HEAD
 version="${1.15.2-0.3.2}" #mandatory
+=======
+version="${1.16.1-0.2.1}" #mandatory
+>>>>>>> updating to 1.16
  # A display name for the mod
 displayName="Global Trade System" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
@@ -41,7 +45,7 @@ A mod that adds a dynamically changing economy. Inspired by Equivalent Exchange.
     # Does this dependency have to exist - if not, ordering below must be specified
     mandatory=true #mandatory
     # The version range of the dependency
-    versionRange="[31,)" #mandatory
+    versionRange="[32,)" #mandatory
     # An ordering relationship for the dependency - BEFORE or AFTER required if the relationship is not mandatory
     ordering="NONE"
     # Side this dependency is applied on - BOTH, CLIENT or SERVER
@@ -50,6 +54,6 @@ A mod that adds a dynamically changing economy. Inspired by Equivalent Exchange.
 [[dependencies.gts]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.15.2]"
+    versionRange="[1.16.1]"
     ordering="NONE"
     side="BOTH"
