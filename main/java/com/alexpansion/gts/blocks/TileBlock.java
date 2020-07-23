@@ -19,7 +19,7 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.network.NetworkHooks;
@@ -30,8 +30,7 @@ public abstract class TileBlock extends Block {
         super(Properties.create(Material.IRON)
             .sound(SoundType.METAL)
             .hardnessAndResistance(2.0f)
-            .setLightLevel(level -> 14)
-            .setRequiresTool()
+            .lightValue(14)
         );
     }
 
@@ -43,7 +42,7 @@ public abstract class TileBlock extends Block {
     }
 
     public static Direction getFacingFromEntity(BlockPos clickedBlock, LivingEntity entity) {
-        Vector3d vec = entity.getPositionVec();
+        Vec3d vec = entity.getPositionVec();
         return Direction.getFacingFromVector((float) (vec.x - clickedBlock.getX()), (float) (vec.y - clickedBlock.getY()), (float) (vec.z - clickedBlock.getZ()));
     }
 
