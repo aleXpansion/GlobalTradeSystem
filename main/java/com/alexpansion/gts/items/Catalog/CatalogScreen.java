@@ -56,8 +56,9 @@ public class CatalogScreen extends ContainerScreen<CatalogContainer>{
 
     @Override
     @SuppressWarnings("resource")
-    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
-        drawString(Minecraft.getInstance().fontRenderer, "Value Stored: " + container.valueStack.getValue(), 32, 20, 0xffffff);
+    //drawGuiContainerForegroundLayer
+    protected void func_230451_b_(MatrixStack matrix,int mouseX, int mouseY) {
+        drawString(matrix,Minecraft.getInstance().fontRenderer, "Value Stored: " + container.valueStack.getValue(), 32, 20, 0xffffff);
     }
 
     protected void init(){
