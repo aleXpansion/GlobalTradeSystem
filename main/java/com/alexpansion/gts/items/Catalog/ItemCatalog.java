@@ -21,7 +21,8 @@ public class ItemCatalog extends ItemCreditCard{
         if(hand == Hand.MAIN_HAND){
             if(!world.isRemote){
                 ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-                NetworkHooks.openGui(serverPlayer, new CatalogContainer.ContainerProvider(stack),player.getPosition());
+                //the funky function is player.getPos()
+                NetworkHooks.openGui(serverPlayer, new CatalogContainer.ContainerProvider(stack),player.func_233580_cy_());
             }
             return ActionResult.resultSuccess(stack);
         }else{

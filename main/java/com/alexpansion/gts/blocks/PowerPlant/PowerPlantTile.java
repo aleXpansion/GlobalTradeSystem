@@ -1,5 +1,6 @@
 package com.alexpansion.gts.blocks.PowerPlant;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -92,12 +93,12 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
 
     @Override
     @SuppressWarnings({ "unchecked" })
-    public void read(CompoundNBT compound) {
+    public void read(BlockState state,CompoundNBT compound) {
         CompoundNBT invTag = compound.getCompound("inv");
         handler.ifPresent(h -> ((INBTSerializable<CompoundNBT>) h).deserializeNBT(invTag));
         CompoundNBT energyTag = compound.getCompound("energy");
         energy.ifPresent( h -> ((INBTSerializable<CompoundNBT>) h).deserializeNBT(energyTag));
-        super.read(compound);
+        super.read(state, compound);
     }
 
     @Override
