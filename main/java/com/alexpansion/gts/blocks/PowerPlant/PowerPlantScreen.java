@@ -36,7 +36,6 @@ public class PowerPlantScreen extends ContainerScreen<PowerPlantContainer> {
     @Override
     //drawGuiContainerBackgroundLayer
     protected void func_230450_a_(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
-        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(GUI);
         int relX = (this.width - this.xSize) / 2;
         int relY = (this.height - this.ySize) / 2;

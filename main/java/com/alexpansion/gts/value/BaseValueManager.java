@@ -8,7 +8,6 @@ import com.alexpansion.gts.Config;
 import com.alexpansion.gts.GTS;
 
 import net.minecraft.item.Item;
-import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
