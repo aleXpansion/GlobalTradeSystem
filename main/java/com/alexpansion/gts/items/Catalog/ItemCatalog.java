@@ -20,7 +20,8 @@ public class ItemCatalog extends ItemCreditCard{
         ItemStack stack = player.getHeldItem(hand);
         if(hand == Hand.MAIN_HAND){
             if(!world.isRemote){
-                ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;NetworkHooks.openGui(serverPlayer, new CatalogContainer.ContainerProvider(stack),player.getPosition());
+                ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
+                NetworkHooks.openGui(serverPlayer, new CatalogContainer.ContainerProvider(stack),player.getPosition());
             }
             return ActionResult.resultSuccess(stack);
         }else{
