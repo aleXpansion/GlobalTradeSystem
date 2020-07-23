@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.value.ValueManager;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import net.minecraft.client.Minecraft;
@@ -38,27 +37,24 @@ public class CatalogScreen extends ContainerScreen<CatalogContainer>{
     }
 
     @Override
-    public void render(MatrixStack matrix,int mouseX, int mouseY, float partialTicks) {
-        this.renderBackground(matrix);
-        super.render(matrix, mouseX, mouseY, partialTicks);
-        //renderHoveredToolTip
-        this.func_230459_a_(matrix, mouseX, mouseY);
+    public void render(int mouseX, int mouseY, float partialTicks) {
+        this.renderBackground();
+        super.render(mouseX, mouseY, partialTicks);
+        this.renderHoveredToolTip(mouseX, mouseY);
     }
 
     @Override
-    //drawGuiContainerBackgroundLayer
-    protected void func_230450_a_(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
+    protected void drawGuiContainerBackgroundLayer(float partialTicks, int mouseX, int mouseY) {
         this.minecraft.getTextureManager().bindTexture(GUI);
         int relX = (this.width - this.xSize) / 2;
         int relY = (this.height - this.ySize) / 2;
-        this.blit(matrix,relX, relY, 0, 0, this.xSize, this.ySize);
+        this.blit(relX, relY, 0, 0, this.xSize, this.ySize);
     }
 
     @Override
     @SuppressWarnings("resource")
-    //drawGuiContainerForegroundLayer
-    protected void func_230451_b_(MatrixStack matrix,int mouseX, int mouseY) {
-        drawString(matrix,Minecraft.getInstance().fontRenderer, "Value Stored: " + container.valueStack.getValue(), 32, 20, 0xffffff);
+    protected void drawGuiContainerForegroundLayer(int mouseX, int mouseY) {
+        drawString(Minecraft.getInstance().fontRenderer, "Value Stored: " + container.valueStack.getValue(), 32, 20, 0xffffff);
     }
 
     protected void init(){
