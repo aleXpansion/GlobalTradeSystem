@@ -8,7 +8,6 @@ import com.alexpansion.gts.items.ValueStack;
 import com.alexpansion.gts.setup.RegistryHandler;
 import com.alexpansion.gts.value.ValueManager;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
@@ -224,10 +223,10 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
     }
 
     @Override
-    public void read(BlockState state, CompoundNBT compound) {
+    public void read(CompoundNBT compound) {
         CompoundNBT invTag = compound.getCompound("inv");
         handler.ifPresent(h -> ((INBTSerializable<CompoundNBT>) h).deserializeNBT(invTag));
-        super.read(state, compound);
+        super.read(compound);
     }
 
     @Override
