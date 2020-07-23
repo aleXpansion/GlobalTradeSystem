@@ -16,11 +16,7 @@ issueTrackerURL="https://github.com/aleXpansion/GlobalTradeSystem/issues" #optio
 # The modid of the mod
 modId="gts" #mandatory
 # The version number of the mod - there's a few well known ${} variables useable here or just hardcode it
-<<<<<<< HEAD
 version="${1.15.2-0.3.2}" #mandatory
-=======
-version="${1.16.1-0.2.1}" #mandatory
->>>>>>> updating to 1.16
  # A display name for the mod
 displayName="Global Trade System" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification <here>
