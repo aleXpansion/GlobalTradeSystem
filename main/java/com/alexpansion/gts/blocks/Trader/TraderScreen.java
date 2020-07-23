@@ -27,7 +27,7 @@ public class TraderScreen extends ContainerScreen<TraderContainer>{
     }
 
     @Override
-    //drawGuiContainerForegroundLayer
+    //drawGuiContainerBackgroundLayer
     protected void func_230450_a_(MatrixStack matrix, float partialTicks, int mouseX, int mouseY) {
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         this.minecraft.getTextureManager().bindTexture(GUI);
