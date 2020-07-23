@@ -114,6 +114,7 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:gold_ore, 2048");
 		itemDefaults.add("minecraft:leather, 64");
 		itemDefaults.add("minecraft:beef, 64");
+		itemDefaults.add("minecraft:mutton, 64");
 		itemDefaults.add("minecraft:pumpkin, 144");
 		itemDefaults.add("minecraft:sweet_berries, 16");
 		itemDefaults.add("minecraft:lapis_ore, 864");
