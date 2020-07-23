@@ -8,6 +8,7 @@ import com.alexpansion.gts.Config;
 import com.alexpansion.gts.GTS;
 
 import net.minecraft.item.Item;
+import net.minecraft.tags.ITag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.tags.TagCollection;
@@ -48,7 +49,7 @@ public class BaseValueManager {
 	public static void addTagValue(String tagString, int value) {
 		TagCollection<Item> tags = ItemTags.getCollection();
 		ResourceLocation rl = new ResourceLocation(tagString);
-		Tag<Item> tag = tags.get(rl);
+		Tag<Item> tag = (Tag<Item>) tags.get(rl);
 		addTagValue(tag, value);
 	}
 

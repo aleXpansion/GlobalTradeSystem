@@ -9,6 +9,6 @@ public class ForgeEventHandlers {
     
     @SubscribeEvent
     public void serverLoad(FMLServerStartingEvent event){
-        ModCommands.register(event.getCommandDispatcher());
+        ModCommands.register(event.getServer().getCommandManager().getDispatcher());
     }
 }
