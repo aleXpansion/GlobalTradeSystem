@@ -7,7 +7,7 @@ import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.network.BaseValuePacket;
 import com.alexpansion.gts.network.Networking;
 import com.alexpansion.gts.network.ValuesRequestPacket;
-//import com.alexpansion.gts.tools.JEIloader;
+import com.alexpansion.gts.tools.JEIloader;
 import com.alexpansion.gts.setup.RegistryHandler;
 
 import net.minecraft.item.Item;
@@ -73,17 +73,17 @@ public class ValueManagerClient extends ValueManager {
 			sendBaseValue(item, 1);
 			return 1;
 		}
-		// if(JEIloader.isLoaded() ){
-		// 	int value = JEIloader.getCrafingValue(this,item);
-		// 	if(value <= 0){
-		// 		GTS.LOGGER.info("unable to find crafing value for: "+item.toString());
-		// 		nonBuyable.add(item);
-		// 		return 0;
-		// 	}else{
-		// 		sendBaseValue(item, value);
-		// 		return value;
-		// 	}
-		// }
+		if(JEIloader.isLoaded() ){
+			int value = JEIloader.getCrafingValue(this,item);
+			if(value <= 0){
+				GTS.LOGGER.info("unable to find crafing value for: "+item.toString());
+				nonBuyable.add(item);
+				return 0;
+			}else{
+				sendBaseValue(item, value);
+				return value;
+			}
+		}
 		return 0;
 	}
 
