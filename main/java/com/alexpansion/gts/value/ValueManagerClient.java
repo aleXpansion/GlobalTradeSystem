@@ -76,7 +76,6 @@ public class ValueManagerClient extends ValueManager {
 		if(JEIloader.isLoaded() ){
 			int value = JEIloader.getCrafingValue(this,item);
 			if(value <= 0){
-				GTS.LOGGER.info("unable to find crafing value for: "+item.toString());
 				nonBuyable.add(item);
 				return 0;
 			}else{
