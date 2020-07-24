@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.value.ValueManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.systems.RenderSystem;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
 import net.minecraft.entity.player.PlayerEntity;
