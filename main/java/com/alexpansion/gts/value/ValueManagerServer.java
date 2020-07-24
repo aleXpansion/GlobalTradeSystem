@@ -85,6 +85,9 @@ public class ValueManagerServer extends ValueManager {
 			double baseValue = baseValueMap.get(item);
 			double newValue = baseValue;
 			double loss = 0;
+			if(valueSold >= totalValueSold){
+				valueSold = (totalValueSold /2)+1;
+			}
 			if (totalValueSold < rampUp) {
 				newValue = ((rampUp - totalValueSold) / (double) rampUp) * baseValue
 						+ (totalValueSold / (double) rampUp) * ((totalValueSold - valueSold) / (double)(totalValueSold));
