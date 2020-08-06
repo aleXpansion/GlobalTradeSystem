@@ -69,6 +69,7 @@ public abstract class TileBlock extends Block {
             TileEntity tile = world.getTileEntity(pos);
             if(tile instanceof INamedContainerProvider){
                 NetworkHooks.openGui((ServerPlayerEntity) player, (INamedContainerProvider) tile, tile.getPos());
+                return ActionResultType.SUCCESS;
             } else {
                 throw new IllegalStateException("Our named container provider is missing!");
             }

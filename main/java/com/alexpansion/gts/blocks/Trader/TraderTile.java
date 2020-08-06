@@ -82,7 +82,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
             //remove the value from the available credits
             if (newStack.isEmpty()) {
                 removeValue(targetValue);
-                vm.addValueSold(targetStack.getItem(), 0-targetValue, world);
+                vm.addValueSold(targetStack.getItem(),-1, 0-targetValue, world);
             }
         }
 
@@ -107,7 +107,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
                 if(getSpace() >= value){
                     int count = stack.getCount() -1;
                     addValue(value);
-                    vm.addValueSold(stack.getItem(),value,world);
+                    vm.addValueSold(stack.getItem(), 1,value,world);
 
                     if(count <= 0){
                         h.setStackInSlot(slot, ItemStack.EMPTY);

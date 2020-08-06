@@ -100,6 +100,14 @@ public abstract class ValueManager {
 		return value;
 	}
 
+	public int getAmtSold(Item target){
+		if(getBean().getAmtMap().containsKey(target)){
+			return getBean().getAmtMap().get(target);
+		}else{
+			return 0;
+		}
+	}
+
 	public int getBaseValue(Item target) {
 		ValuesBean bean = getBean();
 		if(bean == null){
@@ -128,7 +136,9 @@ public abstract class ValueManager {
 	}
 
 	public ArrayList<Item> getAllBuyableItems(){
-		return new ArrayList<Item>(getBean().getValueMap().keySet());
+		ArrayList<Item> list = new ArrayList<Item>(getBean().getValueMap().keySet());
+		list.retainAll(getBean().getAmtMap().keySet());
+		return list;
 	}
 	
 	public ArrayList<Item> getAllBuyableItems(int limit) {
@@ -187,7 +197,7 @@ public abstract class ValueManager {
 		return newList;
 	}
 
-	public void addValueSold(Item Item, double itemValue, World worldObj) {
+	public void addValueSold(Item Item,int amt, double itemValue, World worldObj) {
 	}
 
 }

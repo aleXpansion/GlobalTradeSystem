@@ -3,7 +3,6 @@ package com.alexpansion.gts.value;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.network.BaseValuePacket;
 import com.alexpansion.gts.network.Networking;
 import com.alexpansion.gts.network.ValuesRequestPacket;

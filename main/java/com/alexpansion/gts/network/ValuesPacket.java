@@ -32,7 +32,8 @@ public class ValuesPacket{
 		if(bean == null){
 			bean = new ValuesBean();
 		}
-		buf.writeString(bean.toString());
+		String stringBean = bean.toString();
+		buf.writeString(stringBean);
 	}
 
 	public void handle(Supplier<NetworkEvent.Context> ctx) {

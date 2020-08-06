@@ -22,6 +22,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 
 	private HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
 	private HashMap<Item, Integer> valueSoldMap = new HashMap<Item, Integer>();
+	private HashMap<Item, Integer> amtSoldMap = new HashMap<Item, Integer>();
 	private int total = 0;
 	private static boolean valuesLoaded = false;
 	private IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
@@ -41,6 +42,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 	public void read(CompoundNBT nbt) {
 		HashMap<Item, Integer> newSoldMap = new HashMap<Item, Integer>();
 		HashMap<Item, Integer> newBaseMap = new HashMap<Item, Integer>();
+		HashMap<Item, Integer> newAmtMap  = new HashMap<Item, Integer>();
 
 		Set<String> keys = nbt.keySet();
 		for (String key : keys) {
@@ -51,13 +53,18 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 				String[] values = nbt.getString(key).split(",");
 				int sold = Integer.parseInt(values[0]);
 				if(sold != 0){
-					newSoldMap.put(itemKey, Integer.parseInt(values[0]));
+					newSoldMap.put(itemKey, sold);
 				}
 				newBaseMap.put(itemKey, Integer.parseInt(values[1]));
+				int amt = Integer.parseInt(values[2]);
+				if(amt != 0){
+					newAmtMap.put(itemKey, amt);
+				}
 			}
 		}
 		valueSoldMap = newSoldMap;
 		baseValueMap = newBaseMap;
+		amtSoldMap   = newAmtMap;
 		valuesLoaded = true;
 	}
 
@@ -75,7 +82,9 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 				}
 				Integer value = valueSoldMap.get(pair.getKey());
 				value = value==null ? 0 : value;
-				String values = value +","+pair.getValue().toString();
+				Integer amt = amtSoldMap.get(pair.getKey());
+				amt = amt ==null ? 0 : amt;
+				String values = value +","+pair.getValue().toString()+','+amt;
 				nbt.putString(pair.getKey().toString(), values);
 			}
 		}
@@ -93,6 +102,16 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 		markDirty();
 	}
 
+	public void saveAmts(HashMap<Item,Integer> map){
+		amtSoldMap = map;
+		markDirty();
+	}
+
+	public void saveAmt(Item key, Integer amt){
+		amtSoldMap.put(key,amt);
+		markDirty();
+	}
+
 	public int getTotal() {
 		return total;
 	}
@@ -104,6 +123,10 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 
 	public HashMap<Item, Integer> getValues() {
 		return valueSoldMap;
+	}
+
+	public HashMap<Item, Integer> getAmts() {
+		return amtSoldMap;
 	}
 
 	public boolean areValuesLoaded() {

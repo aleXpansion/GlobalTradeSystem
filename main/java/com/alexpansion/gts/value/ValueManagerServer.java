@@ -11,6 +11,7 @@ public class ValueManagerServer extends ValueManager {
 
 	public HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
 	public HashMap<Item, Integer> valueSoldMap = new HashMap<Item, Integer>();
+	public HashMap<Item, Integer> amtSoldMap = new HashMap<Item, Integer>();
 	public HashMap<Item, Double> changeMap = new HashMap<Item, Double>();
 	public HashMap<Item, Double> valueMap;
 	public int totalValueSold = 0;
@@ -32,7 +33,7 @@ public class ValueManagerServer extends ValueManager {
 		if (!valuesLoaded) {
 			loadValues(); 
 		}
-		return new ValuesBean(baseValueMap, valueMap);
+		return new ValuesBean(baseValueMap, valueMap, amtSoldMap);
 	}
 
 	private void loadValues() {
@@ -45,6 +46,7 @@ public class ValueManagerServer extends ValueManager {
 		} else {
 			valueSoldMap = data.getValues();
 			totalValueSold = data.getTotal();
+			amtSoldMap = data.getAmts();
 		}
 
 		baseValueMap = data.getBaseValues();
@@ -72,36 +74,42 @@ public class ValueManagerServer extends ValueManager {
 			valueMap = new HashMap<Item, Double>();
 		}
 		if (valueSoldMap.containsKey(item)) {
+			double newValue;
+			Integer amtSold = amtSoldMap.get(item);
+			int baseValue = baseValueMap.get(item);
+			if(amtSold == null || amtSold < 1){
+				newValue = baseValue;
+			}else{
+				double multiplier = 1 - (double)(amtSold -1)/640;
+				newValue = baseValue * multiplier;
+			}
 			//int rampUp = ConfigurationHandler.rampUpCredits;
 			//double multiplier = ConfigurationHandler.depreciationMultiplier;
 			// multiplier = (totalValueSold / 15000) + 1;
-			double multiplier = 1;
-			int rampUp = 1200;
-			int valueSold = valueSoldMap.get(item);
-			if (baseValueMap.get(item) == null) {
-				toRemove = item;
-				return;
-			}
-			double baseValue = baseValueMap.get(item);
-			double newValue = baseValue;
-			double loss = 0;
-			if(valueSold >= totalValueSold){
-				valueSold = (totalValueSold /2)+1;
-			}
-			if (totalValueSold < rampUp) {
-				newValue = ((rampUp - totalValueSold) / (double) rampUp) * baseValue
-						+ (totalValueSold / (double) rampUp) * ((totalValueSold - valueSold) / (double)(totalValueSold));
-			} else {
-				loss = newValue * ((valueSold) / ((double) totalValueSold)) * multiplier;
-				newValue -= loss;
-			}
+			// double multiplier = 1;
+			// int rampUp = 1200;
+			// int valueSold = valueSoldMap.get(item);
+			// if (baseValueMap.get(item) == null) {
+			// 	toRemove = item;
+			// 	return;
+			// }
+			// double baseValue = baseValueMap.get(item);
+			// double newValue = baseValue;
+			// double loss = 0;
+			// if(valueSold >= totalValueSold){
+			// 	valueSold = (totalValueSold /2)+1;
+			// }
+			// if (totalValueSold < rampUp) {
+			// 	newValue = ((rampUp - totalValueSold) / (double) rampUp) * baseValue
+			// 			+ (totalValueSold / (double) rampUp) * ((totalValueSold - valueSold) / (double)(totalValueSold));
+			// } else {
+			// 	loss = newValue * ((valueSold) / ((double) totalValueSold)) * multiplier;
+			// 	newValue -= loss;
+			// }
 			// LogHelper.info(item.getUnlocalizedName() + " is worth " +
 			// newValue);
 			valueMap.put(item, newValue);
-		} /*else if (baseValueMap.containsKey(item)) {
-			int base = baseValueMap.get(item);
-			valueMap.put(item, (double) base);
-		}*/else{
+		}else{
 			valueMap.remove(item);
 			return;
 		}
@@ -113,7 +121,7 @@ public class ValueManagerServer extends ValueManager {
 	}
 
 
-	public void addValueSold(Item item, int value, World world) {
+	private void addValueSold(Item item, int value, World world) {
 		ValueSavedData data = ValueSavedData.get((ServerWorld) world);
 		if (!valueSoldMap.containsKey(item)) {
 			valueSoldMap.put(item, value);
@@ -124,10 +132,21 @@ public class ValueManagerServer extends ValueManager {
 		calculateValue(item);
 		data.saveValues(valueSoldMap);
 		data.setTotal(totalValueSold);
-
+		data.saveAmts(amtSoldMap);
 	}
 
-	public void addValueSold(Item item, double value, World world) {
+	public void addValueSold(Item item,int amt, double value, World world) {
+		if(!amtSoldMap.containsKey(item)){
+			amtSoldMap.put(item, amt);
+		}else{
+			int oldAmt = amtSoldMap.get(item);
+			oldAmt += amt;
+			if(oldAmt == 0){
+				amtSoldMap.remove(item);
+			}else{
+				amtSoldMap.put(item, amt + amtSoldMap.get(item));
+			}
+		}
 		if (changeMap.containsKey(item)) {
 			value += changeMap.get(item);
 		}

@@ -108,12 +108,13 @@ public class CatalogContainer extends ContainerGTS {
             itemValue *= mult;
         }
         int toBuy = Math.min(amt, (int)(valueStack.getValue()/itemValue));
+        toBuy = Math.min(toBuy, vm.getAmtSold(stack.getItem()));
         if(toBuy <= 0){
             return ItemStack.EMPTY;
         }
         removeValue( itemValue * toBuy);
         ItemStack outStack = new ItemStack(stack.getItem(),toBuy);
-        vm.addValueSold(stack.getItem(), 0-(itemValue*toBuy), world);
+        vm.addValueSold(stack.getItem(),0-toBuy, 0-(itemValue*toBuy), world);
         return outStack;
     }
 
@@ -136,7 +137,7 @@ public class CatalogContainer extends ContainerGTS {
                     GTS.LOGGER.error("Selling a negative number.");
                 }
                 addValue(itemValue * toSell * mult);
-                vm.addValueSold(item, itemValue * toSell * mult, world);
+                vm.addValueSold(item,toSell, itemValue * toSell * mult, world);
                 if(toSell < sellStack.getCount()){
                     sellStack.setCount(sellStack.getCount() - toSell);
                     return sellStack;
