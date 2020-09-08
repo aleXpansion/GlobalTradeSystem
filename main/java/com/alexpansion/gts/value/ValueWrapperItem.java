@@ -43,10 +43,10 @@ public class ValueWrapperItem extends ValueWrapper {
             float multiplier = 1 - (float)(soldAmt -1)/Config.SOLD_ITEMS_MAX.get();
             newValue = baseValue * multiplier;
         }else{
-            float multiplier = 1 + (float)(soldAmt -1)/Config.BOUGHT_ITEMS_DOUBLE.get();
+            float multiplier = 1 + (float)(0- soldAmt)/Config.BOUGHT_ITEMS_DOUBLE.get();
             newValue = baseValue * multiplier;
         }
-        if(soldAmt > Config.SOLD_ITEMS_MAX.get() || soldAmt < Config.BOUGHT_ITEMS_MAX.get()){
+        if(soldAmt > Config.SOLD_ITEMS_MAX.get() || soldAmt < (0-Config.BOUGHT_ITEMS_MAX.get())){
             available = false;
         }
         //int rampUp = ConfigurationHandler.rampUpCredits;

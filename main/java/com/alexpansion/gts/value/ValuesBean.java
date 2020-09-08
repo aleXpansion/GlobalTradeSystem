@@ -19,7 +19,7 @@ public class ValuesBean {
 
 	public ValuesBean(String inString) {
 		wrappersMap = new HashMap<String,List<ValueWrapper>>();
-		String[] splitString = inString.split("-");
+		String[] splitString = inString.split("#");
 		for(String setString : splitString){
 			String[] setStringSplit = setString.split(":");
 			String key = setStringSplit[0];
@@ -45,7 +45,7 @@ public class ValuesBean {
 			}
 			//take off the last character to remove the trailing comma
 			out = out.substring(0,out.length()-1);
-			out += "-";
+			out += "#";
 		}
 		
 		return out.substring(0,out.length()-1);

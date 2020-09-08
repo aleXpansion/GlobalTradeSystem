@@ -108,7 +108,7 @@ public class CatalogContainer extends ContainerGTS {
             itemValue *= mult;
         }
         int toBuy = Math.min(amt, (int)(valueStack.getValue()/itemValue));
-        toBuy = Math.min(toBuy, vm.getAmtSold(stack.getItem()));
+        //toBuy = Math.min(toBuy, vm.getAmtSold(stack.getItem()));
         if(toBuy <= 0){
             return ItemStack.EMPTY;
         }

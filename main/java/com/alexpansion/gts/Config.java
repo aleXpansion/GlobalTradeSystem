@@ -42,8 +42,12 @@ public class Config{
         COMMON_BUILDER.comment("Value Settings").push(CATEGORY_VALUES);
 
         setupDefaultValuesConfig(COMMON_BUILDER);
+        setupValueCalculationConfig(COMMON_BUILDER);
+
+        COMMON_BUILDER.pop();
 
         COMMON_BUILDER.comment("General settings").push(CATEGORY_GENERAL);
+
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.comment("Power settings").push(CATEGORY_POWER);
@@ -90,7 +94,8 @@ public class Config{
     }
 
     private static void setupValueCalculationConfig(ForgeConfigSpec.Builder COMMON_BUILDER){
-        COMMON_BUILDER.comment("Values that affect the calculation of an item's value.");
+        COMMON_BUILDER.comment("Values that affect the calculation of an item's value.")
+                .push(SUBCATEGORY_VALUE_CALCULATION);
 
         SOLD_ITEMS_MAX = COMMON_BUILDER.comment("Maximum amount of a given item that can be sold. "+
                 "Price will gradually decrease until it hits 0 when this many have been sold.")
@@ -101,7 +106,7 @@ public class Config{
                 .defineInRange("bought_items_max", 640, 0, Integer.MAX_VALUE);
 
         BOUGHT_ITEMS_DOUBLE = COMMON_BUILDER.comment("If the amount sold is less than 0, "
-                +"the price will double everytime this value is reached.")
+                +"the price will be double the original price when this value is reached.")
                 .defineInRange("bought_items_double", 64, 1, Integer.MAX_VALUE);
 
         COMMON_BUILDER.pop();
