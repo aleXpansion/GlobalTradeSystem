@@ -2,7 +2,6 @@ package com.alexpansion.gts.value;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import com.alexpansion.gts.Config;
 import com.alexpansion.gts.GTS;
@@ -17,24 +16,30 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class BaseValueManager {
 
-	static HashMap<Item, Integer> baseValueMap = new HashMap<Item, Integer>();
+	static List<ValueWrapper> wrapperList = new ArrayList<ValueWrapper>();
 	static ArrayList<String> itemDefaults = new ArrayList<String>();
 	static ArrayList<String> tagDefaults = new ArrayList<String>();
 
 	private static IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
 
 	public static void addSellableItem(Item item, int value) {
-		if (item != null) {
-			baseValueMap.put(item, value);
-		} else {
-			GTS.LOGGER.error("Null item in BaseValueManager.addSellableItem!");
-		}
+		ValueWrapperItem wrapper = new ValueWrapperItem(item);
+		wrapper.setBaseValue(value);
+		addWrapper(wrapper);
+	}
+
+	public static void addWrapper(ValueWrapper wrapper){
+		wrapperList.add(wrapper);
 	}
 
 	public static void addSellableItem(String name, int value) {
 		ResourceLocation rl = new ResourceLocation(name);
 		Item item = itemReg.getValue(rl);
-		addSellableItem(item, value);
+		if(item == null){
+			GTS.LOGGER.error("Null item for name:"+name);
+		}else{
+			addSellableItem(item, value);
+		}
 	}
 
 
@@ -80,7 +85,7 @@ public class BaseValueManager {
 
 	//reloads all base values from config
 	public static void initItemValues(){
-		baseValueMap.clear(); 
+		wrapperList.clear(); 
 		loadTagDefaults(Config.DEFAULT_TAG_VALUES.get());
 		loadItemDefaults(Config.DEFAULT_ITEM_VALUES.get());
 	}

@@ -4,6 +4,7 @@ import java.util.function.Supplier;
 
 import com.alexpansion.gts.value.ValueManager;
 import com.alexpansion.gts.value.ValueManagerServer;
+import com.alexpansion.gts.value.ValueWrapperItem;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -37,7 +38,12 @@ public class BaseValuePacket {
         get.enqueueWork(() ->{
             ServerWorld world = get.getSender().getServerWorld();
             ValueManagerServer vm = ValueManager.getVM(world);
-            vm.setBaseValue(key, value);
+            ValueWrapperItem wrapper= vm.getWrapper(key);
+            if(wrapper == null){
+                wrapper = new ValueWrapperItem(key);
+                vm.addWrapper(wrapper, "item");
+            }
+            wrapper.setBaseValue(value);
         });
     }
 }

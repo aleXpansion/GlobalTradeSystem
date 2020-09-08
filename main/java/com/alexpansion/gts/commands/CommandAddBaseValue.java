@@ -3,6 +3,7 @@ package com.alexpansion.gts.commands;
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.value.ValueManager;
 import com.alexpansion.gts.value.ValueManagerServer;
+import com.alexpansion.gts.value.ValueWrapperItem;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
@@ -48,7 +49,12 @@ public class CommandAddBaseValue implements Command<CommandSource> {
             vm = (ValueManagerServer)ValueManager.getVM(world);
         }
         GTS.LOGGER.info("add base value "+value+" to "+key.toString());
-        vm.setBaseValue(key, value);
+        ValueWrapperItem wrapper = vm.getWrapper(key);
+        if(wrapper == null){
+            wrapper = new ValueWrapperItem(key);
+            vm.addWrapper(wrapper, "item");
+        }
+        wrapper.setBaseValue(value);
         return 0;
     }
 

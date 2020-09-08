@@ -2,6 +2,9 @@ package com.alexpansion.gts.value;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import com.alexpansion.gts.network.BaseValuePacket;
 import com.alexpansion.gts.network.Networking;
@@ -25,6 +28,14 @@ public class ValueManagerClient extends ValueManager {
 
 	public void setBean(ValuesBean inBean) {
 		bean = inBean;
+		Map<Item,ValueWrapperItem> newMap = new HashMap<Item,ValueWrapperItem>();
+		List<ValueWrapper> wrappers = inBean.getWrappers("item");
+		for(ValueWrapper wrapper : wrappers){
+			if(wrapper instanceof ValueWrapperItem){
+				newMap.put(((ValueWrapperItem) wrapper).getItem(), (ValueWrapperItem)wrapper);
+			}
+		}
+		itemMap = newMap;
 	}
 
 	public ValuesBean getBean() {
@@ -50,7 +61,7 @@ public class ValueManagerClient extends ValueManager {
 		if(getBean() == null){
 			return false;
 		}
-		if(getBean().getBaseMap().containsKey(item)){
+		if(itemMap.containsKey(item)){
 			return true;
 		}else{
 			//If JEI is installed and loaded, use it to calculate the value

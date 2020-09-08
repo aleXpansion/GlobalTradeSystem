@@ -2,6 +2,7 @@ package com.alexpansion.gts.value;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.items.IValueContainer;
@@ -18,6 +19,8 @@ public abstract class ValueManager {
 	protected World world;
 	private static ValueManagerClient clientInstance;
 	private static ValueManagerServer serverInstance;
+	
+	public Map<Item,ValueWrapperItem> itemMap = new HashMap<Item,ValueWrapperItem>();
 
 	public ValueManager(World world) {
 		this.world = world;
@@ -66,14 +69,21 @@ public abstract class ValueManager {
 	
 	public abstract ValuesBean getBean();
 
-	private Double getValue(Item target) {
+	private float getValue(Item target) {
 		if (!canISell(target)) {
-			return (double) 0.0;
+			return 0.0F;
 		} else if (!canIBuy(target)) {
-			return (double) getBaseValue(target);
+			if(getWrapper(target) == null){
+				return 0.0f;
+			}
+			return getWrapper(target).getBaseValue();
 		} else {
-			return getBean().getValueMap().get(target);
+			return getWrapper(target).getValue();
 		}
+	}
+
+	public ValueWrapperItem getWrapper(Item target){
+		return itemMap.get(target);
 	}
 
 	public Double getValue(ItemStack stack){
@@ -101,23 +111,20 @@ public abstract class ValueManager {
 	}
 
 	public int getAmtSold(Item target){
-		if(getBean().getAmtMap().containsKey(target)){
-			return getBean().getAmtMap().get(target);
-		}else{
+		ValueWrapperItem wrapper = getWrapper(target);
+		if(wrapper == null){
 			return 0;
+		}else{
+			return wrapper.getSoldAmt();
 		}
 	}
 
 	public int getBaseValue(Item target) {
-		ValuesBean bean = getBean();
-		if(bean == null){
+		ValueWrapperItem wrapper = getWrapper(target);
+		if(wrapper == null){
 			return 0;
-		}
-		HashMap<Item,Integer> baseMap = bean.getBaseMap();
-		if(baseMap.containsKey(target)){
-			return baseMap.get(target);
 		}else{
-			return 0;
+			return wrapper.getBaseValue();
 		}
 	}
 
@@ -125,19 +132,23 @@ public abstract class ValueManager {
 
 	public boolean canIBuy(Item item) {
 		if (getBean() != null) {
-			return getBean().getValueMap().containsKey(item);
+			return itemMap.containsKey(item);
 		} else {
 			return false;
 		}
 	}
 	
 	public ArrayList<Item> getAllSellableItems(){
-		return new ArrayList<Item>(getBean().getBaseMap().keySet());
+		return new ArrayList<Item>(itemMap.keySet());
 	}
 
 	public ArrayList<Item> getAllBuyableItems(){
-		ArrayList<Item> list = new ArrayList<Item>(getBean().getValueMap().keySet());
-		list.retainAll(getBean().getAmtMap().keySet());
+		ArrayList<Item> list = new ArrayList<Item>();
+		for(ValueWrapperItem wrapper : itemMap.values()){
+			if(wrapper.soldAmt > 0){
+				list.add(wrapper.getItem());
+			}
+		}
 		return list;
 	}
 	
@@ -173,11 +184,11 @@ public abstract class ValueManager {
 	public ArrayList<Item> sortItems(ArrayList<Item> inList){
 		ArrayList<Item> newList = new ArrayList<Item>();
 		while(inList.size()>0){
-			Double top = (double) 0;
+			float top = (float) 0;
 			Item topItem = null;
 			ArrayList<Item> badList = new ArrayList<Item>();
 			for(Item item:inList){
-				Double value = getValue(item);
+				float value = getValue(item);
 				if(value == 0.0){
 					badList.add(item);
 					continue;

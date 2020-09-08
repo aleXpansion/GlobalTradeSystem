@@ -1,136 +1,55 @@
 package com.alexpansion.gts.value;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Set;
-
-import com.alexpansion.gts.GTS;
-
-import net.minecraft.item.Item;
-import net.minecraft.util.ResourceLocation;
-import net.minecraftforge.registries.ForgeRegistries;
-import net.minecraftforge.registries.IForgeRegistry;
+import java.util.List;
+import java.util.Map;
 
 public class ValuesBean {
 
-	private HashMap<Item, Integer> baseMap;
-	private HashMap<Item, Double> valueMap;
-	private HashMap<Item, Integer> amtMap;
-
-	private IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
+	public Map<String,List<ValueWrapper>> wrappersMap;
 
 	public ValuesBean(){
-		baseMap = new HashMap<Item, Integer>();
-		valueMap = new HashMap<Item, Double>();
-		amtMap = new HashMap<Item, Integer>();
+		wrappersMap = new HashMap<String,List<ValueWrapper>>();
 	}
 
-	public ValuesBean(HashMap<Item, Integer> baseMapIn, HashMap<Item, Double> valueMapIn, HashMap<Item, Integer> amtMapIn) {
-		baseMap = baseMapIn;
-		valueMap = valueMapIn;
-		amtMap = amtMapIn;
+	public ValuesBean(Map<String,List<ValueWrapper>> wrappersMap) {
+		this.wrappersMap = wrappersMap;
 	}
 
 	public ValuesBean(String inString) {
-		String[] maps = inString.split(";");
-		// for (int i=0;i<3;i++) {
-		// 	StringBuilder sb = new StringBuilder(maps[i]);
-		// 	sb.deleteCharAt(0);
-		// 	sb.deleteCharAt(sb.indexOf("}"));
-			// maps[i] = sb.toString();
-		// }
-		String[] basePairs = maps[0].split(", ");
-		baseMap = new HashMap<Item, Integer>();
-		valueMap = new HashMap<Item, Double>();
-		amtMap = new HashMap<Item,Integer>();
-		try{
-			for (String pair : basePairs) {
-				String[] kv = pair.split("=");
-				if(kv.length < 2){
-					baseMap = new HashMap<Item, Integer>();
-					return;
-				}
-				ResourceLocation rl = new ResourceLocation(kv[0]);
-				Item key = itemReg.getValue(rl);
-				baseMap.put(key, Integer.valueOf(kv[1]));
+		wrappersMap = new HashMap<String,List<ValueWrapper>>();
+		String[] splitString = inString.split("-");
+		for(String setString : splitString){
+			String[] setStringSplit = setString.split(":");
+			String key = setStringSplit[0];
+			String[] wrappingStrings = setString.substring(setString.indexOf(":")+1).split("@");
+			List<ValueWrapper> newList = new ArrayList<ValueWrapper>();
+			for(String wrapperString : wrappingStrings){
+				newList.add(ValueWrapper.create(wrapperString));
 			}
-			String[] valuePairs = maps[1].split(", ");
-			for (String pair : valuePairs) {
-				String[] kv = pair.split("=");
-				if(kv.length < 2){
-					valueMap = new HashMap<Item, Double>();
-					return;
-				}
-				ResourceLocation rl = new ResourceLocation(kv[0]);
-				Item key = itemReg.getValue(rl);
-				double value = Double.valueOf(kv[1]);
-				valueMap.put(key, value);
-			}
-			String[] amtPairs = maps[2].split(", ");
-			for (String pair : amtPairs) {
-				String[] kv = pair.split("=");
-				if(kv.length < 2){
-					amtMap = new HashMap<Item, Integer>();
-					return;
-				}
-				ResourceLocation rl = new ResourceLocation(kv[0]);
-				Item key = itemReg.getValue(rl);
-				int amt = Integer.parseInt(kv[1]);
-				amtMap.put(key, amt);
-			}
-		}catch(NullPointerException e){
-			GTS.LOGGER.error("NPE in ValuesBean.<init>");
-			//e.printStackTrace();
-		}catch(IndexOutOfBoundsException e){
-			GTS.LOGGER.error("IOOBE in ValuesBean.<init>");
-			e.printStackTrace();
-		}
+			wrappersMap.put(key, newList);
+		}	
 	}
 
-	public HashMap<Item, Integer> getBaseMap() {
-		return baseMap;
-	}
-
-	public HashMap<Item, Double> getValueMap() {
-		return valueMap;
-	}
-
-	public HashMap<Item,Integer> getAmtMap(){
-		return amtMap;
+	public List<ValueWrapper> getWrappers(String key){
+		return wrappersMap.get(key);
 	}
 
 	public String toString() {
-		String out1 = itemMapToStringInt(baseMap);
-		String out2 = ";" +  itemMapToStringDouble(valueMap);
-		String out3 = ';' + itemMapToStringInt(amtMap);
-		return out1 + out2 + out3;
+		String out = "";
+		for(String key : wrappersMap.keySet()){
+			out += key + ":";
+			for(ValueWrapper wrapper : wrappersMap.get(key)){
+				out += wrapper.toString() + "@";
+			}
+			//take off the last character to remove the trailing comma
+			out = out.substring(0,out.length()-1);
+			out += "-";
+		}
+		
+		return out.substring(0,out.length()-1);
 	}
 
-	private String itemMapToStringInt(HashMap<Item,Integer> map){
-		String out = "";
-		Object[] keys = map.keySet().toArray();
-		for(int i = 0;i<keys.length;i++){
-			Item key = (Item)keys[i];
-			out += key.getRegistryName().toString();
-			out += "=" + map.get(key);
-			if(i < keys.length -1){
-				out += ", ";
-			}
-		}
-		return out;
-	}
-
-	private String itemMapToStringDouble(HashMap<Item,Double> map){
-		String out = "";
-		Object[] keys = map.keySet().toArray();
-		for(int i = 0;i<keys.length;i++){
-			Item key = (Item)keys[i];
-			out += key.getRegistryName().toString();
-			out += "=" + map.get(key);
-			if(i < keys.length -1){
-				out += ", ";
-			}
-		}
-		return out;
-	}
 
 }
