@@ -21,7 +21,7 @@ import net.minecraftforge.fml.config.ModConfig;
 @Mod("gts")
 public class GTS {
 
-    public static IProxy PROXY = DistExecutor.safeRunForDist(() -> ClientProxy::new, () -> ServerProxy::new);
+    public static IProxy PROXY = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
 
     public static ModSetup SETUP = new ModSetup();
 
