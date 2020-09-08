@@ -145,7 +145,7 @@ public abstract class ValueManager {
 	public ArrayList<Item> getAllBuyableItems(){
 		ArrayList<Item> list = new ArrayList<Item>();
 		for(ValueWrapperItem wrapper : itemMap.values()){
-			if(wrapper.soldAmt > 0){
+			if(wrapper.available){
 				list.add(wrapper.getItem());
 			}
 		}

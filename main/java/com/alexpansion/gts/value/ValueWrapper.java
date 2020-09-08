@@ -10,6 +10,7 @@ public abstract class ValueWrapper {
     protected float value;
     protected float soldValue;
     protected int soldAmt;
+    protected boolean available = false;
 
     public static ValueWrapper create(String inString) {
         String[] splitString = inString.split(";");
@@ -32,12 +33,15 @@ public abstract class ValueWrapper {
         }
         newWrapper.soldValue = Float.parseFloat(values[1]);
         newWrapper.soldAmt = Integer.parseInt(values[2]);
+        if(values.length > 3){    
+            newWrapper.available = Boolean.parseBoolean(values[3]);
+        }
         newWrapper.setBaseValue(Integer.parseInt(values[0]));
         return newWrapper;
     }
 
     public String toString(){
-        return baseValue+","+soldValue+","+soldAmt+";";
+        return baseValue+","+soldValue+","+soldAmt+","+available+";";
     }
 
     public void setValue(int value){
@@ -68,6 +72,7 @@ public abstract class ValueWrapper {
     public void addSold(float soldValueIn,int soldAmtIn){
         this.soldValue += soldValueIn;
         this.soldAmt += soldAmtIn;
+        available = true;
     }
 
     public abstract float calculateValue(int totalValueSold);

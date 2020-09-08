@@ -17,6 +17,7 @@ public class Config{
     public static final String SUBCATEGORY_POWER_PLANT = "power_plant";
     public static final String CATEGORY_VALUES = "values";
     public static final String SUBCATEGORY_DEFAULT_VALUES = "default_values";
+    public static final String SUBCATEGORY_VALUE_CALCULATION = "value_calculation";
 
     public static ForgeConfigSpec COMMON_CONFIG;
     public static ForgeConfigSpec CLIENT_CONFIG;
@@ -27,6 +28,10 @@ public class Config{
     public static ForgeConfigSpec.IntValue POWER_PLANT_GENERATE;
     public static ForgeConfigSpec.IntValue POWER_PLANT_SEND;
     public static ForgeConfigSpec.IntValue POWER_PLANT_TICKS;
+
+    public static ForgeConfigSpec.IntValue SOLD_ITEMS_MAX;
+    public static ForgeConfigSpec.IntValue BOUGHT_ITEMS_DOUBLE;
+    public static ForgeConfigSpec.IntValue BOUGHT_ITEMS_MAX;
 
 
     static {
@@ -82,6 +87,24 @@ public class Config{
                 
         COMMON_BUILDER.pop();
 
+    }
+
+    private static void setupValueCalculationConfig(ForgeConfigSpec.Builder COMMON_BUILDER){
+        COMMON_BUILDER.comment("Values that affect the calculation of an item's value.");
+
+        SOLD_ITEMS_MAX = COMMON_BUILDER.comment("Maximum amount of a given item that can be sold. "+
+                "Price will gradually decrease until it hits 0 when this many have been sold.")
+                .defineInRange("sold_items_max", 640, 0, Integer.MAX_VALUE);
+
+        BOUGHT_ITEMS_MAX = COMMON_BUILDER.comment("Maximum number of a given item that can be bought."
+                +" The item will not be available once the amount sold is less that 0 - <this>")
+                .defineInRange("bought_items_max", 640, 0, Integer.MAX_VALUE);
+
+        BOUGHT_ITEMS_DOUBLE = COMMON_BUILDER.comment("If the amount sold is less than 0, "
+                +"the price will double everytime this value is reached.")
+                .defineInRange("bought_items_double", 64, 1, Integer.MAX_VALUE);
+
+        COMMON_BUILDER.pop();
     }
 
     @SubscribeEvent

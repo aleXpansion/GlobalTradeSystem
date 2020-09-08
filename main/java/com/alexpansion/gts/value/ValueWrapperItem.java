@@ -1,5 +1,7 @@
 package com.alexpansion.gts.value;
 
+import com.alexpansion.gts.Config;
+
 import net.minecraft.item.Item;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
@@ -35,11 +37,17 @@ public class ValueWrapperItem extends ValueWrapper {
 			totalValueSold = 1;
 		}
         float newValue;
-        if(soldAmt < 1){
+        if(soldAmt == 0){
             newValue = baseValue;
-        }else{
-            float multiplier = 1 - (float)(soldAmt -1)/640;
+        }else if(soldAmt > 0){
+            float multiplier = 1 - (float)(soldAmt -1)/Config.SOLD_ITEMS_MAX.get();
             newValue = baseValue * multiplier;
+        }else{
+            float multiplier = 1 + (float)(soldAmt -1)/Config.BOUGHT_ITEMS_DOUBLE.get();
+            newValue = baseValue * multiplier;
+        }
+        if(soldAmt > Config.SOLD_ITEMS_MAX.get() || soldAmt < Config.BOUGHT_ITEMS_MAX.get()){
+            available = false;
         }
         //int rampUp = ConfigurationHandler.rampUpCredits;
         //double multiplier = ConfigurationHandler.depreciationMultiplier;
