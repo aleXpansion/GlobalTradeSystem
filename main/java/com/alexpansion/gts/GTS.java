@@ -21,6 +21,8 @@ import net.minecraftforge.fml.config.ModConfig;
 @Mod("gts")
 public class GTS {
 
+    //I know this is deprecated, but when I update it to the new method it breaks, claiming I'm loading client classes on the server.
+    @SuppressWarnings("deprecation")
     public static IProxy PROXY = DistExecutor.runForDist(() -> () -> new ClientProxy(), () -> () -> new ServerProxy());
 
     public static ModSetup SETUP = new ModSetup();
