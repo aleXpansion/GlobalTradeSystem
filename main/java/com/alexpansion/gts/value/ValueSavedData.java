@@ -33,10 +33,9 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 	@Override
 	public void read(CompoundNBT nbt) {
 		List<ValueWrapper> newWrapperList = new ArrayList<ValueWrapper>();
-
 		total = nbt.getInt("total");
 		String wrappersString = nbt.getString("wrappers");
-		String[] splitString = wrappersString.split(",");
+		String[] splitString = wrappersString.split("@");
 		for(String wrapperString : splitString){
 			ValueWrapper wrapper = ValueWrapper.create(wrapperString);
 			newWrapperList.add(wrapper);
@@ -47,9 +46,9 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 
 	@Override
 	public CompoundNBT write(CompoundNBT nbt) {
-		String wrapperString = wrapperList.toString();
+		String wrapperString = "";
 		for(ValueWrapper wrapper : wrapperList){
-			wrapperString += wrapper.toString() + ",";
+			wrapperString += wrapper.toString() + "@";
 		}
 		wrapperString = wrapperString.substring(0, wrapperString.length()-1);
 		nbt.putString("wrappers", wrapperString);
