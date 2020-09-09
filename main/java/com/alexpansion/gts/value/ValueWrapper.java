@@ -20,8 +20,8 @@ public abstract class ValueWrapper {
         if(splitString.length > 1){
             type = splitString[1];
         }else{
-            GTS.LOGGER.error("stuff");
-            type = "";
+            GTS.LOGGER.error("attempted to create ValueWrapper with string "+inString);
+            return null;
         }
         splitString = Arrays.copyOfRange(splitString, 2, splitString.length);
         ValueWrapper newWrapper;
