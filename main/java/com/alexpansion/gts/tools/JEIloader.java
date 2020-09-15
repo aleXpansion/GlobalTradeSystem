@@ -75,7 +75,7 @@ public class JEIloader implements IModPlugin {
             return;
         }
         itemList = new HashMap<Item,ArrayList<RecipeWrapper>>();
-        List<IRecipeCategory> categories = manager.getRecipeCategories();
+        List<IRecipeCategory<?>> categories = manager.getRecipeCategories();
         for (IRecipeCategory category : categories) {
             List recipes = manager.getRecipes(category);
             for (Object recipe : recipes) {
