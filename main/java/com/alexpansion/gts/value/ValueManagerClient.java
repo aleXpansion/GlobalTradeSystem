@@ -14,6 +14,7 @@ import com.alexpansion.gts.setup.RegistryHandler;
 
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.ModList;
 
 public class ValueManagerClient extends ValueManager {
 	private ValuesBean bean;
@@ -83,7 +84,7 @@ public class ValueManagerClient extends ValueManager {
 			sendBaseValue(item, 1);
 			return 1;
 		}
-		if(JEIloader.isLoaded() ){
+		if(ModList.get().isLoaded("jei") && JEIloader.isLoaded() ){
 			int value = JEIloader.getCrafingValue(this,item);
 			if(value <= 0){
 				nonBuyable.add(item);

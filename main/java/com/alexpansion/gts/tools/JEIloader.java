@@ -78,6 +78,14 @@ public class JEIloader implements IModPlugin {
         List<IRecipeCategory<?>> categories = manager.getRecipeCategories();
         for (IRecipeCategory category : categories) {
             List recipes = manager.getRecipes(category);
+            String out = "loading "+ category.getTitle();
+            if(recipes.get(0) instanceof IRecipe){
+                out += " Success!";
+            }else{
+                out += " fail";
+                out += " " + recipes.get(0).toString();
+            }
+            GTS.LOGGER.info(out);
             for (Object recipe : recipes) {
                 if (recipe instanceof IRecipe) {
                     IRecipe irecipe = (IRecipe)recipe;
