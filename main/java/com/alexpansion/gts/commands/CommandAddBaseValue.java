@@ -1,5 +1,8 @@
 package com.alexpansion.gts.commands;
 
+import java.util.List;
+
+import com.alexpansion.gts.Config;
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.value.ValueManager;
 import com.alexpansion.gts.value.ValueManagerServer;
@@ -50,11 +53,21 @@ public class CommandAddBaseValue implements Command<CommandSource> {
         }
         GTS.LOGGER.info("add base value "+value+" to "+key.toString());
         ValueWrapperItem wrapper = vm.getWrapper(key);
+        List<String> baseList = Config.DEFAULT_ITEM_VALUES.get();
         if(wrapper == null){
             wrapper = new ValueWrapperItem(key);
             vm.addWrapper(wrapper, "item");
+        }else{
+            for(String entry : baseList){
+                if(entry.contains(key.getRegistryName().toString())){
+                    baseList.remove(entry);
+                }
+            }
         }
+        baseList.add(key.getRegistryName().toString()+","+value);
+        Config.DEFAULT_ITEM_VALUES.set(baseList);
         wrapper.setBaseValue(value);
+
         return 0;
     }
 
