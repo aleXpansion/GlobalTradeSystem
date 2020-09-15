@@ -6,6 +6,10 @@ import java.util.List;
 
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.ValueManagerClient;
+import com.alexpansion.gts.value.ValueWrapper;
+import com.alexpansion.gts.value.ValueWrapperItem;
+
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.IRecipeManager;
@@ -17,13 +21,14 @@ import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
+import net.minecraftforge.fml.ModList;
 
 @JeiPlugin
 public class JEIloader implements IModPlugin {
 
     private static IRecipeManager manager;
     private static boolean loaded = false;
-    private static HashMap<Item,ArrayList<RecipeWrapper>> itemList;
+    private static HashMap<ValueWrapper,ArrayList<RecipeWrapper>> wrapperList;
 
     public JEIloader() {
     }
@@ -38,25 +43,26 @@ public class JEIloader implements IModPlugin {
         GTS.LOGGER.info("Loading JEI runtime.");
         IJeiRuntime runtime = jeiRuntime;
         manager = runtime.getRecipeManager();
+        mek = ModList.get().isLoaded("mekanism");
         loadRecipes();
         loaded = true;
     }
 
-    private static ArrayList<Item> checking = new ArrayList<Item>();
+    private static ArrayList<ValueWrapper> checking = new ArrayList<ValueWrapper>();
 
-    public static int getCrafingValue(ValueManager vm, Item item) {
-        if(!itemList.containsKey(item)){
+    public static int getCrafingValue(ValueManager vm, ValueWrapper wrapper) {
+        if(!wrapperList.containsKey(wrapper)){
             return 0;
         }
         int value;
         //Checking for loops. If it's in here, that means this is a circular dependancy, just return 0 for this one.
-        if(checking.contains(item)){
+        if(checking.contains(wrapper)){
             return 0;
         }
-        checking.add(item);
+        checking.add(wrapper);
 
 
-        ArrayList<RecipeWrapper> inputs = itemList.get(item);
+        ArrayList<RecipeWrapper> inputs = wrapperList.get(wrapper);
         value = 0;
         for(RecipeWrapper input : inputs){
             int inputValue = input.getValue(vm);
@@ -64,7 +70,7 @@ public class JEIloader implements IModPlugin {
                 value = inputValue;
             }
         }
-        checking.remove(item);
+        checking.remove(wrapper);
         
         return value;
     }
@@ -74,7 +80,8 @@ public class JEIloader implements IModPlugin {
         if(manager == null){
             return;
         }
-        itemList = new HashMap<Item,ArrayList<RecipeWrapper>>();
+        ValueManagerClient vm = ValueManager.getClientVM();
+        wrapperList = new HashMap<ValueWrapper,ArrayList<RecipeWrapper>>();
         List<IRecipeCategory<?>> categories = manager.getRecipeCategories();
         for (IRecipeCategory category : categories) {
             List recipes = manager.getRecipes(category);
@@ -100,13 +107,14 @@ public class JEIloader implements IModPlugin {
                         }
                         input.add(ingredientList);
                     }
-                    RecipeWrapper wrapper = new RecipeWrapper(output.getItem(),output.getCount(), input);
-                    if(itemList.containsKey(output.getItem())){
-                        itemList.get(output.getItem()).add(wrapper);
+                    RecipeWrapper recipeWrapper = new RecipeWrapper(output.getItem(),output.getCount(), input);
+                    ValueWrapperItem  outWrapper = vm.getWrapper(output.getItem());
+                    if(wrapperList.containsKey(outWrapper)){
+                        wrapperList.get(outWrapper).add(recipeWrapper);
                     }else{
                         ArrayList<RecipeWrapper> list = new ArrayList<RecipeWrapper>();
-                        list.add(wrapper);
-                        itemList.put(output.getItem(), list);
+                        list.add(recipeWrapper);
+                        wrapperList.put(outWrapper, list);
                     }
                 }
             }

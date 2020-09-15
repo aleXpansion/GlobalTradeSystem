@@ -86,6 +86,16 @@ public abstract class ValueManager {
 		return itemMap.get(target);
 	}
 
+	public ValueWrapper getWrapper(String target){
+		ValueWrapper test = ValueWrapper.create(target);
+		if(test instanceof ValueWrapperItem){
+			return getWrapper(((ValueWrapperItem)test).getItem());
+		}else{
+			GTS.LOGGER.error("Unrecognized target "+target+" in ValueManager#getWrapper.");
+			return null;
+		}
+	}
+
 	public Double getValue(ItemStack stack){
 		if(stack.isEmpty()) return 0.0;
 		double value = getValue(stack.getItem());

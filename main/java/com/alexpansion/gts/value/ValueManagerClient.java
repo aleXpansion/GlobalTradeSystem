@@ -10,8 +10,6 @@ import com.alexpansion.gts.network.BaseValuePacket;
 import com.alexpansion.gts.network.Networking;
 import com.alexpansion.gts.network.ValuesRequestPacket;
 import com.alexpansion.gts.tools.JEIloader;
-import com.alexpansion.gts.setup.RegistryHandler;
-
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.ModList;
@@ -20,7 +18,7 @@ public class ValueManagerClient extends ValueManager {
 	private ValuesBean bean;
 
 	private Calendar lastUpdate = Calendar.getInstance();
-	private ArrayList<Item> nonBuyable = new ArrayList<Item>();
+	private ArrayList<ValueWrapper> nonBuyable = new ArrayList<ValueWrapper>();
 
 	public ValueManagerClient(World world) {
 		super(world);
@@ -79,26 +77,26 @@ public class ValueManagerClient extends ValueManager {
 		return value;
 	}
 
-	private int getCrafingValue(Item item){
-		if(item == RegistryHandler.CREDIT.get()){
-			sendBaseValue(item, 1);
-			return 1;
-		}
+	private int getCrafingValue(Item target){
+		return getCrafingValue(getWrapper(target));
+	}
+
+	private int getCrafingValue(ValueWrapper wrapper){
 		if(ModList.get().isLoaded("jei") && JEIloader.isLoaded() ){
-			int value = JEIloader.getCrafingValue(this,item);
+			int value = JEIloader.getCrafingValue(this,wrapper);
 			if(value <= 0){
-				nonBuyable.add(item);
+				nonBuyable.add(wrapper);
 				return 0;
 			}else{
-				sendBaseValue(item, value);
+				sendBaseValue(wrapper, value);
 				return value;
 			}
 		}
 		return 0;
 	}
 
-	private void sendBaseValue(Item item,int value){
-		Networking.INSTANCE.sendToServer(new BaseValuePacket(item, value));
+	private void sendBaseValue(ValueWrapper wrapper,int value){
+		Networking.INSTANCE.sendToServer(new BaseValuePacket(wrapper, value));
 	}
 
 }
