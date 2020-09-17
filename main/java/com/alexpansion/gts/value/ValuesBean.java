@@ -38,7 +38,7 @@ public class ValuesBean {
 	public static ValuesBean create(PacketBuffer buf){
 		String string = "";
 		String inString = buf.readString();
-		while(inString.length() == 29000||inString.length() == 2900){
+		while(inString.length() == 29000){
 			string += inString;
 			inString = buf.readString();
 		}
