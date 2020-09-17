@@ -87,7 +87,7 @@ public abstract class ValueManager {
 	}
 
 	public ValueWrapper getWrapper(String target){
-		ValueWrapper test = ValueWrapper.create(target);
+		ValueWrapper test = ValueWrapper.get(target);
 		if(test instanceof ValueWrapperItem){
 			return getWrapper(((ValueWrapperItem)test).getItem());
 		}else{

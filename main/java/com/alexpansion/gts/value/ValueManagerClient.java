@@ -78,12 +78,18 @@ public class ValueManagerClient extends ValueManager {
 	}
 
 	private int getCrafingValue(Item target){
-		return getCrafingValue(getWrapper(target));
+		ValueWrapperItem wrapper;
+		if(itemMap.containsKey(target)){
+			wrapper = itemMap.get(target);
+		}else{
+			wrapper = ValueWrapperItem.get(target);
+		}
+		return getCrafingValue(wrapper);
 	}
 
 	private int getCrafingValue(ValueWrapper wrapper){
 		if(ModList.get().isLoaded("jei") && JEIloader.isLoaded() ){
-			int value = JEIloader.getCrafingValue(this,wrapper);
+			int value = JEIloader.getCrafingValue(wrapper);
 			if(value <= 0){
 				nonBuyable.add(wrapper);
 				return 0;

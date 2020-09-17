@@ -29,7 +29,7 @@ public class ValuesBean {
 			String[] wrappingStrings = setString.substring(setString.indexOf(":")+1).split("@");
 			List<ValueWrapper> newList = new ArrayList<ValueWrapper>();
 			for(String wrapperString : wrappingStrings){
-				newList.add(ValueWrapper.create(wrapperString));
+				newList.add(ValueWrapper.get(wrapperString));
 			}
 			wrappersMap.put(key, newList);
 		}	
@@ -38,7 +38,7 @@ public class ValuesBean {
 	public static ValuesBean create(PacketBuffer buf){
 		String string = "";
 		String inString = buf.readString();
-		while(inString.length() == 2900){
+		while(inString.length() == 29000||inString.length() == 2900){
 			string += inString;
 			inString = buf.readString();
 		}
@@ -68,9 +68,9 @@ public class ValuesBean {
 	public PacketBuffer toBytes(PacketBuffer buf){
 		String string = toString();
 		byte[] abyte = string.getBytes(StandardCharsets.UTF_8);
-		while(abyte.length > 3000){
-			buf.writeString(string.substring(0,2900));
-			string = string.substring(2900);
+		while(abyte.length > 30000){
+			buf.writeString(string.substring(0,29000));
+			string = string.substring(29000);
 			abyte = string.getBytes(StandardCharsets.UTF_8);
 		}
 		buf.writeString(string);

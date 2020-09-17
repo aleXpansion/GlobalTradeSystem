@@ -3,6 +3,7 @@ package com.alexpansion.gts.value;
 import java.util.Arrays;
 
 import com.alexpansion.gts.GTS;
+import com.alexpansion.gts.tools.JEIloader;
 
 public abstract class ValueWrapper {
 
@@ -11,8 +12,9 @@ public abstract class ValueWrapper {
     protected float soldValue;
     protected int soldAmt;
     protected boolean available = false;
+    protected boolean calculated = false;
 
-    public static ValueWrapper create(String inString) {
+    public static ValueWrapper get(String inString) {
         String[] splitString = inString.split(";");
         String valueString = splitString[0];
         String[] values = valueString.split(",");
@@ -26,7 +28,7 @@ public abstract class ValueWrapper {
         splitString = Arrays.copyOfRange(splitString, 2, splitString.length);
         ValueWrapper newWrapper;
         if(type.equals("Item")){
-            newWrapper =  ValueWrapperItem.create(String.join(";", splitString));
+            newWrapper =  ValueWrapperItem.get(String.join(";", splitString));
         }else{
             GTS.LOGGER.error("Invalid type "+type+ " in ValueWrapper#create.");
             return null;
@@ -50,10 +52,15 @@ public abstract class ValueWrapper {
 
     public void setBaseValue(int baseValue){
         this.baseValue = baseValue;
+        calculated = true;
         calculateValue((int)soldValue);
     }
 
     public int getBaseValue(){
+        if(baseValue == 0 && !calculated){
+            baseValue = JEIloader.getCrafingValue(this);
+            calculated = true;
+        }
         return baseValue;
     }
 

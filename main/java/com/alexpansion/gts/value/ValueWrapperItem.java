@@ -1,5 +1,8 @@
 package com.alexpansion.gts.value;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.alexpansion.gts.Config;
 
 import net.minecraft.item.Item;
@@ -9,17 +12,28 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class ValueWrapperItem extends ValueWrapper {
 
+    private static Map<Item,ValueWrapperItem> itemMap = new HashMap<Item,ValueWrapperItem>();
+
     private Item item;
 
-    public ValueWrapperItem(Item itemIn){
-        this.item = itemIn;
+    public static ValueWrapperItem get(Item itemIn){
+        if(itemMap.containsKey(itemIn)){
+            return itemMap.get(itemIn);
+        }else{
+            return new ValueWrapperItem(itemIn);
+        }
     }
 
-    //creates a new wrapper for this item
-    public static ValueWrapperItem create(String name){
+    private ValueWrapperItem(Item itemIn){
+        this.item = itemIn;
+        itemMap.put(itemIn, this);
+    }
+
+    //gets or creates the wrapper for this item
+    public static ValueWrapperItem get(String name){
         IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
         Item item = itemReg.getValue(new ResourceLocation(name));
-        return new ValueWrapperItem(item);
+        return get(item);
     }
 
     public Item getItem(){

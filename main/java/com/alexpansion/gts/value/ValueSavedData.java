@@ -37,7 +37,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 		String wrappersString = nbt.getString("wrappers");
 		String[] splitString = wrappersString.split("@");
 		for(String wrapperString : splitString){
-			ValueWrapper wrapper = ValueWrapper.create(wrapperString);
+			ValueWrapper wrapper = ValueWrapper.get(wrapperString);
 			newWrapperList.add(wrapper);
 		}
 		wrapperList = newWrapperList;
