@@ -127,10 +127,20 @@ public class CatalogContainer extends ContainerGTS {
         double mult = 0.8;
         Item item = sellStack.getItem();
         double itemValue = vm.getValue(sellStack);
+        int space = ((IValueContainer)stack.getItem()).getLimit() - valueStack.getValue();
+        if(item instanceof IValueContainer){
+            IValueContainer container = (IValueContainer)item;
+            int value = container.getValue(sellStack);
+            int toRemove = value;
+            if(value > space){
+                toRemove = space;
+            }
+            addValue(toRemove);
+            return container.setValue(sellStack, value-toRemove);
+        }
         if(!vm.canISell(item)){
             return sellStack;
         }else{
-            int space = ((IValueContainer)stack.getItem()).getLimit() - valueStack.getValue();
             if(itemValue <= space){
                 int toSell = Math.min(max, (int)(space/itemValue));
                 if(toSell < 0){
