@@ -21,7 +21,7 @@ public class BaseValuePacket {
     }
 
     public BaseValuePacket(PacketBuffer buf){
-        key = buf.readString();
+        key = buf.readString(30000);
         value = buf.readInt();
     }
 
@@ -37,7 +37,7 @@ public class BaseValuePacket {
             ValueManagerServer vm = ValueManager.getVM(world);
             ValueWrapper wrapper= vm.getWrapper(key);
             if(wrapper == null){
-                wrapper = ValueWrapper.create(key);
+                wrapper = ValueWrapper.get(key);
                 vm.addWrapper(wrapper, "item");
             }
             wrapper.setBaseValue(value);
