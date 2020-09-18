@@ -1,6 +1,7 @@
 package com.alexpansion.gts.blocks.PowerPlant;
 
 import com.alexpansion.gts.blocks.ContainerGTS;
+import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.tools.CustomEnergyStorage;
 import com.alexpansion.gts.setup.RegistryHandler;
 
@@ -58,7 +59,7 @@ public class PowerPlantContainer extends ContainerGTS {
                 }
                 slot.onSlotChange(stack, itemstack);
             } else {
-                if (stack.getItem() == RegistryHandler.CREDIT.get()) {
+                if (stack.getItem() instanceof IValueContainer) {
                     if (!this.mergeItemStack(stack, 0, 1, false)) {
                         return ItemStack.EMPTY;
                     }

@@ -28,8 +28,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.Nullable;
 
 import com.alexpansion.gts.Config;
+import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.tools.CustomEnergyStorage;
-import com.alexpansion.gts.setup.RegistryHandler;
 
 public class PowerPlantTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
@@ -52,10 +52,16 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
         } else{
             handler.ifPresent(h -> {
                 ItemStack stack = h.getStackInSlot(0);
+                //If the stack in the credit slot doesn't hold credits, do nothing.
+                if(!(stack.getItem() instanceof IValueContainer)){
+                    return;
+                }
+                IValueContainer container = (IValueContainer)stack.getItem();
+                int credits = container.getValue(stack);
                 int stored = energy.map(e -> ((CustomEnergyStorage)e).getEnergyStored()).orElse(0);
                 int max = energy.map(e -> ((CustomEnergyStorage)e).getMaxEnergyStored()).orElse(0);
-                if(stack.getItem() == RegistryHandler.CREDIT.get() && stored < max){
-                    h.extractItem(0, 1, false);
+                if(credits > 0 && stored < max){
+                    container.setValue(stack, credits-1);
                     counter = Config.POWER_PLANT_TICKS.get();
                 }else{
                 }
@@ -125,7 +131,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
 
             @Override
             public boolean isItemValid(int slot, ItemStack stack) {
-                return stack.getItem() == RegistryHandler.CREDIT.get();
+                return stack.getItem() instanceof IValueContainer;
             }
         };
 
