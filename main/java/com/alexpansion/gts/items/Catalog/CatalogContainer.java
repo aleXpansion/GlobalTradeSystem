@@ -34,7 +34,8 @@ public class CatalogContainer extends ContainerGTS {
     private ValueManager vm;
     private ItemStack stack;
     private World world;
-
+    private boolean handFull = false;
+    private PlayerEntity player;
     
     public CatalogContainer(int windowId, PlayerEntity clientPlayer, PacketBuffer data) {
         this(windowId,clientPlayer,clientPlayer.getHeldItemMainhand());
@@ -68,6 +69,7 @@ public class CatalogContainer extends ContainerGTS {
 
     public CatalogContainer(int windowId,PlayerEntity player, ItemStack stack) {
         super(RegistryHandler.CATALOG_CONTAINER.get(), windowId, player.world, null, player.inventory);
+        this.player = player;
         world = player.world;
         player.openContainer = this;
         this.stack = stack;
@@ -92,6 +94,7 @@ public class CatalogContainer extends ContainerGTS {
         }
         layoutPlayerInventorySlots(8, 140);
         refresh();
+        //detectAndSendChanges();
     }
 
     @Deprecated
@@ -165,7 +168,13 @@ public class CatalogContainer extends ContainerGTS {
         return true;
     }
 
-    private void refresh(){
+    public void refresh(){
+        //checking if they player is holding anything, cancel if they are. 
+        //This way the items don't move around while you're trying to buy them.
+        handFull = player.inventory.getItemStack().getItem() != ItemStack.EMPTY.getItem();
+        if(handFull){
+            return;
+        }
         this.itemList.clear();
         ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
         ItemStack filterStack = getSlot(1).getStack();
@@ -256,7 +265,7 @@ public class CatalogContainer extends ContainerGTS {
                 sellItem(mouseStack);
                 player.inventory.setItemStack(ItemStack.EMPTY);
             }
-            scrollTo(0.0f);
+            refresh();
             return ItemStack.EMPTY;
         //The rest of the slots. Buy the selected item, or sell anything else.
         }else if(slotId >=0 && slotId < 38){
@@ -264,7 +273,7 @@ public class CatalogContainer extends ContainerGTS {
                 //This is the middle click, set the target to the selected item.
                 if(clickTypeIn.equals(ClickType.CLONE) && !stack.isEmpty()){
                     getSlot(1).putStack(new ItemStack(stack.getItem(),1));
-                    scrollTo(0.0F);
+                    refresh();;
                     return mouseStack;
                 }
                 int amt = shift ? stack.getMaxStackSize():1;

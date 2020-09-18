@@ -2,6 +2,7 @@ package com.alexpansion.gts.network;
 
 import java.util.function.Supplier;
 
+import com.alexpansion.gts.items.Catalog.CatalogContainer;
 import com.alexpansion.gts.value.ValueManager;
 import com.alexpansion.gts.value.ValuesBean;
 
@@ -24,6 +25,10 @@ public class ValuesRequestPacket{
 			ValueManager vm = ValueManager.getVM(ctx.get().getSender().world);
 			ValuesBean bean = vm.getBean();
 			Networking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> ctx.get().getSender()), new ValuesPacket(bean));
+			if(ctx.get().getSender().openContainer instanceof CatalogContainer){
+				CatalogContainer cont = (CatalogContainer)ctx.get().getSender().openContainer;
+				cont.refresh();
+			}
         });
         ctx.get().setPacketHandled(true);
     }
