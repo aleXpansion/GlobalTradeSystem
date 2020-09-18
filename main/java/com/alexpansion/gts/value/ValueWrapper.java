@@ -10,11 +10,11 @@ public abstract class ValueWrapper {
     protected int baseValue;
     protected float value;
     protected float soldValue;
-    protected int soldAmt;
+    private int soldAmt;
     protected boolean available = false;
     protected boolean calculated = false;
 
-    public static ValueWrapper get(String inString) {
+    public static ValueWrapper get(String inString,boolean isRemote) {
         String[] splitString = inString.split(";");
         String valueString = splitString[0];
         String[] values = valueString.split(",");
@@ -28,7 +28,7 @@ public abstract class ValueWrapper {
         splitString = Arrays.copyOfRange(splitString, 2, splitString.length);
         ValueWrapper newWrapper;
         if(type.equals("Item")){
-            newWrapper =  ValueWrapperItem.get(String.join(";", splitString));
+            newWrapper =  ValueWrapperItem.get(String.join(";", splitString),isRemote);
         }else{
             GTS.LOGGER.error("Invalid type "+type+ " in ValueWrapper#create.");
             return null;

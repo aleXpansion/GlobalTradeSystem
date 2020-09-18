@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alexpansion.gts.GTS;
+
 import net.minecraft.network.PacketBuffer;
 
 public class ValuesBean {
@@ -20,7 +22,7 @@ public class ValuesBean {
 		this.wrappersMap = wrappersMap;
 	}
 
-	public ValuesBean(String inString) {
+	public ValuesBean(String inString,boolean isRemote) {
 		wrappersMap = new HashMap<String,List<ValueWrapper>>();
 		String[] splitString = inString.split("#");
 		for(String setString : splitString){
@@ -29,13 +31,13 @@ public class ValuesBean {
 			String[] wrappingStrings = setString.substring(setString.indexOf(":")+1).split("@");
 			List<ValueWrapper> newList = new ArrayList<ValueWrapper>();
 			for(String wrapperString : wrappingStrings){
-				newList.add(ValueWrapper.get(wrapperString));
+				newList.add(ValueWrapper.get(wrapperString,isRemote));
 			}
 			wrappersMap.put(key, newList);
 		}	
 	}
 
-	public static ValuesBean create(PacketBuffer buf){
+	public static ValuesBean create(PacketBuffer buf,boolean isRemote){
 		String string = "";
 		String inString = buf.readString();
 		while(inString.length() == 29000){
@@ -43,7 +45,7 @@ public class ValuesBean {
 			inString = buf.readString();
 		}
 		string += inString;
-		return new ValuesBean(string);
+		return new ValuesBean(string,isRemote);
 	}
 
 	public List<ValueWrapper> getWrappers(String key){
@@ -55,7 +57,11 @@ public class ValuesBean {
 		for(String key : wrappersMap.keySet()){
 			out += key + ":";
 			for(ValueWrapper wrapper : wrappersMap.get(key)){
-				out += wrapper.toString() + "@";
+				if(wrapper == null){
+					GTS.LOGGER.error("Oh no! ValuesBean");
+				}else{
+					out += wrapper.toString() + "@";
+				}
 			}
 			//take off the last character to remove the trailing @
 			out = out.substring(0,out.length()-1);

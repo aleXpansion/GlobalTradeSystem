@@ -12,28 +12,31 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class ValueWrapperItem extends ValueWrapper {
 
-    private static Map<Item,ValueWrapperItem> itemMap = new HashMap<Item,ValueWrapperItem>();
+    private static Map<Item,ValueWrapperItem> itemMapServer = new HashMap<Item,ValueWrapperItem>();
+    private static Map<Item,ValueWrapperItem> itemMapRemote = new HashMap<Item,ValueWrapperItem>();
 
     private Item item;
 
-    public static ValueWrapperItem get(Item itemIn){
+    public static ValueWrapperItem get(Item itemIn,boolean isRemote){
+        Map<Item,ValueWrapperItem> itemMap = isRemote ? itemMapRemote : itemMapServer;
         if(itemMap.containsKey(itemIn)){
             return itemMap.get(itemIn);
         }else{
-            return new ValueWrapperItem(itemIn);
+            return new ValueWrapperItem(itemIn,isRemote);
         }
     }
 
-    private ValueWrapperItem(Item itemIn){
+    private ValueWrapperItem(Item itemIn, boolean isRemote){
+        Map<Item,ValueWrapperItem> itemMap = isRemote ? itemMapRemote : itemMapServer;
         this.item = itemIn;
         itemMap.put(itemIn, this);
     }
 
     //gets or creates the wrapper for this item
-    public static ValueWrapperItem get(String name){
+    public static ValueWrapperItem get(String name,boolean isRemote){
         IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
         Item item = itemReg.getValue(new ResourceLocation(name));
-        return get(item);
+        return get(item,isRemote);
     }
 
     public Item getItem(){
@@ -51,16 +54,16 @@ public class ValueWrapperItem extends ValueWrapper {
 			totalValueSold = 1;
 		}
         float newValue;
-        if(soldAmt == 0){
+        if(getSoldAmt() == 0) {
             newValue = baseValue;
-        }else if(soldAmt > 0){
-            float multiplier = 1 - (float)(soldAmt -1)/Config.SOLD_ITEMS_MAX.get();
+        }else if(getSoldAmt() > 0){
+            float multiplier = 1 - (float)(getSoldAmt() -1)/Config.SOLD_ITEMS_MAX.get();
             newValue = baseValue * multiplier;
         }else{
-            float multiplier = 1 + (float)(0- soldAmt)/Config.BOUGHT_ITEMS_DOUBLE.get();
+            float multiplier = 1 + (float)(0- getSoldAmt())/Config.BOUGHT_ITEMS_DOUBLE.get();
             newValue = baseValue * multiplier;
         }
-        if(soldAmt > Config.SOLD_ITEMS_MAX.get() || soldAmt < (0-Config.BOUGHT_ITEMS_MAX.get())){
+        if(getSoldAmt() > Config.SOLD_ITEMS_MAX.get() || getSoldAmt() < (0-Config.BOUGHT_ITEMS_MAX.get())){
             available = false;
         }
         //int rampUp = ConfigurationHandler.rampUpCredits;

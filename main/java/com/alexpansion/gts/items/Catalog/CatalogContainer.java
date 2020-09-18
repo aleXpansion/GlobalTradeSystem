@@ -91,8 +91,7 @@ public class CatalogContainer extends ContainerGTS {
             }
         }
         layoutPlayerInventorySlots(8, 140);
-
-        this.scrollTo(0.0F);
+        refresh();
     }
 
     @Deprecated
@@ -124,7 +123,7 @@ public class CatalogContainer extends ContainerGTS {
 
     //attempts to sell the items in the given stack. Returns the remaining items, or an empty stack if all were sold.
     public ItemStack sellItem(ItemStack sellStack, int max){
-        double mult = 0.8;
+        double mult = 1;
         Item item = sellStack.getItem();
         double itemValue = vm.getValue(sellStack);
         int space = ((IValueContainer)stack.getItem()).getLimit() - valueStack.getValue();
@@ -148,6 +147,7 @@ public class CatalogContainer extends ContainerGTS {
                 }
                 addValue(itemValue * toSell * mult);
                 vm.addValueSold(item,toSell, itemValue * toSell * mult, world);
+                refresh();
                 if(toSell < sellStack.getCount()){
                     sellStack.setCount(sellStack.getCount() - toSell);
                     return sellStack;
@@ -165,8 +165,20 @@ public class CatalogContainer extends ContainerGTS {
         return true;
     }
 
+    private void refresh(){
+        this.itemList.clear();
+        ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
+        ItemStack filterStack = getSlot(1).getStack();
+        ArrayList<Item> buyable = vm.getBuyableItemsTargeted(filterStack.getItem(),36,valueStack.getValue());
+        for(Item i : buyable){
+            stacks.add(new ItemStack(i));
+        }
+        this.itemList.addAll(stacks);
+        scrollTo(0.0f);
+    }
+
     public void scrollTo(float pos) {
-        ValueManager vm = ValueManager.getVM(world);
+        /*ValueManager vm = ValueManager.getVM(world);
         itemList.clear();
         ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
         ItemStack filterStack = getSlot(1).getStack();
@@ -174,7 +186,7 @@ public class CatalogContainer extends ContainerGTS {
         for(Item i : buyable){
             stacks.add(new ItemStack(i));
         }
-        itemList.addAll(stacks);
+        itemList.addAll(stacks);*/
 
         int i = (this.itemList.size() + 9 - 1) / 9 - 4;
         int j = (int) ((double) (pos * (float) i) + 0.5D);

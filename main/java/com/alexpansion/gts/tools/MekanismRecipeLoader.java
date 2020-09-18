@@ -31,13 +31,13 @@ public class MekanismRecipeLoader extends RecipeLoader {
                 ArrayList<ArrayList<ValueWrapper>> inputList = new ArrayList<ArrayList<ValueWrapper>>();
                 ArrayList<ValueWrapper> slotList = new ArrayList<ValueWrapper>();
                 for(ItemStack stack:input){
-                    slotList.add(ValueWrapperItem.get(stack.getItem()));
+                    slotList.add(ValueWrapperItem.get(stack.getItem(),true));
                 }
                 inputList.add(slotList);
                 ItemStack output = stackRecipe.getOutput(input.get(0));
 
                 RecipeWrapper recipeWrapper = new RecipeWrapper(output.getItem(),output.getCount(), inputList);
-                ValueWrapperItem  outWrapper = ValueWrapperItem.get(output.getItem());
+                ValueWrapperItem  outWrapper = ValueWrapperItem.get(output.getItem(),true);
                 if(wrapperList.containsKey(outWrapper)){
                     wrapperList.get(outWrapper).add(recipeWrapper);
                 }else{

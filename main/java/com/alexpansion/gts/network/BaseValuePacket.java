@@ -37,7 +37,7 @@ public class BaseValuePacket {
             ValueManagerServer vm = ValueManager.getVM(world);
             ValueWrapper wrapper= vm.getWrapper(key);
             if(wrapper == null){
-                wrapper = ValueWrapper.get(key);
+                wrapper = ValueWrapper.get(key,false);
                 vm.addWrapper(wrapper, "item");
             }
             wrapper.setBaseValue(value);

@@ -21,7 +21,7 @@ public class ValuesPacket{
 	
 	
 	public ValuesPacket(PacketBuffer buf) {
-		bean = ValuesBean.create(buf);
+		bean = ValuesBean.create(buf,true);
 	}
 	
 	public ValuesBean getBean(){

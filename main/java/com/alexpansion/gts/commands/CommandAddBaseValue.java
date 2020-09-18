@@ -55,7 +55,7 @@ public class CommandAddBaseValue implements Command<CommandSource> {
         ValueWrapperItem wrapper = vm.getWrapper(key);
         List<String> baseList = Config.DEFAULT_ITEM_VALUES.get();
         if(wrapper == null){
-            wrapper = ValueWrapperItem.get(key);
+            wrapper = ValueWrapperItem.get(key,false);
             vm.addWrapper(wrapper, "item");
         }else{
             for(String entry : baseList){

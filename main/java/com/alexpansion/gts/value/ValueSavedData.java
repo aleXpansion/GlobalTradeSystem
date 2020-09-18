@@ -37,7 +37,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 		String wrappersString = nbt.getString("wrappers");
 		String[] splitString = wrappersString.split("@");
 		for(String wrapperString : splitString){
-			ValueWrapper wrapper = ValueWrapper.get(wrapperString);
+			ValueWrapper wrapper = ValueWrapper.get(wrapperString,false);
 			newWrapperList.add(wrapper);
 		}
 		wrapperList = newWrapperList;
@@ -48,7 +48,11 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 	public CompoundNBT write(CompoundNBT nbt) {
 		String wrapperString = "";
 		for(ValueWrapper wrapper : wrapperList){
-			wrapperString += wrapper.toString() + "@";
+			if(wrapper == null){
+				GTS.LOGGER.error("Oh no! ValueSavedData");
+			}else{
+				wrapperString += wrapper.toString() + "@";
+			}
 		}
 		wrapperString = wrapperString.substring(0, wrapperString.length()-1);
 		nbt.putString("wrappers", wrapperString);

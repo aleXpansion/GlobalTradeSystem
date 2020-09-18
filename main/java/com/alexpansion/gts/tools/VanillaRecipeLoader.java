@@ -35,7 +35,7 @@ public class VanillaRecipeLoader extends RecipeLoader {
                     ItemStack[] stacks = i.getMatchingStacks();
                     for(ItemStack stack : stacks){
                         if(!stack.isEmpty()){
-                            ValueWrapperItem inWrapper = ValueWrapperItem.get(stack.getItem());
+                            ValueWrapperItem inWrapper = ValueWrapperItem.get(stack.getItem(),true);
                             ingredientList.add(inWrapper);
                         }if(stack.getCount() > 1){
                             GTS.LOGGER.info("JEILoader handle this");
@@ -44,7 +44,7 @@ public class VanillaRecipeLoader extends RecipeLoader {
                     input.add(ingredientList);
                 }
                 RecipeWrapper recipeWrapper = new RecipeWrapper(output.getItem(),output.getCount(), input);
-                ValueWrapperItem  outWrapper = ValueWrapperItem.get(output.getItem());
+                ValueWrapperItem  outWrapper = ValueWrapperItem.get(output.getItem(),true);
                 if(wrapperList.containsKey(outWrapper)){
                     wrapperList.get(outWrapper).add(recipeWrapper);
                 }else{

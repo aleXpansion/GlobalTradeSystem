@@ -87,7 +87,7 @@ public abstract class ValueManager {
 	}
 
 	public ValueWrapper getWrapper(String target){
-		ValueWrapper test = ValueWrapper.get(target);
+		ValueWrapper test = ValueWrapper.get(target,isRemote());
 		if(test instanceof ValueWrapperItem){
 			return getWrapper(((ValueWrapperItem)test).getItem());
 		}else{
@@ -155,7 +155,7 @@ public abstract class ValueManager {
 	public ArrayList<Item> getAllBuyableItems(){
 		ArrayList<Item> list = new ArrayList<Item>();
 		for(ValueWrapperItem wrapper : itemMap.values()){
-			if(wrapper.available){
+			if(wrapper.available || wrapper.getSoldAmt() != 0){
 				list.add(wrapper.getItem());
 			}
 		}
@@ -217,6 +217,8 @@ public abstract class ValueManager {
 		}
 		return newList;
 	}
+
+	public abstract boolean isRemote();
 
 	public void addValueSold(Item Item,int amt, double itemValue, World worldObj) {
 	}

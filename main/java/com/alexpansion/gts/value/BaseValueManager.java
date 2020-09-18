@@ -23,7 +23,7 @@ public class BaseValueManager {
 	private static IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
 
 	public static void addSellableItem(Item item, int value) {
-		ValueWrapperItem wrapper = ValueWrapperItem.get(item);
+		ValueWrapperItem wrapper = ValueWrapperItem.get(item,false);
 		wrapper.setBaseValue(value);
 		addWrapper(wrapper);
 	}

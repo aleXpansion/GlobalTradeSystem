@@ -82,7 +82,7 @@ public class ValueManagerClient extends ValueManager {
 		if(itemMap.containsKey(target)){
 			wrapper = itemMap.get(target);
 		}else{
-			wrapper = ValueWrapperItem.get(target);
+			wrapper = ValueWrapperItem.get(target,true);
 		}
 		return getCrafingValue(wrapper);
 	}
@@ -103,6 +103,10 @@ public class ValueManagerClient extends ValueManager {
 
 	private void sendBaseValue(ValueWrapper wrapper,int value){
 		Networking.INSTANCE.sendToServer(new BaseValuePacket(wrapper, value));
+	}
+
+	public boolean isRemote(){
+		return true;
 	}
 
 }

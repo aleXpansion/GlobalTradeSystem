@@ -84,7 +84,7 @@ public class ValueManagerServer extends ValueManager {
 		if (!wrapperList.contains(wrapper)) {
 			wrapperList.add(wrapper);
 		}
-		wrapper.addSold(value, amt);
+		wrapper.addSold(value, amt);;
 		totalValueSold += value;
 		wrapper.calculateValue(totalValueSold);
 		data.saveWrapper(wrapper);
@@ -108,6 +108,10 @@ public class ValueManagerServer extends ValueManager {
 			}
 		}
 		calculateValues();
+	}
+
+	public boolean isRemote(){
+		return false;
 	}
 
 }
