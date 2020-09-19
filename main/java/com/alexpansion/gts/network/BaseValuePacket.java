@@ -5,6 +5,7 @@ import java.util.function.Supplier;
 import com.alexpansion.gts.value.ValueManager;
 import com.alexpansion.gts.value.ValueManagerServer;
 import com.alexpansion.gts.value.ValueWrapper;
+import com.alexpansion.gts.value.ValueWrapperItem;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.server.ServerWorld;
@@ -38,7 +39,7 @@ public class BaseValuePacket {
             ValueWrapper wrapper= vm.getWrapper(key);
             if(wrapper == null){
                 wrapper = ValueWrapper.get(key,false);
-                vm.addWrapper(wrapper, "item");
+                vm.addWrapper(wrapper,((ValueWrapperItem)wrapper).getItem().getRegistryName().toString(), "Item");
             }
             wrapper.setBaseValue(value);
         });

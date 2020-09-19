@@ -1,8 +1,6 @@
 package com.alexpansion.gts.value;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.items.IValueContainer;
@@ -19,8 +17,6 @@ public abstract class ValueManager {
 	protected World world;
 	private static ValueManagerClient clientInstance;
 	private static ValueManagerServer serverInstance;
-	
-	public Map<Item,ValueWrapperItem> itemMap = new HashMap<Item,ValueWrapperItem>();
 
 	public ValueManager(World world) {
 		this.world = world;
@@ -33,6 +29,10 @@ public abstract class ValueManager {
 			GTS.LOGGER.error("Client instance not ready.");
 			return null;
 		}
+	}
+
+	public static ValueManagerServer getServerVM(){
+		return serverInstance;
 	}
 
 	public static ValueManagerServer getVM(ServerWorld world){
@@ -78,12 +78,15 @@ public abstract class ValueManager {
 			}
 			return getWrapper(target).getBaseValue();
 		} else {
+			if(getWrapper(target) == null){
+				return 0.0f;
+			}
 			return getWrapper(target).getValue();
 		}
 	}
 
 	public ValueWrapperItem getWrapper(Item target){
-		return itemMap.get(target);
+		return (ValueWrapperItem)getBean().getWrapper("Item",target.getRegistryName().toString());
 	}
 
 	public ValueWrapper getWrapper(String target){
@@ -142,24 +145,28 @@ public abstract class ValueManager {
 
 	public boolean canIBuy(Item item) {
 		if (getBean() != null) {
-			return itemMap.containsKey(item);
+			return getBean().wrapperMap.get("Item").containsKey(item.getRegistryName().toString());
 		} else {
 			return false;
 		}
 	}
 	
 	public ArrayList<Item> getAllSellableItems(){
-		return new ArrayList<Item>(itemMap.keySet());
+		ArrayList<Item> newList = new ArrayList<Item>();
+		for(ValueWrapper wrapper: getBean().getWrappers("Item").values()){
+			newList.add(((ValueWrapperItem)wrapper).getItem());
+		}
+		return newList;
 	}
 
 	public ArrayList<Item> getAllBuyableItems(){
-		ArrayList<Item> list = new ArrayList<Item>();
-		for(ValueWrapperItem wrapper : itemMap.values()){
-			if(wrapper.available || wrapper.getSoldAmt() != 0){
-				list.add(wrapper.getItem());
+		ArrayList<Item> newList = new ArrayList<Item>();
+		for(ValueWrapper wrapper: getBean().getWrappers("Item").values()){
+			if(wrapper.isAvailable()){
+				newList.add(((ValueWrapperItem)wrapper).getItem());
 			}
 		}
-		return list;
+		return newList;
 	}
 	
 	public ArrayList<Item> getAllBuyableItems(int limit) {

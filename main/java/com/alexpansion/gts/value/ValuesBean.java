@@ -1,9 +1,7 @@
 package com.alexpansion.gts.value;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.alexpansion.gts.GTS;
@@ -12,28 +10,33 @@ import net.minecraft.network.PacketBuffer;
 
 public class ValuesBean {
 
-	public Map<String,List<ValueWrapper>> wrappersMap;
+	public Map<String,Map<String,ValueWrapper>> wrapperMap;
 
 	public ValuesBean(){
-		wrappersMap = new HashMap<String,List<ValueWrapper>>();
+		wrapperMap = new HashMap<String,Map<String,ValueWrapper>>();
 	}
 
-	public ValuesBean(Map<String,List<ValueWrapper>> wrappersMap) {
-		this.wrappersMap = wrappersMap;
+	public ValuesBean(Map<String,Map<String,ValueWrapper>> wrapperMap) {
+		this.wrapperMap = wrapperMap;
 	}
 
 	public ValuesBean(String inString,boolean isRemote) {
-		wrappersMap = new HashMap<String,List<ValueWrapper>>();
+		wrapperMap = new HashMap<String,Map<String,ValueWrapper>>();
 		String[] splitString = inString.split("#");
 		for(String setString : splitString){
 			String[] setStringSplit = setString.split(":");
 			String key = setStringSplit[0];
 			String[] wrappingStrings = setString.substring(setString.indexOf(":")+1).split("@");
-			List<ValueWrapper> newList = new ArrayList<ValueWrapper>();
+			Map<String,ValueWrapper> newList = new HashMap<String,ValueWrapper>();
 			for(String wrapperString : wrappingStrings){
-				newList.add(ValueWrapper.get(wrapperString,isRemote));
+				String[] wrapperSplit = wrapperString.split("-");
+				if(wrapperSplit.length < 2){
+					GTS.LOGGER.error("Improper length for wrapperSplit in ValuesBean.<init> for string "+wrapperString);
+				}else{
+					newList.put(wrapperSplit[0],ValueWrapper.get(wrapperSplit[1],isRemote));
+				}
 			}
-			wrappersMap.put(key, newList);
+			wrapperMap.put(key, newList);
 		}	
 	}
 
@@ -48,20 +51,24 @@ public class ValuesBean {
 		return new ValuesBean(string,isRemote);
 	}
 
-	public List<ValueWrapper> getWrappers(String key){
-		return wrappersMap.get(key);
+	public Map<String,ValueWrapper> getWrappers(String key){
+		return wrapperMap.get(key);
+	}
+
+	public Map<String,Map<String,ValueWrapper>> getWrappers(){
+		return wrapperMap;
+	}
+
+	public ValueWrapper getWrapper(String category,String label){
+		return wrapperMap.get(category).get(label);
 	}
 
 	public String toString() {
 		String out = "";
-		for(String key : wrappersMap.keySet()){
+		for(String key : wrapperMap.keySet()){
 			out += key + ":";
-			for(ValueWrapper wrapper : wrappersMap.get(key)){
-				if(wrapper == null){
-					GTS.LOGGER.error("Oh no! ValuesBean");
-				}else{
-					out += wrapper.toString() + "@";
-				}
+			for(String wrapperKey : wrapperMap.get(key).keySet()){
+				out += wrapperKey +"-"+ wrapperMap.get(key).get(wrapperKey).toString() + "@";
 			}
 			//take off the last character to remove the trailing @
 			out = out.substring(0,out.length()-1);

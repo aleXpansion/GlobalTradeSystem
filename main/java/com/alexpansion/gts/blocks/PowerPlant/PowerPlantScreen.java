@@ -1,6 +1,7 @@
 package com.alexpansion.gts.blocks.PowerPlant;
 
 import com.alexpansion.gts.GTS;
+import com.alexpansion.gts.value.ValueWrapperEnergy;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;
@@ -28,7 +29,10 @@ public class PowerPlantScreen extends ContainerScreen<PowerPlantContainer> {
     @SuppressWarnings("resource")
     //drawGuiContainerForegroundLayer
     protected void func_230451_b_(MatrixStack matrix,int mouseX, int mouseY) {
-        drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy: " + container.getEnergy(), 10, 10, 0xffffff);
+        drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy: " + container.getEnergy() +"/", 10, 10, 0xffffff);
+        int value = (int)ValueWrapperEnergy.get("forge", true).getValue();
+        drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy Value: " + value, 10, 50, 0xffffff);
+        
     }
 
     @Override

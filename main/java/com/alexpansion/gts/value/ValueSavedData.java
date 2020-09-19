@@ -1,7 +1,7 @@
 package com.alexpansion.gts.value;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.Supplier;
 
 import com.alexpansion.gts.GTS;
@@ -15,14 +15,16 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 
 	private static final String DATA_NAME = GTS.MOD_ID + "ValueData";
 	
-	private List<ValueWrapper> wrapperList = new ArrayList<ValueWrapper>();
+	private ValuesBean bean;
 	private int total = 0;
 	private static boolean valuesLoaded = false;
 
 	public ValueSavedData(String name) {
 		super(name);
 		BaseValueManager.initItemValues();
-		wrapperList = BaseValueManager.wrapperList;
+		Map<String,Map<String,ValueWrapper>> wrapperMap = new HashMap<String,Map<String,ValueWrapper>>();
+		wrapperMap.put("Item", BaseValueManager.wrapperMap);
+		bean = new ValuesBean(wrapperMap);
 		markDirty();
 	}
 
@@ -32,30 +34,15 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 
 	@Override
 	public void read(CompoundNBT nbt) {
-		List<ValueWrapper> newWrapperList = new ArrayList<ValueWrapper>();
 		total = nbt.getInt("total");
 		String wrappersString = nbt.getString("wrappers");
-		String[] splitString = wrappersString.split("@");
-		for(String wrapperString : splitString){
-			ValueWrapper wrapper = ValueWrapper.get(wrapperString,false);
-			newWrapperList.add(wrapper);
-		}
-		wrapperList = newWrapperList;
+		bean = new ValuesBean(wrappersString,false);
 		valuesLoaded = true;
 	}
 
 	@Override
 	public CompoundNBT write(CompoundNBT nbt) {
-		String wrapperString = "";
-		for(ValueWrapper wrapper : wrapperList){
-			if(wrapper == null){
-				GTS.LOGGER.error("Oh no! ValueSavedData");
-			}else{
-				wrapperString += wrapper.toString() + "@";
-			}
-		}
-		wrapperString = wrapperString.substring(0, wrapperString.length()-1);
-		nbt.putString("wrappers", wrapperString);
+		nbt.putString("wrappers", bean.toString());
 		nbt.putInt("total", total);
 		return nbt;
 	}
@@ -73,19 +60,12 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 		return valuesLoaded;
 	}
 
-	public List<ValueWrapper> getWrappers(){
-		return wrapperList;
+	public ValuesBean getBean(){
+		return bean;
 	}
 
-	public void saveWrappers(List<ValueWrapper> wrapperListIn){
-		wrapperList = wrapperListIn;
-		markDirty();
-	}
-
-	public void saveWrapper(ValueWrapper wrapper){
-		if(!wrapperList.contains(wrapper)){
-			wrapperList.add(wrapper);
-		}
+	public void saveBean(ValuesBean beanIn){
+		bean = beanIn;
 		markDirty();
 	}
 

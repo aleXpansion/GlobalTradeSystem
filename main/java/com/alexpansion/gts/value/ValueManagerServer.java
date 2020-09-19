@@ -1,19 +1,18 @@
 package com.alexpansion.gts.value;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.alexpansion.gts.GTS;
+
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 
 public class ValueManagerServer extends ValueManager {
 
-	public List<ValueWrapper> wrapperList = new ArrayList<ValueWrapper>();
-	public Map<String,List<ValueWrapper>> wrappersMap = new HashMap<String,List<ValueWrapper>>();
+	public Map<String,Map<String,ValueWrapper>> wrapperMap = new HashMap<String,Map<String,ValueWrapper>>();
 	public int totalValueSold = 0;
 	private boolean valuesLoaded = false;
 
@@ -30,19 +29,20 @@ public class ValueManagerServer extends ValueManager {
 		if (!valuesLoaded) {
 			loadValues(); 
 		}
-		return new ValuesBean(wrappersMap);
+		return new ValuesBean(wrapperMap);
 	}
 
-	public void addWrapper(ValueWrapper wrapper, String label){
-		if(wrapperList.contains(wrapper)){
+	public void addWrapper(ValueWrapper wrapper, String label,String category){
+		Map<String,ValueWrapper> innerMap = wrapperMap.get(category);
+		if(innerMap == null){
+			innerMap = new HashMap<String,ValueWrapper>();
+			wrapperMap.put(category, innerMap);
+		}
+		if(innerMap.containsValue(wrapper)){
 			GTS.LOGGER.error("Attempted to add wrapper already in list");
 			return;
 		}
-		wrapperList.add(wrapper);
-		wrappersMap.get(label).add(wrapper);
-		if(wrapper instanceof ValueWrapperItem){
-			itemMap.put(((ValueWrapperItem)wrapper).getItem(), (ValueWrapperItem)wrapper);
-		}
+		innerMap.put(label,wrapper);
 	}
 
 	private void loadValues() {
@@ -53,14 +53,8 @@ public class ValueManagerServer extends ValueManager {
 			data.markDirty();
 			return;
 		} else {
-			wrapperList = data.getWrappers();
-			for(ValueWrapper wrapper :wrapperList){
-				if(wrapper instanceof ValueWrapperItem){
-					itemMap.put(((ValueWrapperItem)wrapper).getItem(), (ValueWrapperItem)wrapper);
-				}
-			}
+			wrapperMap = data.getBean().getWrappers();
 			totalValueSold = data.getTotal();
-			wrappersMap.put("item", new ArrayList<ValueWrapper>(itemMap.values()));
 		}
 
 		calculateValues();
@@ -68,26 +62,34 @@ public class ValueManagerServer extends ValueManager {
 
 	public void calculateValues() {
 		GTS.LOGGER.info("recalculating all values");
-		for( ValueWrapper wrapper : wrapperList){
-			wrapper.calculateValue(totalValueSold);
+		for( Map<String,ValueWrapper> map : wrapperMap.values()){
+			for( Entry<String,ValueWrapper> entry : map.entrySet()){
+				ValueWrapper wrapper = entry.getValue();
+				if(wrapper == null){
+					map.remove(entry.getKey());
+					GTS.LOGGER.info("null wrapper in ValueManagerServer#calculateValues");
+				}else{
+					wrapper.calculateValue(totalValueSold);
+				}
+			}
 		}
 	}
 
 	@Override
 	public boolean canISell(Item item) {
-		return itemMap.containsKey(item);
+		return getBean().getWrappers("Item").containsKey(item.getRegistryName().toString());
 	}
 
 
 	public void addValueSold(ValueWrapper wrapper, float value, int amt, World world) {
 		ValueSavedData data = ValueSavedData.get((ServerWorld) world);
-		if (!wrapperList.contains(wrapper)) {
-			wrapperList.add(wrapper);
+		if (!wrapperMap.get(wrapper.getType()).containsValue(wrapper)) {
+			wrapperMap.get(wrapper.getType()).put(wrapper.getLabel(),wrapper);
 		}
 		wrapper.addSold(value, amt);;
 		totalValueSold += value;
 		wrapper.calculateValue(totalValueSold);
-		data.saveWrapper(wrapper);
+		data.saveBean(getBean());
 		data.setTotal(totalValueSold);
 		calculateValues();
 	}
@@ -100,13 +102,8 @@ public class ValueManagerServer extends ValueManager {
 	public void resetValues(){
 		GTS.LOGGER.info("Resetting Values");
 		BaseValueManager.initItemValues();
-		wrapperList = (ArrayList<ValueWrapper>) BaseValueManager.wrapperList;
-		itemMap.clear();
-		for(ValueWrapper wrapper :wrapperList){
-			if(wrapper instanceof ValueWrapperItem){
-				itemMap.put(((ValueWrapperItem)wrapper).getItem(), (ValueWrapperItem)wrapper);
-			}
-		}
+		wrapperMap.clear();
+		wrapperMap.put("Item",BaseValueManager.wrapperMap);
 		calculateValues();
 	}
 

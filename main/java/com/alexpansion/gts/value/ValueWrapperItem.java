@@ -94,4 +94,14 @@ public class ValueWrapperItem extends ValueWrapper {
         this.value = newValue;
         return newValue;
     }
+
+    @Override
+    public String getType() {
+        return "Item";
+    }
+
+    @Override
+    public String getLabel() {
+        return item.getRegistryName().toString();
+    }
 }

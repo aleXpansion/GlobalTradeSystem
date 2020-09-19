@@ -29,6 +29,8 @@ public abstract class ValueWrapper {
         ValueWrapper newWrapper;
         if(type.equals("Item")){
             newWrapper =  ValueWrapperItem.get(String.join(";", splitString),isRemote);
+        }else if(type.equals("Energy")){
+            newWrapper = ValueWrapperEnergy.get(String.join(";", splitString),isRemote);
         }else{
             GTS.LOGGER.error("Invalid type "+type+ " in ValueWrapper#create.");
             return null;
@@ -65,6 +67,10 @@ public abstract class ValueWrapper {
     }
 
     public float getValue() {
+        if(!calculated){
+            calculateValue(1);
+            calculated = true;
+        }
         return value;
     }
 
@@ -82,5 +88,13 @@ public abstract class ValueWrapper {
         available = true;
     }
 
+    public boolean isAvailable(){
+        return available;
+    }
+
     public abstract float calculateValue(int totalValueSold);
+
+    public abstract String getType();
+
+    public abstract String getLabel();
 }

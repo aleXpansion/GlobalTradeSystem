@@ -2,6 +2,7 @@ package com.alexpansion.gts.value;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import com.alexpansion.gts.Config;
 import com.alexpansion.gts.GTS;
@@ -16,20 +17,20 @@ import net.minecraftforge.registries.IForgeRegistry;
 
 public class BaseValueManager {
 
-	static List<ValueWrapper> wrapperList = new ArrayList<ValueWrapper>();
+	static HashMap<String,ValueWrapper> wrapperMap = new HashMap<String,ValueWrapper>();
 	static ArrayList<String> itemDefaults = new ArrayList<String>();
 	static ArrayList<String> tagDefaults = new ArrayList<String>();
 
 	private static IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
 
-	public static void addSellableItem(Item item, int value) {
+	public static void addSellableItem(Item item, int value, String name) {
 		ValueWrapperItem wrapper = ValueWrapperItem.get(item,false);
 		wrapper.setBaseValue(value);
-		addWrapper(wrapper);
+		addWrapper(wrapper, name);
 	}
 
-	public static void addWrapper(ValueWrapper wrapper){
-		wrapperList.add(wrapper);
+	public static void addWrapper(ValueWrapperItem wrapper, String name){
+		wrapperMap.put(name,wrapper);
 	}
 
 	public static void addSellableItem(String name, int value) {
@@ -38,7 +39,7 @@ public class BaseValueManager {
 		if(item == null){
 			GTS.LOGGER.error("Null item for name:"+name);
 		}else{
-			addSellableItem(item, value);
+			addSellableItem(item, value, name);
 		}
 	}
 
@@ -46,7 +47,7 @@ public class BaseValueManager {
 	public static void addTagValue(Tag<Item> tag, int value) {
 		Collection<Item> items = tag.getAllElements();
 		for (Item item : items) {
-			addSellableItem(item, value);
+			addSellableItem(item, value, item.getRegistryName().toString());
 		}
 	}
 
@@ -85,7 +86,7 @@ public class BaseValueManager {
 
 	//reloads all base values from config
 	public static void initItemValues(){
-		wrapperList.clear(); 
+		wrapperMap.clear(); 
 		loadTagDefaults(Config.DEFAULT_TAG_VALUES.get());
 		loadItemDefaults(Config.DEFAULT_ITEM_VALUES.get());
 	}

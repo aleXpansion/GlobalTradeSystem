@@ -2,14 +2,12 @@ package com.alexpansion.gts.value;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import com.alexpansion.gts.network.BaseValuePacket;
 import com.alexpansion.gts.network.Networking;
 import com.alexpansion.gts.network.ValuesRequestPacket;
 import com.alexpansion.gts.tools.JEIloader;
+
 import net.minecraft.item.Item;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.ModList;
@@ -27,14 +25,6 @@ public class ValueManagerClient extends ValueManager {
 
 	public void setBean(ValuesBean inBean) {
 		bean = inBean;
-		Map<Item,ValueWrapperItem> newMap = new HashMap<Item,ValueWrapperItem>();
-		List<ValueWrapper> wrappers = inBean.getWrappers("item");
-		for(ValueWrapper wrapper : wrappers){
-			if(wrapper instanceof ValueWrapperItem){
-				newMap.put(((ValueWrapperItem) wrapper).getItem(), (ValueWrapperItem)wrapper);
-			}
-		}
-		itemMap = newMap;
 	}
 
 	public ValuesBean getBean() {
@@ -57,10 +47,10 @@ public class ValueManagerClient extends ValueManager {
 
 	public boolean canISell(Item item) {
 		//if we haven't loaded values yet, return false for now
-		if(getBean() == null){
+		if(getBean() == null || getBean().getWrappers("Item") == null){
 			return false;
 		}
-		if(itemMap.containsKey(item)){
+		if(getBean().getWrappers("Item").containsKey(item.getRegistryName().toString())){
 			return true;
 		}else{
 			//If JEI is installed and loaded, use it to calculate the value
@@ -79,8 +69,8 @@ public class ValueManagerClient extends ValueManager {
 
 	private int getCrafingValue(Item target){
 		ValueWrapperItem wrapper;
-		if(itemMap.containsKey(target)){
-			wrapper = itemMap.get(target);
+		if(getBean().getWrappers("Item").containsKey(target.getRegistryName().toString())){
+			wrapper = (ValueWrapperItem)getBean().getWrappers("Item").get(target.getRegistryName().toString());
 		}else{
 			wrapper = ValueWrapperItem.get(target,true);
 		}

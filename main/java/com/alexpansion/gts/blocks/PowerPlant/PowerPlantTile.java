@@ -1,5 +1,18 @@
 package com.alexpansion.gts.blocks.PowerPlant;
 
+import static com.alexpansion.gts.setup.RegistryHandler.POWER_PLANT_TILE;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+import javax.annotation.Nullable;
+
+import com.alexpansion.gts.Config;
+import com.alexpansion.gts.items.IValueContainer;
+import com.alexpansion.gts.tools.CustomEnergyStorage;
+import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.ValueManagerServer;
+import com.alexpansion.gts.value.ValueWrapperEnergy;
+
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -13,30 +26,18 @@ import net.minecraft.util.Direction;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.common.util.INBTSerializable;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
-import net.minecraftforge.common.util.INBTSerializable;
-
-import static com.alexpansion.gts.setup.RegistryHandler.POWER_PLANT_TILE;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.annotation.Nullable;
-
-import com.alexpansion.gts.Config;
-import com.alexpansion.gts.items.IValueContainer;
-import com.alexpansion.gts.tools.CustomEnergyStorage;
 
 public class PowerPlantTile extends TileEntity implements ITickableTileEntity, INamedContainerProvider {
 
     private LazyOptional<IItemHandler> handler = LazyOptional.of(this::createHandler);
     private LazyOptional<IEnergyStorage> energy = LazyOptional.of(this::createEnergy);
-
-    private int counter;
 
     public PowerPlantTile() {
         super(POWER_PLANT_TILE.get());
@@ -44,6 +45,33 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
 
     @Override
     public void tick() {
+        int stored = energy.map(e -> ((CustomEnergyStorage)e).getEnergyStored()).orElse(0);
+        if(stored <= 0){
+            handler.ifPresent(h -> {
+                ItemStack valueStack = h.getStackInSlot(0);
+                //If the stack in the credit slot doesn't hold credits, do nothing.
+                if(!(valueStack.getItem() instanceof IValueContainer)){
+                    return;
+                }
+                    IValueContainer container = (IValueContainer)valueStack.getItem();
+                    int credits = container.getValue(valueStack);
+                    ValueWrapperEnergy wrapper = ValueWrapperEnergy.get("Forge", this.getWorld().isRemote());
+                    int energyValue = (int)wrapper.getValue();
+                    int max = energy.map(e -> ((CustomEnergyStorage)e).getMaxEnergyStored()).orElse(0);
+                    int space = max - stored;
+                    while(credits > 0 && energyValue <=space && energyValue > 0){
+                        energy.ifPresent(e -> ((CustomEnergyStorage)e).addEnergy(energyValue));
+                        credits -= 1;
+                        space -= energyValue;
+                        container.setValue(valueStack, credits -1);
+                        if(!this.world.isRemote){
+                            ((ValueManagerServer)ValueManager.getVM(this.world)).addValueSold(wrapper, 1, energyValue, world);
+                        }
+                    }
+            });
+        }
+
+        /*
         if(counter >0){
             counter--;
             int toAdd = Config.POWER_PLANT_GENERATE.get()/Config.POWER_PLANT_TICKS.get();
@@ -58,7 +86,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                 }
                 IValueContainer container = (IValueContainer)stack.getItem();
                 int credits = container.getValue(stack);
-                int stored = energy.map(e -> ((CustomEnergyStorage)e).getEnergyStored()).orElse(0);
+                //int stored = energy.map(e -> ((CustomEnergyStorage)e).getEnergyStored()).orElse(0);
                 int max = energy.map(e -> ((CustomEnergyStorage)e).getMaxEnergyStored()).orElse(0);
                 if(credits > 0 && stored < max){
                     container.setValue(stack, credits-1);
@@ -67,7 +95,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                 }
             });
         }
-
+        */
         sendOutPower();
         
     }
@@ -81,7 +109,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                     if(te != null){
                         te.getCapability(CapabilityEnergy.ENERGY, direction).ifPresent(handler -> {
                             if(handler.canReceive()){
-                                int received = handler.receiveEnergy(Math.min(capacity.get(),100), false);
+                                int received = handler.receiveEnergy(Math.min(capacity.get(),1000), false);
                                 capacity.addAndGet(-received);
                                 ((CustomEnergyStorage)energy).consumeEnergy(received);
                                 markDirty();
