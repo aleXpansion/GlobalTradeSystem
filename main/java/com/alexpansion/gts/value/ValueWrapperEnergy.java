@@ -15,7 +15,10 @@ public class ValueWrapperEnergy extends ValueWrapper {
             ValueWrapperEnergy instance = new ValueWrapperEnergy(type);
             map.put(type,instance);
             if(!isRemote){
-                ValueManager.getServerVM().addWrapper(instance,type, "Energy");
+                ValueManagerServer vm = ValueManager.getServerVM();
+                if(vm != null){
+                    vm.addWrapper(instance,type, "Energy");
+                }
             }
             return instance;
         }else{

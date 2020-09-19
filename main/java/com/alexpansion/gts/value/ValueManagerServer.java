@@ -83,15 +83,20 @@ public class ValueManagerServer extends ValueManager {
 
 	public void addValueSold(ValueWrapper wrapper, float value, int amt, World world) {
 		ValueSavedData data = ValueSavedData.get((ServerWorld) world);
-		if (!wrapperMap.get(wrapper.getType()).containsValue(wrapper)) {
-			wrapperMap.get(wrapper.getType()).put(wrapper.getLabel(),wrapper);
+		Map<String, ValueWrapper> innerMap = wrapperMap.get(wrapper.getType());
+		if(innerMap == null){
+			innerMap = new HashMap<String, ValueWrapper>();
+			wrapperMap.put(wrapper.getType(),innerMap);
+		}
+		if (!innerMap.containsValue(wrapper)) {
+			innerMap.put(wrapper.getLabel(),wrapper);
 		}
 		wrapper.addSold(value, amt);;
 		totalValueSold += value;
 		wrapper.calculateValue(totalValueSold);
 		data.saveBean(getBean());
 		data.setTotal(totalValueSold);
-		calculateValues();
+		//calculateValues();
 	}
 
 	@Deprecated
