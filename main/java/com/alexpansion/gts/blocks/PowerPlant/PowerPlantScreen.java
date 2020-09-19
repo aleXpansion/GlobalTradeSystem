@@ -1,6 +1,8 @@
 package com.alexpansion.gts.blocks.PowerPlant;
 
 import com.alexpansion.gts.GTS;
+import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.ValueManagerClient;
 import com.alexpansion.gts.value.ValueWrapperEnergy;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
@@ -30,8 +32,24 @@ public class PowerPlantScreen extends ContainerScreen<PowerPlantContainer> {
     //drawGuiContainerForegroundLayer
     protected void func_230451_b_(MatrixStack matrix,int mouseX, int mouseY) {
         drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy: " + container.getEnergy() +"/", 10, 10, 0xffffff);
-        int value = (int)ValueWrapperEnergy.get("forge", true).getValue();
-        drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy Value: " + value, 10, 50, 0xffffff);
+        ValueManagerClient vm = ValueManager.getClientVM();
+        ValueWrapperEnergy wrapper = (ValueWrapperEnergy)vm.getBean().getWrapper("Energy","Forge");
+        if(wrapper == null){
+            return;
+        }
+        int value = (int)wrapper.getValue();
+        String valueString = ""+value;
+        if(value > 1000){
+            valueString = value/1000 +"k";
+        }
+        int sold = wrapper.getSoldAmt();
+        String soldString = ""+sold;
+        if(sold > 10000000){
+            soldString = sold/1000000 +"M";
+        }else if(sold > 10000){
+            soldString = sold/1000 +"k";
+        }
+        drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy Value: " + valueString +"    Sold: "+soldString, 10, 50, 0xffffff);
         
     }
 

@@ -32,7 +32,21 @@ public class ValueWrapperEnergy extends ValueWrapper {
 
     @Override
     public float calculateValue(int totalValueSold) {
-        value = 100;
+        baseValue = 1000;
+        int maxBought = 1000000;
+        int sold = getSoldAmt();
+        if(sold > 0){
+            value = sold/baseValue +baseValue;
+        }else if(sold == 0){
+            value = baseValue;
+        }else{
+            float mult = (float)sold/maxBought;
+            value = mult*baseValue + baseValue;
+        }
+        available = sold > 0-maxBought;
+        if(value < 1){
+            value = 1;
+        }
         return value;
     }
 

@@ -29,7 +29,7 @@ public class ValuesBean {
 			String[] wrappingStrings = setString.substring(setString.indexOf(":")+1).split("@");
 			Map<String,ValueWrapper> newList = new HashMap<String,ValueWrapper>();
 			for(String wrapperString : wrappingStrings){
-				String[] wrapperSplit = wrapperString.split("-");
+				String[] wrapperSplit = wrapperString.split("%");
 				if(wrapperSplit.length < 2){
 					GTS.LOGGER.error("Improper length for wrapperSplit in ValuesBean.<init> for string "+wrapperString);
 				}else{
@@ -68,7 +68,7 @@ public class ValuesBean {
 		for(String key : wrapperMap.keySet()){
 			out += key + ":";
 			for(String wrapperKey : wrapperMap.get(key).keySet()){
-				out += wrapperKey +"-"+ wrapperMap.get(key).get(wrapperKey).toString() + "@";
+				out += wrapperKey +"%"+ wrapperMap.get(key).get(wrapperKey).toString() + "@";
 			}
 			//take off the last character to remove the trailing @
 			out = out.substring(0,out.length()-1);

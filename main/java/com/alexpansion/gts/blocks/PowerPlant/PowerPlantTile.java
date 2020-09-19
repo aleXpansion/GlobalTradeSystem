@@ -8,6 +8,7 @@ import javax.annotation.Nullable;
 
 import com.alexpansion.gts.Config;
 import com.alexpansion.gts.items.IValueContainer;
+import com.alexpansion.gts.setup.RegistryHandler;
 import com.alexpansion.gts.tools.CustomEnergyStorage;
 import com.alexpansion.gts.value.ValueManager;
 import com.alexpansion.gts.value.ValueManagerServer;
@@ -46,10 +47,14 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
     @Override
     public void tick() {
         int stored = energy.map(e -> ((CustomEnergyStorage)e).getEnergyStored()).orElse(0);
-        int max = energy.map(e -> ((CustomEnergyStorage)e).getMaxEnergyStored()).orElse(0)/2;
+        int realMax = energy.map(e -> ((CustomEnergyStorage)e).getMaxEnergyStored()).orElse(0);
         ValueWrapperEnergy wrapper = ValueWrapperEnergy.get("Forge", this.getWorld().isRemote());
         int energyValue = (int)wrapper.getValue();
-        if(stored <= max-energyValue){
+
+        int max = stored == 0 ? realMax : realMax/2;
+
+        //buy energy
+        if(stored <= max-energyValue && wrapper.isAvailable()){
             handler.ifPresent(h -> {
                 ItemStack valueStack = h.getStackInSlot(0);
                 //If the stack in the credit slot doesn't hold credits, do nothing.
@@ -60,16 +65,57 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                     int credits = container.getValue(valueStack);
                     int space = max - stored;
                     int count = 0;
-                    while(credits > 0 && energyValue <=space && energyValue > 0 &&count < 100){
+                    while(credits > 1 && energyValue <=space && energyValue > 0 &&count < 100){
                         energy.ifPresent(e -> ((CustomEnergyStorage)e).addEnergy(energyValue));
                         credits -= 1;
                         space -= energyValue;
                         count++;
-                        container.setValue(valueStack, credits -1);
+                        container.setValue(valueStack, credits);
                         if(!this.world.isRemote){
-                            ((ValueManagerServer)ValueManager.getVM(this.world)).addValueSold(wrapper, 1, energyValue, world);
+                            ((ValueManagerServer)ValueManager.getVM(this.world)).addValueSold(wrapper, -1, 0-energyValue, world);
                         }
                     }
+            });
+        }
+
+        //sell energy
+        if(stored > (max + energyValue)){
+            handler.ifPresent(h -> {
+                ItemStack valueStack = h.getStackInSlot(0);
+                //get information about the valueContainer
+                int space = 0;
+                int credits = 0;
+                IValueContainer container;
+                if(!(valueStack.getItem() instanceof IValueContainer)){
+                    //If the stack in the credit slot doesn't hold credits, check if it's empty
+                    if( valueStack.isEmpty()){
+                        //if it is, place a credit there
+                        space = 64;
+                        valueStack = new ItemStack(RegistryHandler.CREDIT.get());
+                        container = (IValueContainer)valueStack.getItem();
+                        h.insertItem(0, valueStack, false);
+                    }
+                    //if it's neither a ValueContainer or empty, something's wrong, do nothing.
+                    return;
+                }else{
+                    //if it's already a ValueContainer, make sure it's not full.
+                    container = (IValueContainer)valueStack.getItem();
+                    if(container.getSpace(valueStack) < 1){
+                        return;
+                    }else{
+                        credits = container.getValue(valueStack);
+                        space = container.getSpace(valueStack);
+                    }
+                }
+
+                //calculate how many cycles to run, then record the results
+                int toInsert = Math.min(space,Math.min(1000,(stored-max)/energyValue));
+                int toExtract = energyValue * toInsert;
+                container.setValue(valueStack, credits+toInsert);
+                energy.ifPresent(e -> ((CustomEnergyStorage)e).consumeEnergy(toExtract));
+                if(!this.world.isRemote){
+                    ((ValueManagerServer)ValueManager.getVM(this.world)).addValueSold(wrapper, toInsert, energyValue+toInsert, world);
+                }
             });
         }
 
@@ -111,7 +157,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                     if(te != null){
                         te.getCapability(CapabilityEnergy.ENERGY, direction).ifPresent(handler -> {
                             if(handler.canReceive()){
-                                int received = handler.receiveEnergy(Math.min(capacity.get(),1000), false);
+                                int received = handler.receiveEnergy(Math.min(capacity.get(),10000), false);
                                 capacity.addAndGet(-received);
                                 ((CustomEnergyStorage)energy).consumeEnergy(received);
                                 markDirty();
