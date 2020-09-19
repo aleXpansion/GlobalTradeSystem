@@ -13,6 +13,8 @@ import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.crafting.IRecipe;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.ModList;
 
@@ -92,6 +94,13 @@ public class JEIloader implements IModPlugin {
                 if(loader.hasCategory(title)){
                     wrapperList = loader.loadRecipes(title, recipes, wrapperList);
                     continue categories;
+                }
+            }
+            Object testRecipe = recipes.get(0);
+            if(testRecipe instanceof IRecipe){
+                IRecipe test = (IRecipe)testRecipe;
+                if(test.getRecipeOutput() != ItemStack.EMPTY && test.getIngredients().size() > 0){
+                    new VanillaRecipeLoader().loadRecipes(title, recipes, wrapperList);
                 }
             }
             GTS.LOGGER.info("No loader found for "+title);
