@@ -65,11 +65,11 @@ public class Config{
         COMMON_BUILDER.comment("Power Plant settings").push(SUBCATEGORY_POWER_PLANT);
 
         POWER_PLANT_MAXPOWER = COMMON_BUILDER.comment("Maximum power for the Power Plant generator")
-                .defineInRange("maxPower", 100000, 0, Integer.MAX_VALUE);
+                .defineInRange("maxPower", 1000000, 0, Integer.MAX_VALUE);
         POWER_PLANT_GENERATE = COMMON_BUILDER.comment("Power generation per credit")
                 .defineInRange("generate", 1000, 0, Integer.MAX_VALUE);
         POWER_PLANT_SEND = COMMON_BUILDER.comment("Power generation to send per tick")
-                .defineInRange("send", 100, 0, Integer.MAX_VALUE);
+                .defineInRange("send", 10000, 0, Integer.MAX_VALUE);
         POWER_PLANT_TICKS = COMMON_BUILDER.comment("Ticks per credit")
                 .defineInRange("ticks", 20, 0, Integer.MAX_VALUE);
 
