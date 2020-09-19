@@ -46,7 +46,10 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
     @Override
     public void tick() {
         int stored = energy.map(e -> ((CustomEnergyStorage)e).getEnergyStored()).orElse(0);
-        if(stored <= 0){
+        int max = energy.map(e -> ((CustomEnergyStorage)e).getMaxEnergyStored()).orElse(0)/2;
+        ValueWrapperEnergy wrapper = ValueWrapperEnergy.get("Forge", this.getWorld().isRemote());
+        int energyValue = (int)wrapper.getValue();
+        if(stored <= max-energyValue){
             handler.ifPresent(h -> {
                 ItemStack valueStack = h.getStackInSlot(0);
                 //If the stack in the credit slot doesn't hold credits, do nothing.
@@ -55,14 +58,13 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                 }
                     IValueContainer container = (IValueContainer)valueStack.getItem();
                     int credits = container.getValue(valueStack);
-                    ValueWrapperEnergy wrapper = ValueWrapperEnergy.get("Forge", this.getWorld().isRemote());
-                    int energyValue = (int)wrapper.getValue();
-                    int max = energy.map(e -> ((CustomEnergyStorage)e).getMaxEnergyStored()).orElse(0);
                     int space = max - stored;
-                    while(credits > 0 && energyValue <=space && energyValue > 0){
+                    int count = 0;
+                    while(credits > 0 && energyValue <=space && energyValue > 0 &&count < 100){
                         energy.ifPresent(e -> ((CustomEnergyStorage)e).addEnergy(energyValue));
                         credits -= 1;
                         space -= energyValue;
+                        count++;
                         container.setValue(valueStack, credits -1);
                         if(!this.world.isRemote){
                             ((ValueManagerServer)ValueManager.getVM(this.world)).addValueSold(wrapper, 1, energyValue, world);
@@ -166,7 +168,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
     }
 
     private IEnergyStorage createEnergy() {
-        return new CustomEnergyStorage(Config.POWER_PLANT_MAXPOWER.get(), 0);
+        return new CustomEnergyStorage(Config.POWER_PLANT_MAXPOWER.get(), 10000);
     }
 
     @Nullable
