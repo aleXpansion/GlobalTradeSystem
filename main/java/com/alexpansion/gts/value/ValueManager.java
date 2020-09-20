@@ -1,6 +1,7 @@
 package com.alexpansion.gts.value;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.items.IValueContainer;
@@ -161,6 +162,10 @@ public abstract class ValueManager {
 
 	public ArrayList<Item> getAllBuyableItems(){
 		ArrayList<Item> newList = new ArrayList<Item>();
+		Map<String,ValueWrapper> wrappers = getBean().getWrappers("Item");
+		if(wrappers == null){
+			return newList;
+		}
 		for(ValueWrapper wrapper: getBean().getWrappers("Item").values()){
 			if(wrapper.isAvailable()){
 				newList.add(((ValueWrapperItem)wrapper).getItem());
