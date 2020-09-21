@@ -61,20 +61,20 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                 if(!(valueStack.getItem() instanceof IValueContainer)){
                     return;
                 }
-                    IValueContainer container = (IValueContainer)valueStack.getItem();
-                    int credits = container.getValue(valueStack);
-                    int space = max - stored;
-                    int count = 0;
-                    while(credits > 1 && energyValue <=space && energyValue > 0 &&count < 100){
-                        energy.ifPresent(e -> ((CustomEnergyStorage)e).addEnergy(energyValue));
-                        credits -= 1;
-                        space -= energyValue;
-                        count++;
-                        container.setValue(valueStack, credits);
-                        if(!this.world.isRemote){
-                            ((ValueManagerServer)ValueManager.getVM(this.world)).addValueSold(wrapper, -1, 0-energyValue, world);
-                        }
+                IValueContainer container = (IValueContainer)valueStack.getItem();
+                int credits = container.getValue(valueStack);
+                int space = max - stored;
+                int count = 0;
+                while(credits >= 1 && energyValue <=space && energyValue > 0 &&count < 100){
+                    energy.ifPresent(e -> ((CustomEnergyStorage)e).addEnergy(energyValue));
+                    credits -= 1;
+                    space -= energyValue;
+                    count++;
+                    container.setValue(valueStack, credits);
+                    if(!this.world.isRemote){
+                        ((ValueManagerServer)ValueManager.getVM(this.world)).addValueSold(wrapper, -1, 0-energyValue, world);
                     }
+                }
             });
         }
 
@@ -144,7 +144,9 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
             });
         }
         */
-        sendOutPower();
+        if(stored > 0){
+            sendOutPower();
+        }
         
     }
 

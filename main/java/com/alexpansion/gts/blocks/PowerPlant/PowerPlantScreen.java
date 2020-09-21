@@ -31,7 +31,7 @@ public class PowerPlantScreen extends ContainerScreen<PowerPlantContainer> {
     @SuppressWarnings("resource")
     //drawGuiContainerForegroundLayer
     protected void func_230451_b_(MatrixStack matrix,int mouseX, int mouseY) {
-        drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy: " + container.getEnergy() +"/", 10, 10, 0xffffff);
+        drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy: " + container.getEnergy() +"", 10, 10, 0xffffff);
         ValueManagerClient vm = ValueManager.getClientVM();
         ValueWrapperEnergy wrapper = (ValueWrapperEnergy)vm.getBean().getWrapper("Energy","Forge");
         if(wrapper == null){
@@ -44,9 +44,9 @@ public class PowerPlantScreen extends ContainerScreen<PowerPlantContainer> {
         }
         int sold = wrapper.getSoldAmt();
         String soldString = ""+sold;
-        if(sold > 10000000){
+        if(sold > 10000000 || sold < -10000000){
             soldString = sold/1000000 +"M";
-        }else if(sold > 10000){
+        }else if(sold > 10000|| sold < -10000){
             soldString = sold/1000 +"k";
         }
         drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy Value: " + valueString +"    Sold: "+soldString, 10, 50, 0xffffff);
