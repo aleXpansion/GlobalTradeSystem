@@ -1,6 +1,8 @@
 {
     "item.gts.catalog":"Catalog",
     "item.gts.credit":"Credit",
+    "item.gts.credit_card":"Credit Card",
+    "item.gts.credit_card2":"Credit Card 2",
     "itemGroup.gts":"Global Trade System",
     "block.gts.trader":"Trader",
     "block.gts.power_plant":"Power Plant"

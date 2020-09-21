@@ -9,6 +9,7 @@ import com.alexpansion.gts.blocks.PowerPlant.PowerPlantTile;
 import com.alexpansion.gts.blocks.Trader.TraderTile;
 import com.alexpansion.gts.items.Catalog.ItemCatalog;
 import com.alexpansion.gts.items.ItemCoin;
+import com.alexpansion.gts.items.ItemCreditCard;
 import com.alexpansion.gts.items.Catalog.CatalogContainer;
 
 import static com.alexpansion.gts.GTS.MOD_ID;
@@ -83,5 +84,7 @@ public class RegistryHandler {
             return new CatalogContainer(windowId, PROXY.getClientPlayer(), data);
         }));
     public static final RegistryObject<Item> CREDIT = ITEMS.register("credit", ItemCoin::new);
+    public static final RegistryObject<Item> CREDIT_CARD = ITEMS.register("credit_card", ItemCreditCard::new);
+    public static final RegistryObject<Item> CREDIT_CARD2 = ITEMS.register("credit_card2", () -> new ItemCreditCard(100000));
 
 }

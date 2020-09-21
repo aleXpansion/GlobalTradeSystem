@@ -1,0 +1,14 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item":"gts:credit_card"
+        },
+        {
+            "item":"gts:credit"
+        }
+    ],
+    "result": {
+        "item": "gts:credit_card2"
+    }
+}

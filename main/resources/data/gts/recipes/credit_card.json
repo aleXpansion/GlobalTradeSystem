@@ -6,15 +6,9 @@
         },
         {
             "item":"gts:credit"
-        },
-        {
-            "item":"gts:credit"
-        },
-        {
-            "item":"gts:credit"
         }
     ],
     "result": {
-      "item": "gts:catalog"
+        "item": "gts:credit_card"
     }
-  }
+}
