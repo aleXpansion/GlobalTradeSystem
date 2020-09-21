@@ -82,6 +82,9 @@ public class ValueManagerServer extends ValueManager {
 
 
 	public void addValueSold(ValueWrapper wrapper, float value, int amt, World world) {
+		if(wrapper == null){
+			return;
+		}
 		ValueSavedData data = ValueSavedData.get((ServerWorld) world);
 		Map<String, ValueWrapper> innerMap = wrapperMap.get(wrapper.getType());
 		if(innerMap == null){
