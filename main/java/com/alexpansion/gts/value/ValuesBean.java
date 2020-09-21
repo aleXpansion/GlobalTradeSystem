@@ -60,6 +60,8 @@ public class ValuesBean {
 	}
 
 	public ValueWrapper getWrapper(String category,String label){
+		Map<String, ValueWrapper> map = wrapperMap.get(category);
+		if(map == null) return null;
 		return wrapperMap.get(category).get(label);
 	}
 
