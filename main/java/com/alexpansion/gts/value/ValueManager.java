@@ -87,17 +87,16 @@ public abstract class ValueManager {
 	}
 
 	public ValueWrapperItem getWrapper(Item target){
-		return (ValueWrapperItem)getBean().getWrapper("Item",target.getRegistryName().toString());
+		return (ValueWrapperItem)getWrapper("Item",target.getRegistryName().toString());
 	}
 
 	public ValueWrapper getWrapper(String target){
 		ValueWrapper test = ValueWrapper.get(target,isRemote());
-		if(test instanceof ValueWrapperItem){
-			return getWrapper(((ValueWrapperItem)test).getItem());
-		}else{
-			GTS.LOGGER.error("Unrecognized target "+target+" in ValueManager#getWrapper.");
-			return null;
-		}
+		return getWrapper(test.getType(), test.getLabel());
+	}
+
+	public ValueWrapper getWrapper(String category,String label){
+		return getBean().getWrapper(category, label);
 	}
 
 	public Double getValue(ItemStack stack){

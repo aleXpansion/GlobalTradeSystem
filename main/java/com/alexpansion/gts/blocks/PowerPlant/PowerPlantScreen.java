@@ -33,7 +33,7 @@ public class PowerPlantScreen extends ContainerScreen<PowerPlantContainer> {
     protected void func_230451_b_(MatrixStack matrix,int mouseX, int mouseY) {
         drawString(matrix,Minecraft.getInstance().fontRenderer, "Energy: " + container.getEnergy() +"", 10, 10, 0xffffff);
         ValueManagerClient vm = ValueManager.getClientVM();
-        ValueWrapperEnergy wrapper = (ValueWrapperEnergy)vm.getBean().getWrapper("Energy","Forge");
+        ValueWrapperEnergy wrapper = (ValueWrapperEnergy)vm.getWrapper("Energy","Forge");
         if(wrapper == null){
             return;
         }
