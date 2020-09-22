@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.blocks.ContainerGTS;
 import com.alexpansion.gts.items.IValueContainer;
+import com.alexpansion.gts.items.ItemEnderCard;
 import com.alexpansion.gts.items.ValueStack;
 import com.alexpansion.gts.setup.RegistryHandler;
 import com.alexpansion.gts.value.ValueManager;
@@ -286,6 +287,14 @@ public class CatalogContainer extends ContainerGTS {
                 removeValue(out);
                 mouseStack = new ItemStack(RegistryHandler.CREDIT.get(),out);
             }else if(mouseStack.getItem() instanceof IValueContainer){
+                //if this is an ender catalog and the mouse has an ender card, check if they are on the same channel.
+                //if so, do nothing.
+                if(ender && mouseStack.getItem() instanceof ItemEnderCard){
+                    String mouseId = ((ItemEnderCard)mouseStack.getItem()).getId(mouseStack);
+                    if(mouseId.equals(channel.getLabel())){
+                        return mouseStack;
+                    }
+                }
                 ValueStack mouseValue = new ValueStack(mouseStack, world);
                 int out = shift ? mouseValue.getSpace():1;
                 if(out > value) out = value;
@@ -329,6 +338,12 @@ public class CatalogContainer extends ContainerGTS {
                 }
                 return mouseStack;
             }else if(mouseStack.getItem() instanceof IValueContainer){
+                if(ender && mouseStack.getItem() instanceof ItemEnderCard){
+                    String mouseId = ((ItemEnderCard)mouseStack.getItem()).getId(mouseStack);
+                    if(mouseId.equals(channel.getLabel())){
+                        return mouseStack;
+                    }
+                }
                 ValueStack mouseValue = new ValueStack(mouseStack, world);
                 int space = getLimit() - getValue();
                 int in = Math.min(mouseValue.getValue(),space);
@@ -359,6 +374,12 @@ public class CatalogContainer extends ContainerGTS {
 
     public ItemStack transferStackInSlot(PlayerEntity playerIn, int index) {
         ItemStack stack = getSlot(index).getStack();
+        if(ender && stack.getItem() instanceof ItemEnderCard){
+            String mouseId = ((ItemEnderCard)stack.getItem()).getId(stack);
+            if(mouseId.equals(channel.getLabel())){
+                return ItemStack.EMPTY;
+            }
+        }
         if(stack.getItem() == RegistryHandler.CATALOG.get()){
             return ItemStack.EMPTY;
         }
