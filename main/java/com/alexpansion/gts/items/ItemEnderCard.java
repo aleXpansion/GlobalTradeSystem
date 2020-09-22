@@ -52,7 +52,6 @@ public class ItemEnderCard extends ItemBase implements IValueContainer {
 	@Override
 	public ItemStack setValue(ItemStack stack, int value, World world) {
 		ValueWrapperChannel channel = getChannel(stack,world);
-		GTS.LOGGER.info("setting value to "+value);
 		if(channel != null){
 			channel.setValue(value);
 			updateDisplay(stack,world);

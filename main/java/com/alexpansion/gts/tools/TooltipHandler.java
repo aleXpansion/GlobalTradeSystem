@@ -26,13 +26,15 @@ public class TooltipHandler {
         if(e.getEntity() != null){
             if(stack.getItem() == RegistryHandler.ENDER_CATALOG.get()){
                 tooltip.add(new StringTextComponent("Accesses your personal credit channel"));
+                tooltip.add(new StringTextComponent(""));
                 ValueManager vm = ValueManager.getVM(e.getEntity().world);
                 ValueWrapperChannel channel = (ValueWrapperChannel)vm.getWrapper("Channel", e.getPlayer().getUniqueID().toString());
                 if(channel != null){
                     int value = (int)channel.getValue();
                     tooltip.add(new StringTextComponent("Value Stored: "+value));
                 }
-            }else if(stack.getItem() instanceof IValueContainer){
+            }
+            if(stack.getItem() instanceof IValueContainer){
                 IValueContainer item = (IValueContainer) stack.getItem();
                 int value = item.getValue(stack,e.getEntity().world);
                 if(item == RegistryHandler.ENDER_CATALOG.get()){
