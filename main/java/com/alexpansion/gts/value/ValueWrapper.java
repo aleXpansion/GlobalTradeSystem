@@ -31,6 +31,8 @@ public abstract class ValueWrapper {
             newWrapper =  ValueWrapperItem.get(String.join(";", splitString),isRemote);
         }else if(type.equals("Energy")){
             newWrapper = ValueWrapperEnergy.get(String.join(";", splitString),isRemote);
+        }else if(type.equals("Channel")){
+            newWrapper = ValueWrapperChannel.get(String.join(";", splitString),isRemote);
         }else{
             GTS.LOGGER.error("Invalid type "+type+ " in ValueWrapper#create.");
             return null;

@@ -76,7 +76,7 @@ public class CatalogContainer extends ContainerGTS {
         playerInventory = new InvWrapper(player.inventory);
         vm = ValueManager.getVM(world);
         if(stack.getItem() instanceof ItemCatalog){
-            valueStack = new ValueStack(stack);
+            valueStack = new ValueStack(stack, world);
         }else{
             GTS.LOGGER.error("Catalog container found "+stack.getDisplayName()+" instead of Catalog.");
             valueStack = null;
@@ -129,16 +129,16 @@ public class CatalogContainer extends ContainerGTS {
         double mult = 1;
         Item item = sellStack.getItem();
         double itemValue = vm.getValue(sellStack);
-        int space = ((IValueContainer)stack.getItem()).getLimit() - valueStack.getValue();
+        int space = ((IValueContainer)stack.getItem()).getLimit(world) - valueStack.getValue();
         if(item instanceof IValueContainer){
             IValueContainer container = (IValueContainer)item;
-            int value = container.getValue(sellStack);
+            int value = container.getValue(sellStack,world);
             int toRemove = value;
             if(value > space){
                 toRemove = space;
             }
             addValue(toRemove);
-            return container.setValue(sellStack, value-toRemove);
+            return container.setValue(sellStack, value-toRemove,world);
         }
         if(!vm.canISell(item)){
             return sellStack;
@@ -247,7 +247,7 @@ public class CatalogContainer extends ContainerGTS {
                 removeValue(out);
                 mouseStack = new ItemStack(RegistryHandler.CREDIT.get(),out);
             }else if(mouseStack.getItem() instanceof IValueContainer){
-                ValueStack mouseValue = new ValueStack(mouseStack);
+                ValueStack mouseValue = new ValueStack(mouseStack, world);
                 int out = shift ? mouseValue.getSpace():1;
                 if(out > value) out = value;
                 mouseStack = mouseValue.addValue(out);
@@ -290,8 +290,8 @@ public class CatalogContainer extends ContainerGTS {
                 }
                 return mouseStack;
             }else if(mouseStack.getItem() instanceof IValueContainer){
-                ValueStack mouseValue = new ValueStack(mouseStack);
-                int space = ((IValueContainer)this.stack.getItem()).getLimit() - valueStack.getValue();
+                ValueStack mouseValue = new ValueStack(mouseStack, world);
+                int space = ((IValueContainer)this.stack.getItem()).getLimit(world) - valueStack.getValue();
                 int in = Math.min(mouseValue.getValue(),space);
                 mouseStack = mouseValue.removeValue(in);
                 addValue(in);

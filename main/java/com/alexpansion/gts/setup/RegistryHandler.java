@@ -10,6 +10,7 @@ import com.alexpansion.gts.blocks.Trader.TraderTile;
 import com.alexpansion.gts.items.Catalog.ItemCatalog;
 import com.alexpansion.gts.items.ItemCoin;
 import com.alexpansion.gts.items.ItemCreditCard;
+import com.alexpansion.gts.items.ItemEnderCard;
 import com.alexpansion.gts.items.Catalog.CatalogContainer;
 
 import static com.alexpansion.gts.GTS.MOD_ID;
@@ -86,5 +87,6 @@ public class RegistryHandler {
     public static final RegistryObject<Item> CREDIT = ITEMS.register("credit", ItemCoin::new);
     public static final RegistryObject<Item> CREDIT_CARD = ITEMS.register("credit_card", ItemCreditCard::new);
     public static final RegistryObject<Item> CREDIT_CARD2 = ITEMS.register("credit_card2", () -> new ItemCreditCard(100000));
+    public static final RegistryObject<Item> ENDER_CARD = ITEMS.register("ender_card", ItemEnderCard::new);
 
 }

@@ -105,7 +105,7 @@ public abstract class ValueManager {
 		
 		if(stack.getItem() instanceof IValueContainer){
 			IValueContainer item = (IValueContainer)stack.getItem();
-			int held = item.getValue(stack);
+			int held = item.getValue(stack,world);
 			if(item == RegistryHandler.CREDIT.get()){
 				return (double)held;
 			}else{

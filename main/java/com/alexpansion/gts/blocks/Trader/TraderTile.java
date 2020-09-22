@@ -93,7 +93,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
                 continue;
             }
             if(stack.getItem() instanceof IValueContainer){
-                ValueStack itemValue = new ValueStack(stack);
+                ValueStack itemValue = new ValueStack(stack, world);
                 if(itemValue.getValue()>0 && getSpace() >0){  
                     //get the lowest of transfer speed, credits available in target, and space available.
                     int toTransfer = Math.min(valueTransferSpeed, Math.min(itemValue.getValue(), getSpace()));
@@ -123,7 +123,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
         for(int slot = bufferSlotFirst;slot <= bufferSlotLast;slot++){
             ItemStack stack = h.getStackInSlot(slot);
             if(stack.getItem() instanceof IValueContainer){
-                ValueStack itemValue = new ValueStack(stack);
+                ValueStack itemValue = new ValueStack(stack, world);
                 if(itemValue.getSpace()>0 && getValue() >0){  
                     //get the lowest of transfer speed, credits available, and space available in target stack.
                     int toTransfer = Math.min(valueTransferSpeed, Math.min(itemValue.getSpace(), getValue()));
@@ -157,7 +157,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
                 }
                 creditStack = new ItemStack(RegistryHandler.CREDIT.get(),toAdd);
             }else if(creditStack.getItem() instanceof IValueContainer){
-                ValueStack item = new ValueStack(creditStack);
+                ValueStack item = new ValueStack(creditStack, world);
                 creditStack = item.addValue(toAdd);
             }else{
                 GTS.LOGGER.error("Attempted to add value to non-ValueContainer in Trader");
@@ -187,7 +187,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
             if(creditStack.isEmpty()){
                 GTS.LOGGER.error("Attempted to remove value from empty stack in Trader");
             }else if(creditStack.getItem() instanceof IValueContainer){
-                ValueStack item = new ValueStack(creditStack);
+                ValueStack item = new ValueStack(creditStack, world);
                 creditStack = item.removeValue(toRemove);
             }else{
                 GTS.LOGGER.error("Attempted to remove value from non-ValueContainer in Trader");
@@ -203,7 +203,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
         if(stack.isEmpty()){
             return 64;
         }else if(stack.getItem() instanceof IValueContainer){
-            return ((IValueContainer)stack.getItem()).getSpace(stack);
+            return ((IValueContainer)stack.getItem()).getSpace(stack,world);
         }else{
             return 0;
         }
@@ -217,7 +217,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
         if(stack.isEmpty()){
             return 0;
         }else if(stack.getItem() instanceof IValueContainer){
-            return ((IValueContainer)stack.getItem()).getValue(stack);
+            return ((IValueContainer)stack.getItem()).getValue(stack, world);
         }else{
             return 0;
         }

@@ -3,13 +3,16 @@ package com.alexpansion.gts.items;
 import com.alexpansion.gts.GTS;
 
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 
 public class ValueStack{
 
     private ItemStack stack;
     private IValueContainer item;
+    private World world;
 
-    public ValueStack(ItemStack stack){
+    public ValueStack(ItemStack stack,World world){
+        this.world = world;
         if(!(stack.getItem() instanceof IValueContainer)){
             GTS.LOGGER.error("Attempted to create ValueStack with stack of item "+stack.getItem());
             this.stack = null;
@@ -24,7 +27,7 @@ public class ValueStack{
     }
 
     public int getValue(){
-        return item.getValue(stack);
+        return item.getValue(stack,world);
     }
 	
 	public ItemStack addValue(int toAdd){
@@ -47,14 +50,14 @@ public class ValueStack{
             GTS.LOGGER.error("Attempted to set value less than 0");
             value = 0;
         }
-        return item.setValue(stack, value);
+        return item.setValue(stack, value, world);
     }
 	
 	public int getLimit(){
-        return item.getLimit();
+        return item.getLimit(world);
     }
 	
 	public int getSpace(){
-        return item.getSpace(stack);
+        return item.getSpace(stack, world);
     }
 }

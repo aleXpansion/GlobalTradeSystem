@@ -1,10 +1,10 @@
 package com.alexpansion.gts.items;
 
-
 import com.alexpansion.gts.GTS;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.world.World;
 
 public class ItemCreditCard extends ItemBase implements IValueContainer{
 	
@@ -30,18 +30,18 @@ public class ItemCreditCard extends ItemBase implements IValueContainer{
 	}
 
 	@Override
-	public ItemStack setValue(ItemStack stack, int value) {
+	public ItemStack setValue(ItemStack stack, int value, World world) {
 		stack.getTag().putInt(VALUE_KEY, value);
-		updateDisplay(stack);
+		updateDisplay(stack, world);
 		return stack;
 	}
 	
-	public ItemStack addValue(ItemStack stack,int toAdd){
+	public ItemStack addValue(ItemStack stack,int toAdd, World world){
 		if(stack.getItem()!= this){
 			GTS.LOGGER.error("W01");
 			return null;
 		}
-		int value = getValue(stack);
+		int value = getValue(stack,world);
 		if(value+toAdd>limit){
 			toAdd -= (limit-value);
 			value = limit;
@@ -50,11 +50,11 @@ public class ItemCreditCard extends ItemBase implements IValueContainer{
 		}else{
 			stack.getTag().putInt(VALUE_KEY, value+toAdd);
 		}
-		updateDisplay(stack);
+		updateDisplay(stack, world);
 		return stack;
 	}
 	
-	public int getValue(ItemStack stack){
+	public int getValue(ItemStack stack, World world){
 		if(stack.getItem()!= this){
 			GTS.LOGGER.error("W02");
 			return 0;
@@ -66,18 +66,18 @@ public class ItemCreditCard extends ItemBase implements IValueContainer{
 		
 	}
 	
-	private void updateDisplay(ItemStack stack){
-		stack.setDamage(stack.getMaxDamage()-((int) ((getValue(stack)/(double)limit) * stack.getMaxDamage())));
+	private void updateDisplay(ItemStack stack, World world){
+		stack.setDamage(stack.getMaxDamage()-((int) ((getValue(stack,world)/(double)limit) * stack.getMaxDamage())));
 	}
 
 	@Override
-	public int getLimit() {
+	public int getLimit(World world) {
 		return limit;
 	}
 
 	@Override
-	public int getSpace(ItemStack stack) {
-		return limit - getValue(stack);
+	public int getSpace(ItemStack stack, World world) {
+		return limit - getValue(stack,world);
 	}
 	
 }

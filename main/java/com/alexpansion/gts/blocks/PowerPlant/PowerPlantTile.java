@@ -62,7 +62,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                     return;
                 }
                 IValueContainer container = (IValueContainer)valueStack.getItem();
-                int credits = container.getValue(valueStack);
+                int credits = container.getValue(valueStack,world);
                 int space = max - stored;
                 int count = 0;
                 while(credits >= 1 && energyValue <=space && energyValue > 0 &&count < 100){
@@ -70,7 +70,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                     credits -= 1;
                     space -= energyValue;
                     count++;
-                    container.setValue(valueStack, credits);
+                    container.setValue(valueStack, credits,world);
                     if(!this.world.isRemote){
                         ((ValueManagerServer)ValueManager.getVM(this.world)).addValueSold(wrapper, -1, 0-energyValue, world);
                     }
@@ -100,18 +100,18 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
                 }else{
                     //if it's already a ValueContainer, make sure it's not full.
                     container = (IValueContainer)valueStack.getItem();
-                    if(container.getSpace(valueStack) < 1){
+                    if(container.getSpace(valueStack, world) < 1){
                         return;
                     }else{
-                        credits = container.getValue(valueStack);
-                        space = container.getSpace(valueStack);
+                        credits = container.getValue(valueStack, world);
+                        space = container.getSpace(valueStack, world);
                     }
                 }
 
                 //calculate how many cycles to run, then record the results
                 int toInsert = Math.min(space,Math.min(1000,(stored-max)/energyValue));
                 int toExtract = energyValue * toInsert;
-                container.setValue(valueStack, credits+toInsert);
+                container.setValue(valueStack, credits+toInsert, world);
                 energy.ifPresent(e -> ((CustomEnergyStorage)e).consumeEnergy(toExtract));
                 if(!this.world.isRemote){
                     ((ValueManagerServer)ValueManager.getVM(this.world)).addValueSold(wrapper, toInsert, energyValue+toInsert, world);
