@@ -3,7 +3,6 @@ package com.alexpansion.gts.items;
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.value.ValueManager;
 import com.alexpansion.gts.value.ValueManagerServer;
-import com.alexpansion.gts.value.ValueWrapper;
 import com.alexpansion.gts.value.ValueWrapperChannel;
 
 import net.minecraft.entity.player.PlayerEntity;
