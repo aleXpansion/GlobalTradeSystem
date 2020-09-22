@@ -21,6 +21,7 @@ public class ValueWrapperChannel extends ValueWrapper{
         }else{
             ValueWrapperChannel instance = new ValueWrapperChannel(id);
             map.put(id,instance);
+            instance.setLimit(1000000);
             return instance;
         }
     }
@@ -48,5 +49,13 @@ public class ValueWrapperChannel extends ValueWrapper{
     @Override
     public String getLabel() {
         return id;
+    }
+
+    public int getLimit(){
+        return (int)soldValue;
+    }
+
+    public void setLimit(int limit){
+        soldValue = limit;
     }
 }

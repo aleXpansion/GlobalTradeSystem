@@ -54,7 +54,7 @@ public class ValueStack{
     }
 	
 	public int getLimit(){
-        return item.getLimit(world);
+        return item.getLimit(stack,world);
     }
 	
 	public int getSpace(){

@@ -15,7 +15,6 @@ import net.minecraft.world.World;
 
 public class ItemEnderCard extends ItemBase implements IValueContainer {
 
-	private int limit = 1000000;
 	private static String ID_KEY = "id";
 
 	public ItemEnderCard() {
@@ -25,6 +24,13 @@ public class ItemEnderCard extends ItemBase implements IValueContainer {
 	public ItemStack setChannel(ItemStack stack,String id){
 		CompoundNBT tag = stack.getTag();
 		tag.putString(ID_KEY, id);
+		return stack;
+	}
+
+	public ItemStack setChannel(ItemStack stack,PlayerEntity player){
+		CompoundNBT tag = stack.getTag();
+		tag.putString(ID_KEY, player.getUniqueID().toString());
+		tag.putString("Username", player.getName().getString());
 		return stack;
 	}
 
@@ -61,25 +67,24 @@ public class ItemEnderCard extends ItemBase implements IValueContainer {
 	}
 	
 	private void updateDisplay(ItemStack stack,World world){
-		stack.setDamage(stack.getMaxDamage()-((int) ((getValue(stack,world)/(double)limit) * stack.getMaxDamage())));
+		stack.setDamage(stack.getMaxDamage()-((int) ((getValue(stack,world)/(double)getLimit(stack, world)) * stack.getMaxDamage())));
 	}
 
 	@Override
-	public int getLimit(World world) {
-		return limit;
+	public int getLimit(ItemStack stack,World world) {
+		return getChannel(stack, world).getLimit();
 	}
 
 	@Override
 	public int getSpace(ItemStack stack, World world) {
 		ValueWrapperChannel channel = getChannel(stack,world);
 		if(channel == null)return 0;
-		return limit - getValue(stack,world);
+		return getLimit(stack, world) - getValue(stack,world);
 	}
 
 	@Override
 	public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-		String id = playerIn.getUniqueID().toString();
-		setChannel(playerIn.getHeldItemMainhand(), id);
+		setChannel(playerIn.getHeldItemMainhand(), playerIn);
 		return super.onItemRightClick(worldIn, playerIn, handIn);
 	}
 	

@@ -8,6 +8,7 @@ import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.items.ValueStack;
 import com.alexpansion.gts.setup.RegistryHandler;
 import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.ValueWrapperChannel;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -37,28 +38,62 @@ public class CatalogContainer extends ContainerGTS {
     private boolean handFull = false;
     private PlayerEntity player;
     
+    private boolean ender = false;
+    private ValueWrapperChannel channel;
+    
     public CatalogContainer(int windowId, PlayerEntity clientPlayer, PacketBuffer data) {
         this(windowId,clientPlayer,clientPlayer.getHeldItemMainhand());
+        ItemStack stack = clientPlayer.getHeldItemMainhand();
+        if(stack.getItem() == RegistryHandler.ENDER_CATALOG.get()){
+            ender = true;
+            ValueManager vm = ValueManager.getVM(clientPlayer.world);
+            channel = (ValueWrapperChannel)vm.getWrapper("Channel", clientPlayer.getUniqueID().toString());
+        }
+
     }
     
     private void addValue(double inValue){
-        int value = valueStack.getValue();
+        int value = getValue();
         change += inValue;
         if(change > 1){
             value += (int)change;
             change = change%1;
         }
-        valueStack.setValue(value);
+        setValue(value);
+    }
+
+    public int getValue(){
+        if(ender){
+            return (int)channel.getValue();
+        }else{
+            return valueStack.getValue();
+        }
+    }
+
+    private int getLimit(){
+        if(ender){
+            return channel.getLimit();
+        }else{
+            return valueStack.getLimit();
+        }
+    }
+
+    private void setValue(int value){
+        if(ender){
+            channel.setValue(value);
+        }else{
+            valueStack.setValue(value);
+        }
     }
 
     private void removeValue(double inValue){
-        int value = valueStack.getValue();
+        int value = getValue();
         change -= inValue;
         if(change < 0){
             value += (int)change -1;
             change = change%1 +1;
         }
-        valueStack.setValue(value);
+        setValue(value);
     }
 
     @Override
@@ -75,7 +110,11 @@ public class CatalogContainer extends ContainerGTS {
         this.stack = stack;
         playerInventory = new InvWrapper(player.inventory);
         vm = ValueManager.getVM(world);
-        if(stack.getItem() instanceof ItemCatalog){
+        if(stack.getItem() == RegistryHandler.ENDER_CATALOG.get()){
+            ender = true;
+            ValueManager vm = ValueManager.getVM(player.world);
+            channel = (ValueWrapperChannel)vm.getWrapper("Channel", player.getUniqueID().toString());
+        }else if(stack.getItem() instanceof ItemCatalog){
             valueStack = new ValueStack(stack, world);
         }else{
             GTS.LOGGER.error("Catalog container found "+stack.getDisplayName()+" instead of Catalog.");
@@ -109,7 +148,7 @@ public class CatalogContainer extends ContainerGTS {
             double mult = 1 + (double)amt/500;
             itemValue *= mult;
         }
-        int toBuy = Math.min(amt, (int)(valueStack.getValue()/itemValue));
+        int toBuy = Math.min(amt, (int)(getValue()/itemValue));
         //toBuy = Math.min(toBuy, vm.getAmtSold(stack.getItem()));
         if(toBuy <= 0){
             return ItemStack.EMPTY;
@@ -129,7 +168,7 @@ public class CatalogContainer extends ContainerGTS {
         double mult = 1;
         Item item = sellStack.getItem();
         double itemValue = vm.getValue(sellStack);
-        int space = ((IValueContainer)stack.getItem()).getLimit(world) - valueStack.getValue();
+        int space = getLimit() - getValue();
         if(item instanceof IValueContainer){
             IValueContainer container = (IValueContainer)item;
             int value = container.getValue(sellStack,world);
@@ -178,7 +217,7 @@ public class CatalogContainer extends ContainerGTS {
         this.itemList.clear();
         ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
         ItemStack filterStack = getSlot(1).getStack();
-        ArrayList<Item> buyable = vm.getBuyableItemsTargeted(filterStack.getItem(),36,valueStack.getValue());
+        ArrayList<Item> buyable = vm.getBuyableItemsTargeted(filterStack.getItem(),36,getValue());
         for(Item i : buyable){
             stacks.add(new ItemStack(i));
         }
@@ -191,7 +230,7 @@ public class CatalogContainer extends ContainerGTS {
         itemList.clear();
         ArrayList<ItemStack> stacks = new ArrayList<ItemStack>();
         ItemStack filterStack = getSlot(1).getStack();
-        ArrayList<Item> buyable = vm.getBuyableItemsTargeted(filterStack.getItem(),36,valueStack.getValue());
+        ArrayList<Item> buyable = vm.getBuyableItemsTargeted(filterStack.getItem(),36,getValue());
         for(Item i : buyable){
             stacks.add(new ItemStack(i));
         }
@@ -238,7 +277,7 @@ public class CatalogContainer extends ContainerGTS {
         }
         //This is the credit slot, grab a credit or fill a valueContainer
         if(slotId == 0){
-            int value = valueStack.getValue();
+            int value = getValue();
             if(value <= 0) return ItemStack.EMPTY;
             if(mouseStack.isEmpty()){
                 int out = shift ? 64 : 1;
@@ -291,7 +330,7 @@ public class CatalogContainer extends ContainerGTS {
                 return mouseStack;
             }else if(mouseStack.getItem() instanceof IValueContainer){
                 ValueStack mouseValue = new ValueStack(mouseStack, world);
-                int space = ((IValueContainer)this.stack.getItem()).getLimit(world) - valueStack.getValue();
+                int space = getLimit() - getValue();
                 int in = Math.min(mouseValue.getValue(),space);
                 mouseStack = mouseValue.removeValue(in);
                 addValue(in);

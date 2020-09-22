@@ -1,0 +1,14 @@
+{
+    "type": "minecraft:crafting_shapeless",
+    "ingredients": [
+        {
+            "item":"gts:catalog"
+        },
+        {
+            "item":"minecraft:ender_pearl"
+        }
+    ],
+    "result": {
+        "item": "gts:ender_catalog"
+    }
+}

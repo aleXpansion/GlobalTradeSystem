@@ -71,7 +71,7 @@ public class ItemCreditCard extends ItemBase implements IValueContainer{
 	}
 
 	@Override
-	public int getLimit(World world) {
+	public int getLimit(ItemStack stack,World world) {
 		return limit;
 	}
 

@@ -9,7 +9,7 @@ public interface IValueContainer {
 	
 	public ItemStack setValue(ItemStack stack,int value, World world);
 	
-	public int getLimit(World world);
+	public int getLimit(ItemStack stack,World world);
 	
 	public int getSpace(ItemStack stack, World world);
 	
