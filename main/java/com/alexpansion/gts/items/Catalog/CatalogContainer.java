@@ -9,6 +9,7 @@ import com.alexpansion.gts.items.ItemEnderCard;
 import com.alexpansion.gts.items.ValueStack;
 import com.alexpansion.gts.setup.RegistryHandler;
 import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.ValueManagerServer;
 import com.alexpansion.gts.value.ValueWrapperChannel;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -52,6 +53,18 @@ public class CatalogContainer extends ContainerGTS {
         }
 
     }
+
+    private ValueWrapperChannel getChannel(){
+        if(channel == null){
+            ValueManager vm = ValueManager.getVM(world);
+            channel = (ValueWrapperChannel)vm.getWrapper("Channel",player.getUniqueID().toString());
+            if(channel == null && !world.isRemote){
+                channel = ValueWrapperChannel.get(player.getUniqueID().toString(),world.isRemote);
+                ((ValueManagerServer)vm).addWrapper(channel, player.getUniqueID().toString(), "Channel");
+            }
+        }
+        return channel;
+    }
     
     private void addValue(double inValue){
         int value = getValue();
@@ -65,7 +78,7 @@ public class CatalogContainer extends ContainerGTS {
 
     public int getValue(){
         if(ender){
-            return (int)channel.getValue();
+            return (int)getChannel().getValue();
         }else{
             return valueStack.getValue();
         }
@@ -73,7 +86,7 @@ public class CatalogContainer extends ContainerGTS {
 
     private int getLimit(){
         if(ender){
-            return channel.getLimit();
+            return getChannel().getLimit();
         }else{
             return valueStack.getLimit();
         }

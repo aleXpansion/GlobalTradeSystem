@@ -36,10 +36,13 @@ public class ItemEnderCard extends ItemBase implements IValueContainer {
 	private ValueWrapperChannel getChannel(ItemStack stack,World world){
 		ValueManager vm = ValueManager.getVM(world);
 		String id = stack.getTag().getString(ID_KEY);
+		if(id.equals("")){
+			return null;
+		}
 		ValueWrapperChannel channel = (ValueWrapperChannel)vm.getWrapper("Channel", id);
 		if(channel == null && !world.isRemote){
 			channel = ValueWrapperChannel.get(id, false);
-			((ValueManagerServer)vm).addWrapper(channel, "Channel", id);
+			((ValueManagerServer)vm).addWrapper(channel, id, "Channel");
 		}
 		return channel;
 	}
