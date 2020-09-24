@@ -10,9 +10,9 @@ import com.alexpansion.gts.Config;
 import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.setup.RegistryHandler;
 import com.alexpansion.gts.tools.CustomEnergyStorage;
-import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValueManagerServer;
-import com.alexpansion.gts.value.ValueWrapperEnergy;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManagerServer;
+import com.alexpansion.gts.value.wrappers.ValueWrapperEnergy;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;

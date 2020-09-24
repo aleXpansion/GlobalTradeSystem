@@ -1,8 +1,8 @@
 package com.alexpansion.gts.items;
 
-import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValueManagerServer;
-import com.alexpansion.gts.value.ValueWrapperChannel;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManagerServer;
+import com.alexpansion.gts.value.wrappers.ValueWrapperChannel;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;

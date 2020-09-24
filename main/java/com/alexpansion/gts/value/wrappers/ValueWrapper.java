@@ -1,9 +1,9 @@
-package com.alexpansion.gts.value;
+package com.alexpansion.gts.value.wrappers;
 
 import java.util.Arrays;
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.tools.JEIloader;
+import com.alexpansion.gts.recipes.loaders.JEIloader;
 
 public abstract class ValueWrapper {
 
@@ -33,7 +33,9 @@ public abstract class ValueWrapper {
             newWrapper = ValueWrapperEnergy.get(String.join(";", splitString),isRemote);
         }else if(type.equals("Channel")){
             newWrapper = ValueWrapperChannel.get(String.join(";", splitString),isRemote);
-        }else{
+        }else if(type.equals("Fluid")){
+            newWrapper = ValueWrapperFluid.get(String.join(";", splitString),isRemote);
+        }else {
             GTS.LOGGER.error("Invalid type "+type+ " in ValueWrapper#create.");
             return null;
         }

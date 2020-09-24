@@ -1,11 +1,11 @@
-package com.alexpansion.gts.tools;
+package com.alexpansion.gts.recipes.loaders;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.value.ValueWrapper;
+import com.alexpansion.gts.value.wrappers.ValueWrapper;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;

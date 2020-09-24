@@ -3,7 +3,7 @@ package com.alexpansion.gts.items.Catalog;
 import java.util.ArrayList;
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManager;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;

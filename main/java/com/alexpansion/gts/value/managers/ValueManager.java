@@ -1,4 +1,4 @@
-package com.alexpansion.gts.value;
+package com.alexpansion.gts.value.managers;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -6,6 +6,8 @@ import java.util.Map;
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.setup.RegistryHandler;
+import com.alexpansion.gts.value.wrappers.ValueWrapper;
+import com.alexpansion.gts.value.wrappers.ValueWrapperItem;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;

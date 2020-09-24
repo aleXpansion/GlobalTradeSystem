@@ -1,4 +1,4 @@
-package com.alexpansion.gts.value;
+package com.alexpansion.gts.value.managers;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -6,7 +6,9 @@ import java.util.Calendar;
 import com.alexpansion.gts.network.BaseValuePacket;
 import com.alexpansion.gts.network.Networking;
 import com.alexpansion.gts.network.ValuesRequestPacket;
-import com.alexpansion.gts.tools.JEIloader;
+import com.alexpansion.gts.recipes.loaders.JEIloader;
+import com.alexpansion.gts.value.wrappers.ValueWrapper;
+import com.alexpansion.gts.value.wrappers.ValueWrapperItem;
 
 import net.minecraft.item.Item;
 import net.minecraft.world.World;

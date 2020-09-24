@@ -4,9 +4,9 @@ import java.util.List;
 
 import com.alexpansion.gts.Config;
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValueManagerServer;
-import com.alexpansion.gts.value.ValueWrapperItem;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManagerServer;
+import com.alexpansion.gts.value.wrappers.ValueWrapperItem;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;

@@ -5,8 +5,8 @@ import java.util.List;
 import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.items.ItemEnderCard;
 import com.alexpansion.gts.setup.RegistryHandler;
-import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValueWrapperChannel;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.wrappers.ValueWrapperChannel;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;

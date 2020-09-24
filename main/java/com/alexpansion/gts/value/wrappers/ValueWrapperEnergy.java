@@ -1,7 +1,10 @@
-package com.alexpansion.gts.value;
+package com.alexpansion.gts.value.wrappers;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManagerServer;
 
 public class ValueWrapperEnergy extends ValueWrapper {
 

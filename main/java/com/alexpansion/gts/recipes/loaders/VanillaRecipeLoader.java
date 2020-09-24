@@ -1,4 +1,4 @@
-package com.alexpansion.gts.tools;
+package com.alexpansion.gts.recipes.loaders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.value.ValueWrapper;
-import com.alexpansion.gts.value.ValueWrapperItem;
+import com.alexpansion.gts.value.wrappers.ValueWrapper;
+import com.alexpansion.gts.value.wrappers.ValueWrapperItem;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;

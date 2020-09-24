@@ -1,4 +1,4 @@
-package com.alexpansion.gts.value;
+package com.alexpansion.gts.value.wrappers;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,7 +1,7 @@
 package com.alexpansion.gts.commands;
 
-import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValueManagerServer;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManagerServer;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.ArgumentBuilder;

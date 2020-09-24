@@ -3,8 +3,8 @@ package com.alexpansion.gts.network;
 import java.util.function.Supplier;
 
 import com.alexpansion.gts.items.Catalog.CatalogContainer;
-import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValuesBean;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValuesBean;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;

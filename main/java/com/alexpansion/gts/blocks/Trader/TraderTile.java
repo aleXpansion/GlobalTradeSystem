@@ -6,7 +6,7 @@ import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.items.ValueStack;
 import com.alexpansion.gts.setup.RegistryHandler;
-import com.alexpansion.gts.value.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManager;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;

@@ -2,7 +2,7 @@ package com.alexpansion.gts;
 
 import java.util.List;
 
-import com.alexpansion.gts.value.BaseValueManager;
+import com.alexpansion.gts.value.managers.BaseValueManager;
 
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.SubscribeEvent;

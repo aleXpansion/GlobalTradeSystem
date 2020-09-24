@@ -1,9 +1,9 @@
 package com.alexpansion.gts.blocks.PowerPlant;
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValueManagerClient;
-import com.alexpansion.gts.value.ValueWrapperEnergy;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManagerClient;
+import com.alexpansion.gts.value.wrappers.ValueWrapperEnergy;
 import com.mojang.blaze3d.matrix.MatrixStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screen.inventory.ContainerScreen;

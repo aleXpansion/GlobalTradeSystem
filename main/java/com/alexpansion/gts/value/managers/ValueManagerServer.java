@@ -1,10 +1,11 @@
-package com.alexpansion.gts.value;
+package com.alexpansion.gts.value.managers;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
 import com.alexpansion.gts.GTS;
+import com.alexpansion.gts.value.wrappers.ValueWrapper;
 
 import net.minecraft.item.Item;
 import net.minecraft.world.World;

@@ -2,10 +2,10 @@ package com.alexpansion.gts.network;
 
 import java.util.function.Supplier;
 
-import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValueManagerServer;
-import com.alexpansion.gts.value.ValueWrapper;
-import com.alexpansion.gts.value.ValueWrapperItem;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManagerServer;
+import com.alexpansion.gts.value.wrappers.ValueWrapper;
+import com.alexpansion.gts.value.wrappers.ValueWrapperItem;
 
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.world.server.ServerWorld;

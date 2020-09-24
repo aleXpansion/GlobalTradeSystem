@@ -8,9 +8,9 @@ import com.alexpansion.gts.items.IValueContainer;
 import com.alexpansion.gts.items.ItemEnderCard;
 import com.alexpansion.gts.items.ValueStack;
 import com.alexpansion.gts.setup.RegistryHandler;
-import com.alexpansion.gts.value.ValueManager;
-import com.alexpansion.gts.value.ValueManagerServer;
-import com.alexpansion.gts.value.ValueWrapperChannel;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManagerServer;
+import com.alexpansion.gts.value.wrappers.ValueWrapperChannel;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;

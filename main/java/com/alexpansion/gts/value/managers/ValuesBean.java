@@ -1,10 +1,11 @@
-package com.alexpansion.gts.value;
+package com.alexpansion.gts.value.managers;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.alexpansion.gts.GTS;
+import com.alexpansion.gts.value.wrappers.ValueWrapper;
 
 import net.minecraft.network.PacketBuffer;
 

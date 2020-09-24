@@ -1,12 +1,12 @@
-package com.alexpansion.gts.tools;
+package com.alexpansion.gts.recipes.loaders;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import com.alexpansion.gts.value.ValueWrapper;
-import com.alexpansion.gts.value.ValueWrapperItem;
+import com.alexpansion.gts.value.wrappers.ValueWrapper;
+import com.alexpansion.gts.value.wrappers.ValueWrapperItem;
 
 import mekanism.api.recipes.ItemStackToItemStackRecipe;
 import net.minecraft.item.ItemStack;
