@@ -66,6 +66,10 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
         if(!targetStack.isEmpty()){
             Double targetValue = vm.getValue(targetStack);
 
+            if(!vm.canIBuy(targetStack.getItem())){
+                break buy;
+            }
+
             if (targetValue > getValue()) {
                 break buy;
             }
