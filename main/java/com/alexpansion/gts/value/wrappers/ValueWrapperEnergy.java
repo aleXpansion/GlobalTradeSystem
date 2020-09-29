@@ -10,12 +10,11 @@ public class ValueWrapperEnergy extends ValueWrapper {
 
     private static Map<String,ValueWrapperEnergy> serverMap = new HashMap<String,ValueWrapperEnergy>();
     private static Map<String,ValueWrapperEnergy> clientMap = new HashMap<String,ValueWrapperEnergy>();
-    private String label;
 
     public static ValueWrapperEnergy get(String type,boolean isRemote){
         Map<String,ValueWrapperEnergy> map = isRemote ? clientMap : serverMap;
         if(map.get(type) == null){
-            ValueWrapperEnergy instance = new ValueWrapperEnergy(type);
+            ValueWrapperEnergy instance = new ValueWrapperEnergy(type,isRemote);
             map.put(type,instance);
             if(!isRemote){
                 ValueManagerServer vm = ValueManager.getServerVM();
@@ -29,8 +28,8 @@ public class ValueWrapperEnergy extends ValueWrapper {
         }
     }
 
-    public ValueWrapperEnergy(String type){
-        this.label = type;
+    public ValueWrapperEnergy(String label,boolean isRemote){
+        super("Energy",label,isRemote);
     }
 
     @Override

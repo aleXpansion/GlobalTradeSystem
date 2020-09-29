@@ -5,48 +5,48 @@ import java.util.Map;
 
 import com.alexpansion.gts.Config;
 
-import net.minecraft.item.Item;
+import net.minecraft.fluid.Fluid;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.IForgeRegistry;
 
-public class ValueWrapperItem extends ValueWrapper {
+public class ValueWrapperFluid extends ValueWrapper {
 
-    private static Map<Item,ValueWrapperItem> itemMapServer = new HashMap<Item,ValueWrapperItem>();
-    private static Map<Item,ValueWrapperItem> itemMapRemote = new HashMap<Item,ValueWrapperItem>();
+    private static Map<Fluid,ValueWrapperFluid> fluidMapServer = new HashMap<Fluid,ValueWrapperFluid>();
+    private static Map<Fluid,ValueWrapperFluid> fluidMapRemote = new HashMap<Fluid,ValueWrapperFluid>();
 
-    private Item item;
+    private Fluid fluid;
 
-    public static ValueWrapperItem get(Item itemIn,boolean isRemote){
-        Map<Item,ValueWrapperItem> itemMap = isRemote ? itemMapRemote : itemMapServer;
-        if(itemMap.containsKey(itemIn)){
-            return itemMap.get(itemIn);
+    public static ValueWrapperFluid get(Fluid fluidIn,boolean isRemote){
+        Map<Fluid,ValueWrapperFluid> fluidMap = isRemote ? fluidMapRemote : fluidMapServer;
+        if(fluidMap.containsKey(fluidIn)){
+            return fluidMap.get(fluidIn);
         }else{
-            return new ValueWrapperItem(itemIn,isRemote);
+            return new ValueWrapperFluid(fluidIn,isRemote);
         }
     }
 
-    private ValueWrapperItem(Item itemIn, boolean isRemote){
-        super("Item",itemIn.getRegistryName().toString(),isRemote);
-        Map<Item,ValueWrapperItem> itemMap = isRemote ? itemMapRemote : itemMapServer;
-        this.item = itemIn;
-        itemMap.put(itemIn, this);
+    private ValueWrapperFluid(Fluid fluidIn, boolean isRemote){
+        super("Fluid",fluidIn.getRegistryName().toString(),isRemote);
+        Map<Fluid,ValueWrapperFluid> fluidMap = isRemote ? fluidMapRemote : fluidMapServer;
+        this.fluid = fluidIn;
+        fluidMap.put(fluidIn, this);
     }
 
-    //gets or creates the wrapper for this item
-    public static ValueWrapperItem get(String name,boolean isRemote){
-        IForgeRegistry<Item> itemReg = ForgeRegistries.ITEMS;
-        Item item = itemReg.getValue(new ResourceLocation(name));
-        return get(item,isRemote);
+    //gets or creates the wrapper for this fluid
+    public static ValueWrapperFluid get(String name,boolean isRemote){
+        IForgeRegistry<Fluid> fluidReg = ForgeRegistries.FLUIDS;
+        Fluid fluid = fluidReg.getValue(new ResourceLocation(name));
+        return get(fluid,isRemote);
     }
 
-    public Item getItem(){
-        return item;
+    public Fluid getFluid(){
+        return fluid;
     }
 
     @Override
     public String toString(){
-        return super.toString() + "Item;"+ item.getRegistryName().toString() ;
+        return super.toString() + "Fluid;"+ fluid.getRegistryName().toString() ;
     }
 
     @Override
@@ -72,12 +72,12 @@ public class ValueWrapperItem extends ValueWrapper {
         // multiplier = (totalValueSold / 15000) + 1;
         // double multiplier = 1;
         // int rampUp = 1200;
-        // int valueSold = valueSoldMap.get(item);
-        // if (baseValueMap.get(item) == null) {
-        // 	toRemove = item;
+        // int valueSold = valueSoldMap.get(fluid);
+        // if (baseValueMap.get(fluid) == null) {
+        // 	toRemove = fluid;
         // 	return;
         // }
-        // double baseValue = baseValueMap.get(item);
+        // double baseValue = baseValueMap.get(fluid);
         // double newValue = baseValue;
         // double loss = 0;
         // if(valueSold >= totalValueSold){
@@ -90,7 +90,7 @@ public class ValueWrapperItem extends ValueWrapper {
         // 	loss = newValue * ((valueSold) / ((double) totalValueSold)) * multiplier;
         // 	newValue -= loss;
         // }
-        // LogHelper.info(item.getUnlocalizedName() + " is worth " +
+        // LogHelper.info(fluid.getUnlocalizedName() + " is worth " +
         // newValue);
         this.value = newValue;
         return newValue;
@@ -98,11 +98,11 @@ public class ValueWrapperItem extends ValueWrapper {
 
     @Override
     public String getType() {
-        return "Item";
+        return "Fluid";
     }
 
     @Override
     public String getLabel() {
-        return item.getRegistryName().toString();
+        return fluid.getRegistryName().toString();
     }
 }

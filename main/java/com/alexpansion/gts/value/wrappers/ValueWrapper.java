@@ -3,7 +3,8 @@ package com.alexpansion.gts.value.wrappers;
 import java.util.Arrays;
 
 import com.alexpansion.gts.GTS;
-import com.alexpansion.gts.recipes.loaders.JEIloader;
+import com.alexpansion.gts.value.managers.ValueManager;
+import com.alexpansion.gts.value.managers.ValueManagerClient;
 
 public abstract class ValueWrapper {
 
@@ -13,6 +14,15 @@ public abstract class ValueWrapper {
     private int soldAmt;
     protected boolean available = false;
     protected boolean calculated = false;
+    protected boolean isRemote;
+    protected String type;
+    protected String label;
+
+    public ValueWrapper(String type,String label,boolean isRemote){
+        this.type = type;
+        this.label = label;
+        this.isRemote = isRemote;
+    }
 
     public static ValueWrapper get(String inString,boolean isRemote) {
         String[] splitString = inString.split(";");
@@ -63,8 +73,9 @@ public abstract class ValueWrapper {
     }
 
     public int getBaseValue(){
-        if(baseValue == 0 && !calculated){
-            baseValue = JEIloader.getCrafingValue(this);
+        if(baseValue == 0 && !calculated && isRemote){
+            ValueManagerClient vm = ValueManager.getClientVM();
+            baseValue = vm.getCraftingValue(this);
             calculated = true;
         }
         return baseValue;

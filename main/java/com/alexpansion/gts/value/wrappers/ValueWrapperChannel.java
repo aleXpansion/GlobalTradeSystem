@@ -5,29 +5,28 @@ import java.util.Map;
 
 public class ValueWrapperChannel extends ValueWrapper{
 
-    private String id;
     private static Map<String,ValueWrapperChannel> serverMap = new HashMap<String,ValueWrapperChannel>();
     private static Map<String,ValueWrapperChannel> clientMap = new HashMap<String,ValueWrapperChannel>();
 
 
-    private ValueWrapperChannel(String id){
-        this.id = id;
+    private ValueWrapperChannel(String label,boolean isRemote){
+        super("Channel",label,isRemote);
     }
 
-    public static ValueWrapperChannel get(String id, boolean isRemote){
+    public static ValueWrapperChannel get(String label, boolean isRemote){
         Map<String,ValueWrapperChannel> map = isRemote ? clientMap : serverMap;
-        if(map.containsKey(id)){
-            return map.get(id);
+        if(map.containsKey(label)){
+            return map.get(label);
         }else{
-            ValueWrapperChannel instance = new ValueWrapperChannel(id);
-            map.put(id,instance);
+            ValueWrapperChannel instance = new ValueWrapperChannel(label,isRemote);
+            map.put(label,instance);
             instance.setLimit(1000000);
             return instance;
         }
     }
 
     public String toString(){
-        return super.toString() +"Channel;"+ id;
+        return super.toString() +"Channel;"+ label;
     }
 
     @Override
@@ -48,7 +47,7 @@ public class ValueWrapperChannel extends ValueWrapper{
 
     @Override
     public String getLabel() {
-        return id;
+        return label;
     }
 
     public int getLimit(){
