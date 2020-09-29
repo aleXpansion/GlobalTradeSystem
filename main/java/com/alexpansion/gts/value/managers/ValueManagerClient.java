@@ -76,10 +76,10 @@ public class ValueManagerClient extends ValueManager {
 		}else{
 			wrapper = ValueWrapperItem.get(target,true);
 		}
-		return getCrafingValue(wrapper);
+		return getCraftingValue(wrapper);
 	}
 
-	private int getCrafingValue(ValueWrapper wrapper){
+	public int getCraftingValue(ValueWrapper wrapper){
 		if(ModList.get().isLoaded("jei") && JEIloader.isLoaded() ){
 			int value = JEIloader.getCrafingValue(wrapper);
 			if(value <= 0){
