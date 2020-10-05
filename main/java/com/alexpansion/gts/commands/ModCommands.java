@@ -13,6 +13,7 @@ public class ModCommands {
                         .then(CommandAddBaseValue.register(dispatcher))
                         .then(CommandResetValues.register(dispatcher))
                         .then(CommandGetValue.register(dispatcher))
+                        .then(CommandSetSoldAmt.register(dispatcher))
         );
 
     }
