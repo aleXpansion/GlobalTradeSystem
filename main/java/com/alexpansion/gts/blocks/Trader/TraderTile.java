@@ -105,7 +105,7 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
                     h.setStackInSlot(slot, stack);
                     addValue(toTransfer);
                 }
-            }else{
+            }else if(vm.canISell(stack.getItem())){
                 Double value = vm.getValue(stack);
 
                 if(getSpace() >= value){
@@ -257,9 +257,11 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
                 if(slot == creditSlot){
                     return stack.getItem() instanceof IValueContainer;
                 //if it's the target slot or a selling slot, allow anything
-                //}else if(slot <=sellSlotLast){
-                   // return true;
-                //if it's the purchase buffer, don't allow anything
+                }else if(slot <=sellSlotLast){
+                   return true;
+                //if it's the purchase buffer, don't allow anything that's not a valueContainer
+                }else if(slot >= bufferSlotFirst && slot <= bufferSlotLast){
+                    return stack.getItem() instanceof IValueContainer;
                 }else{
                     //return false;
                     return true;
