@@ -6,12 +6,16 @@ import java.util.List;
 
 import com.alexpansion.gts.GTS;
 import com.alexpansion.gts.value.wrappers.ValueWrapper;
+import com.alexpansion.gts.value.wrappers.ValueWrapperFluid;
+import com.alexpansion.gts.value.wrappers.ValueWrapperItem;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;
 import mezz.jei.api.recipe.IRecipeManager;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import mezz.jei.api.runtime.IJeiRuntime;
+import net.minecraft.fluid.Fluid;
+import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
@@ -45,28 +49,39 @@ public class JEIloader implements IModPlugin {
     private static ArrayList<ValueWrapper> checking = new ArrayList<ValueWrapper>();
 
     public static int getCrafingValue(ValueWrapper wrapper) {
+        if(!isLoaded()) return 0;
         if(wrapperList == null){
             GTS.LOGGER.error("huh? JEIloader");
         }
-        if(wrapper == null || !wrapperList.containsKey(wrapper)){
-            return 0;
-        }
-        int value;
         //Checking for loops. If it's in here, that means this is a circular dependancy, just return 0 for this one.
         if(checking.contains(wrapper)){
             return 0;
         }
         checking.add(wrapper);
-
-
-        ArrayList<RecipeWrapper> inputs = wrapperList.get(wrapper);
-        value = 0;
-        for(RecipeWrapper input : inputs){
-            int inputValue = input.getValue();
-            if(inputValue != 0 && (value == 0 || inputValue < value)){
-                value = inputValue;
+        int value;
+        if(wrapper == null || !wrapperList.containsKey(wrapper)){
+            if(wrapper instanceof ValueWrapperItem){
+                ValueWrapperItem itemWrapper = (ValueWrapperItem) wrapper;
+                Item item = itemWrapper.getItem();
+                if(item instanceof BucketItem){
+                    Fluid fluid = ((BucketItem)item).getFluid();
+                    ValueWrapperFluid fluidWrapper = ValueWrapperFluid.get(fluid, true);
+                    ValueWrapperItem bucketWrapper = ValueWrapperItem.get(item, true);
+                    value = fluidWrapper.getBaseValue() + bucketWrapper.getBaseValue();
+                }
+            }
+            value = 0;
+        }else{
+            ArrayList<RecipeWrapper> inputs = wrapperList.get(wrapper);
+            value = 0;
+            for(RecipeWrapper input : inputs){
+                int inputValue = input.getValue();
+                if(inputValue != 0 && (value == 0 || inputValue < value)){
+                    value = inputValue;
+                }
             }
         }
+        
         checking.remove(wrapper);
         
         return value;
