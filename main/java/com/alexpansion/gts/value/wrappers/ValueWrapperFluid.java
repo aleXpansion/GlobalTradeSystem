@@ -65,7 +65,7 @@ public class ValueWrapperFluid extends ValueWrapper {
             newValue = baseValue * multiplier;
         }
         if(getSoldAmt() > Config.SOLD_ITEMS_MAX.get() || getSoldAmt() < (0-Config.BOUGHT_ITEMS_MAX.get())){
-            available = false;
+            canBuy = false;
         }
         //int rampUp = ConfigurationHandler.rampUpCredits;
         //double multiplier = ConfigurationHandler.depreciationMultiplier;

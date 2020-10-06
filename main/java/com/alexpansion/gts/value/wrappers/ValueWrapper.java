@@ -12,7 +12,8 @@ public abstract class ValueWrapper {
     protected float value;
     protected float soldValue;
     private int soldAmt;
-    protected boolean available = false;
+    protected boolean canBuy = false;
+    protected boolean canSell = false;
     protected boolean calculated = false;
     protected boolean isRemote;
     protected String type;
@@ -52,14 +53,14 @@ public abstract class ValueWrapper {
         newWrapper.soldValue = Float.parseFloat(values[1]);
         newWrapper.soldAmt = Integer.parseInt(values[2]);
         if(values.length > 3){    
-            newWrapper.available = Boolean.parseBoolean(values[3]);
+            newWrapper.canBuy = Boolean.parseBoolean(values[3]);
         }
         newWrapper.setBaseValue(Integer.parseInt(values[0]));
         return newWrapper;
     }
 
     public String toString(){
-        return baseValue+","+soldValue+","+soldAmt+","+available+";";
+        return baseValue+","+soldValue+","+soldAmt+","+canBuy+";";
     }
 
     public void setValue(int value){
@@ -100,11 +101,15 @@ public abstract class ValueWrapper {
     public void addSold(float soldValueIn,int soldAmtIn){
         this.soldValue += soldValueIn;
         this.soldAmt += soldAmtIn;
-        available = true;
+        canBuy = true;
     }
 
-    public boolean isAvailable(){
-        return available;
+    public boolean canBuy(){
+        return canBuy;
+    }
+
+    public boolean canSell(){
+        return canSell;
     }
 
     public abstract float calculateValue(int totalValueSold);

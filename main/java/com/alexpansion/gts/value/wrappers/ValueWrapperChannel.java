@@ -53,8 +53,7 @@ public class ValueWrapperChannel extends ValueWrapper{
     public int getLimit(){
         if(soldValue == 0){
             soldValue = 1000000000;
-        }
-        return (int)soldValue;
+        }return (int)soldValue;
     }
 
     public void setLimit(int limit){

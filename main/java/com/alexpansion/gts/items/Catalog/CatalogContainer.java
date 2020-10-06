@@ -10,6 +10,7 @@ import com.alexpansion.gts.items.ValueStack;
 import com.alexpansion.gts.setup.RegistryHandler;
 import com.alexpansion.gts.value.managers.ValueManager;
 import com.alexpansion.gts.value.managers.ValueManagerServer;
+import com.alexpansion.gts.value.wrappers.ValueWrapper;
 import com.alexpansion.gts.value.wrappers.ValueWrapperChannel;
 
 import net.minecraft.entity.player.PlayerEntity;
@@ -181,7 +182,12 @@ public class CatalogContainer extends ContainerGTS {
     public ItemStack sellItem(ItemStack sellStack, int max){
         double mult = 1;
         Item item = sellStack.getItem();
-        double itemValue = vm.getValue(sellStack);
+        ValueWrapper wrapper = vm.getWrapper(sellStack.getItem());
+        if(wrapper == null){
+            return sellStack;
+        }
+        if(!wrapper.canSell()) return sellStack;
+        double itemValue = wrapper.getValue();
         int space = getLimit() - getValue();
         if(item instanceof IValueContainer){
             IValueContainer container = (IValueContainer)item;

@@ -45,7 +45,7 @@ public class ValueWrapperEnergy extends ValueWrapper {
             float mult = (float)sold/maxBought;
             value = mult*baseValue + baseValue;
         }
-        available = sold > 0-maxBought;
+        canBuy = sold > 0-maxBought;
         if(value < 1){
             value = 1;
         }

@@ -55,6 +55,7 @@ public class CommandSetSoldAmt implements Command<CommandSource> {
             vm.addWrapper(wrapper,key.getRegistryName().toString(), "Item");
         }else{
             wrapper.addSold(0, 0 - wrapper.getSoldAmt() + amt);
+            wrapper.calculateValue(0);
         }
         return 0;
     }

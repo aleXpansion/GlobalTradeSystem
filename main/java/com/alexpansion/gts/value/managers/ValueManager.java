@@ -156,7 +156,9 @@ public abstract class ValueManager {
 	public ArrayList<Item> getAllSellableItems(){
 		ArrayList<Item> newList = new ArrayList<Item>();
 		for(ValueWrapper wrapper: getBean().getWrappers("Item").values()){
-			newList.add(((ValueWrapperItem)wrapper).getItem());
+			if(wrapper.canSell()){
+				newList.add(((ValueWrapperItem)wrapper).getItem());
+			}
 		}
 		return newList;
 	}
@@ -168,7 +170,7 @@ public abstract class ValueManager {
 			return newList;
 		}
 		for(ValueWrapper wrapper: getBean().getWrappers("Item").values()){
-			if(wrapper.isAvailable()){
+			if(wrapper.canBuy()){
 				newList.add(((ValueWrapperItem)wrapper).getItem());
 			}
 		}

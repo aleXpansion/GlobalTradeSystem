@@ -54,7 +54,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
         int max = stored == 0 ? realMax : realMax/2;
 
         //buy energy
-        if(stored <= max-energyValue && wrapper.isAvailable()){
+        if(stored <= max-energyValue && wrapper.canBuy()){
             handler.ifPresent(h -> {
                 ItemStack valueStack = h.getStackInSlot(0);
                 //If the stack in the credit slot doesn't hold credits, do nothing.
@@ -79,7 +79,7 @@ public class PowerPlantTile extends TileEntity implements ITickableTileEntity, I
         }
 
         //sell energy
-        if(stored > (max + energyValue)){
+        if(stored > (max + energyValue) && wrapper.canSell()){
             handler.ifPresent(h -> {
                 ItemStack valueStack = h.getStackInSlot(0);
                 //get information about the valueContainer
