@@ -35,16 +35,29 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 
 	@Override
 	public void read(CompoundNBT nbt) {
+		int stringCount = nbt.getInt("stringCount");
+		String wrappersString = "";
+		if(stringCount == 0){
+			wrappersString = nbt.getString("wrappers");
+		}
+		for(int i = 0;i<stringCount;i++){
+			wrappersString += nbt.getString("wrappers"+0);
+		}
 		total = nbt.getInt("total");
-		String wrappersString = nbt.getString("wrappers");
 		bean = new ValuesBean(wrappersString,false);
 		valuesLoaded = true;
 	}
 
 	@Override
 	public CompoundNBT write(CompoundNBT nbt) {
-		nbt.putString("wrappers", bean.toString());
+		String wrappersString = bean.toString();
+		int stringLength = wrappersString.length();
+		int stringCount = stringLength/ 65000 + 1;
+		nbt.putInt("stringCount", stringCount);
 		nbt.putInt("total", total);
+		for(int i = 0;i<stringCount;i++){
+			nbt.putString("wrappers"+i, bean.toString());
+		}
 		return nbt;
 	}
 
