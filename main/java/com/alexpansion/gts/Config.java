@@ -32,6 +32,8 @@ public class Config{
     public static ForgeConfigSpec.IntValue POWER_PLANT_SEND;
     public static ForgeConfigSpec.IntValue POWER_PLANT_TICKS;
 
+    public static ForgeConfigSpec.IntValue CHANNEL_LIMIT;
+
     public static ForgeConfigSpec.IntValue SOLD_ITEMS_MAX;
     public static ForgeConfigSpec.IntValue BOUGHT_ITEMS_DOUBLE;
     public static ForgeConfigSpec.IntValue BOUGHT_ITEMS_MAX;
@@ -50,6 +52,9 @@ public class Config{
         COMMON_BUILDER.pop();
 
         COMMON_BUILDER.comment("General settings").push(CATEGORY_GENERAL);
+
+        CHANNEL_LIMIT = COMMON_BUILDER.comment("Maximum amount a value channel can hold")
+                .defineInRange("channel_limit", 1000000000, 0, Integer.MAX_VALUE);
 
         COMMON_BUILDER.pop();
 

@@ -3,6 +3,8 @@ package com.alexpansion.gts.value.wrappers;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alexpansion.gts.Config;
+
 public class ValueWrapperChannel extends ValueWrapper{
 
     private static Map<String,ValueWrapperChannel> serverMap = new HashMap<String,ValueWrapperChannel>();
@@ -51,9 +53,7 @@ public class ValueWrapperChannel extends ValueWrapper{
     }
 
     public int getLimit(){
-        if(soldValue == 0){
-            soldValue = 1000000000;
-        }return (int)soldValue;
+       return Config.CHANNEL_LIMIT.get();
     }
 
     public void setLimit(int limit){
