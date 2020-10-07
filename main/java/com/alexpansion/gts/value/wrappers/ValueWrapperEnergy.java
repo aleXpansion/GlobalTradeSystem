@@ -3,6 +3,7 @@ package com.alexpansion.gts.value.wrappers;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.alexpansion.gts.Config;
 import com.alexpansion.gts.value.managers.ValueManager;
 import com.alexpansion.gts.value.managers.ValueManagerServer;
 
@@ -34,8 +35,8 @@ public class ValueWrapperEnergy extends ValueWrapper {
 
     @Override
     public float calculateValue(int totalValueSold) {
-        baseValue = 1000;
-        int maxBought = 1000000;
+        baseValue = Config.ENERGY_BASE_VALUE.get();
+        int maxBought = Config.ENERGY_MAX_AMT.get();
         int sold = getSoldAmt();
         if(sold > 0){
             value = sold/baseValue +baseValue;
@@ -46,6 +47,7 @@ public class ValueWrapperEnergy extends ValueWrapper {
             value = mult*baseValue + baseValue;
         }
         canBuy = sold > 0-maxBought;
+        canSell = sold < maxBought;
         if(value < 1){
             value = 1;
         }

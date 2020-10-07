@@ -14,6 +14,7 @@ public class Config{
 
     public static final String CATEGORY_GENERAL = "general";
     public static final String CATEGORY_POWER = "power";
+    public static final String SUBCATEGORY_ENERGY_VALUES = "energy_values";
     public static final String SUBCATEGORY_POWER_PLANT = "power_plant";
     public static final String CATEGORY_VALUES = "values";
     public static final String SUBCATEGORY_DEFAULT_VALUES = "default_values";
@@ -24,6 +25,8 @@ public class Config{
 
     public static ForgeConfigSpec.ConfigValue<List<String>> DEFAULT_ITEM_VALUES;
     public static ForgeConfigSpec.ConfigValue<List<String>> DEFAULT_TAG_VALUES;
+    public static ForgeConfigSpec.IntValue ENERGY_BASE_VALUE;
+    public static ForgeConfigSpec.IntValue ENERGY_MAX_AMT;
     public static ForgeConfigSpec.IntValue POWER_PLANT_MAXPOWER;
     public static ForgeConfigSpec.IntValue POWER_PLANT_GENERATE;
     public static ForgeConfigSpec.IntValue POWER_PLANT_SEND;
@@ -62,16 +65,21 @@ public class Config{
     }
 
     private static void setupPowerPlantConfig(ForgeConfigSpec.Builder COMMON_BUILDER, ForgeConfigSpec.Builder CLIENT_BUILDER) {
+        COMMON_BUILDER.comment("Energy Value Settings. Applies to Forge Energy.").push(SUBCATEGORY_ENERGY_VALUES);
+
+        ENERGY_BASE_VALUE = COMMON_BUILDER.comment("Base value for Forge Energy")
+                .defineInRange("energy_base_value",1000, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        ENERGY_MAX_AMT = COMMON_BUILDER.comment("Sale cap for Forge Energy")
+        .defineInRange("energy_max_amt",100000000, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        
+        COMMON_BUILDER.pop();
+
         COMMON_BUILDER.comment("Power Plant settings").push(SUBCATEGORY_POWER_PLANT);
 
         POWER_PLANT_MAXPOWER = COMMON_BUILDER.comment("Maximum power for the Power Plant generator")
                 .defineInRange("maxPower", 1000000, 0, Integer.MAX_VALUE);
-        POWER_PLANT_GENERATE = COMMON_BUILDER.comment("Power generation per credit")
-                .defineInRange("generate", 1000, 0, Integer.MAX_VALUE);
         POWER_PLANT_SEND = COMMON_BUILDER.comment("Power generation to send per tick")
                 .defineInRange("send", 10000, 0, Integer.MAX_VALUE);
-        POWER_PLANT_TICKS = COMMON_BUILDER.comment("Ticks per credit")
-                .defineInRange("ticks", 20, 0, Integer.MAX_VALUE);
 
         COMMON_BUILDER.pop();
     }
