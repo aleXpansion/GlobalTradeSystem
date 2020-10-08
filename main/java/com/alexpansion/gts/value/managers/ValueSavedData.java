@@ -41,7 +41,7 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 			wrappersString = nbt.getString("wrappers");
 		}
 		for(int i = 0;i<stringCount;i++){
-			wrappersString += nbt.getString("wrappers"+0);
+			wrappersString += nbt.getString("wrappers"+i);
 		}
 		total = nbt.getInt("total");
 		bean = new ValuesBean(wrappersString,false);
@@ -56,7 +56,12 @@ public class ValueSavedData extends WorldSavedData implements Supplier<ValueSave
 		nbt.putInt("stringCount", stringCount);
 		nbt.putInt("total", total);
 		for(int i = 0;i<stringCount;i++){
-			nbt.putString("wrappers"+i, bean.toString());
+			if(i < stringCount-1){
+				nbt.putString("wrappers"+i, wrappersString.substring(0, 65000));
+				wrappersString = wrappersString.substring(65000);
+			}else{
+				nbt.putString("wrappers"+i, wrappersString);
+			}
 		}
 		return nbt;
 	}
