@@ -79,7 +79,18 @@ public class TraderTile extends TileEntity implements ITickableTileEntity, IName
 
             int slot = bufferSlotFirst;
             while (slot <= bufferSlotLast && !newStack.isEmpty()) {
-                newStack = h.insertItem(slot, newStack, false);
+                ItemStack existing = h.getStackInSlot(slot);
+                if(existing.isEmpty()){
+                    existing = newStack;
+                    newStack = ItemStack.EMPTY;
+                    h.setStackInSlot(slot, existing);;
+                }else if(existing.getItem() == newStack.getItem()){
+                    if(existing.getCount() < existing.getMaxStackSize()){
+                        existing.setCount(existing.getCount()+1);
+                        newStack = ItemStack.EMPTY;
+                        h.setStackInSlot(slot, existing);;
+                    }
+                }
                 slot++;
             }
 
