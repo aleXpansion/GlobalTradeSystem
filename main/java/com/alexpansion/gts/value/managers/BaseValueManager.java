@@ -47,6 +47,9 @@ public class BaseValueManager {
 
 
 	public static void addTagValue(Tag<Item> tag, int value) {
+		if(tag == null) {
+			return;
+		}
 		Collection<Item> items = tag.getAllElements();
 		for (Item item : items) {
 			addSellableItem(item, value, item.getRegistryName().toString());
@@ -57,6 +60,9 @@ public class BaseValueManager {
 		TagCollection<Item> tags = ItemTags.getCollection();
 		ResourceLocation rl = new ResourceLocation(tagString);
 		Tag<Item> tag = (Tag<Item>) tags.get(rl);
+		if(tag == null){
+			GTS.LOGGER.error("Unable to find tag: "+tagString+". Skipping.");
+		}
 		addTagValue(tag, value);
 	}
 
@@ -171,5 +177,11 @@ public class BaseValueManager {
 		itemDefaults.add("minecraft:cocoa_beans,16");
 		itemDefaults.add("minecraft:red_mushroom,32");
 		itemDefaults.add("minecraft:brown_mushroom,32");
+		itemDefaults.add("minecraft:snowball,4");
+		itemDefaults.add("minecraft:ice,1");
+		itemDefaults.add("minecraft:crying_obsidian,128");
+		itemDefaults.add("minecraft:wither_skeleton_skull,131072");
+		itemDefaults.add("minecraft:nether_star,262144");
+		itemDefaults.add("minecraft:soul_sand,8");
 	}
 }
