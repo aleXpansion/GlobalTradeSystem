@@ -63,7 +63,6 @@ public abstract class TileBlock extends Block {
 
     
     @Override
-    @SuppressWarnings("deprecation")
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult trace) {
         if(!world.isRemote){
             TileEntity tile = world.getTileEntity(pos);
@@ -73,8 +72,9 @@ public abstract class TileBlock extends Block {
             } else {
                 throw new IllegalStateException("Our named container provider is missing!");
             }
+        }else{
+            return ActionResultType.SUCCESS;
         }
-        return super.onBlockActivated(state, world, pos, player, hand, trace);
     }
 
 
