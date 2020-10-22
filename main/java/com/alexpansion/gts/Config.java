@@ -35,6 +35,7 @@ public class Config{
     public static ForgeConfigSpec.IntValue CHANNEL_LIMIT;
 
     public static ForgeConfigSpec.BooleanValue NON_OPS_CAN_SEND_VALUES;
+    public static ForgeConfigSpec.IntValue SOLD_ITEMS_DECAY;
     public static ForgeConfigSpec.IntValue SOLD_ITEMS_MAX;
     public static ForgeConfigSpec.IntValue BOUGHT_ITEMS_DOUBLE;
     public static ForgeConfigSpec.IntValue BOUGHT_ITEMS_MAX;
@@ -115,9 +116,14 @@ public class Config{
         COMMON_BUILDER.comment("Values that affect the calculation of an item's value.")
                 .push(SUBCATEGORY_VALUE_CALCULATION);
 
+        SOLD_ITEMS_DECAY = COMMON_BUILDER.comment("Controls the rate at which the value of an item will decay based on how many have been sold."
+                +"When this number has been sold it will be at half base value, double this will be a quarter, and so on.")
+                .defineInRange("sold_items_decay", 128, 1, Integer.MAX_VALUE);
+
         SOLD_ITEMS_MAX = COMMON_BUILDER.comment("Maximum amount of a given item that can be sold. "+
-                "Price will gradually decrease until it hits 0 when this many have been sold.")
-                .defineInRange("sold_items_max", 640, 0, Integer.MAX_VALUE);
+                "Price will gradually decrease until it hits 0 when this many have been sold."+
+                "0 means there will be no limit.")
+                .defineInRange("sold_items_max", 0, 0, Integer.MAX_VALUE);
 
         BOUGHT_ITEMS_MAX = COMMON_BUILDER.comment("Maximum number of a given item that can be bought."
                 +" The item will not be available once the amount sold is less that 0 - <this>")

@@ -58,7 +58,10 @@ public class ValueWrapperItem extends ValueWrapper {
         if(getSoldAmt() == 0) {
             newValue = baseValue;
         }else if(getSoldAmt() > 0){
-            float multiplier = 1 - (float)(getSoldAmt() -1)/Config.SOLD_ITEMS_MAX.get();
+            double sold = getSoldAmt();
+            double pow = sold/Config.SOLD_ITEMS_DECAY.get();
+            float multiplier = (float)Math.pow(0.5, pow);
+            //float multiplier = 1 - (float)(getSoldAmt() -1)/Config.SOLD_ITEMS_MAX.get();
             newValue = baseValue * multiplier;
         }else{
             float multiplier = 1 + (float)(0- getSoldAmt())/Config.BOUGHT_ITEMS_DOUBLE.get();
@@ -70,7 +73,9 @@ public class ValueWrapperItem extends ValueWrapper {
         if(getSoldAmt() < (0-Config.BOUGHT_ITEMS_MAX.get())){
             canBuy = false;
         }
-        canSell = getSoldAmt() < Config.BOUGHT_ITEMS_MAX.get();
+        if(Config.SOLD_ITEMS_MAX.get() != 0){
+            canSell = getSoldAmt() < Config.SOLD_ITEMS_MAX.get();
+        }
         //int rampUp = ConfigurationHandler.rampUpCredits;
         //double multiplier = ConfigurationHandler.depreciationMultiplier;
         // multiplier = (totalValueSold / 15000) + 1;
