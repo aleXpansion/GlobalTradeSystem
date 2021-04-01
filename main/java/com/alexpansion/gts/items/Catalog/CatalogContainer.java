@@ -234,11 +234,9 @@ public class CatalogContainer extends ContainerGTS {
 
     public void refresh(){
         if(world.isRemote){
-            GTS.LOGGER.info("Client Norefresh");
             Networking.INSTANCE.sendToServer(new RefreshRequestPacket());
             return;
         }
-        GTS.LOGGER.info("Server refresh");
         //checking if they player is holding anything, cancel if they are. 
         //This way the items don't move around while you're trying to buy them.
         handFull = player.inventory.getItemStack().getItem() != ItemStack.EMPTY.getItem();
@@ -258,7 +256,6 @@ public class CatalogContainer extends ContainerGTS {
     }
 
     public void refresh(ArrayList<ItemStack> stacks){
-        GTS.LOGGER.info("client packet refresh");
         this.itemList.clear();
         this.itemList.addAll(stacks);
         scrollTo(0.0f);

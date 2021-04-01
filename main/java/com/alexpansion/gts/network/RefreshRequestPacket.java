@@ -23,7 +23,6 @@ public class RefreshRequestPacket{
 			if(ctx.get().getSender().openContainer instanceof CatalogContainer){
 				CatalogContainer cont = (CatalogContainer)ctx.get().getSender().openContainer;
 				cont.refresh();
-				GTS.LOGGER.info("Sending refresh per request to "+ctx.get().getSender().getName().getString());
 			}
         });
         ctx.get().setPacketHandled(true);
