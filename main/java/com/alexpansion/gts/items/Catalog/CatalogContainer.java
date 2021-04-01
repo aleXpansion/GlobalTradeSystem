@@ -12,9 +12,13 @@ import com.alexpansion.gts.value.managers.ValueManager;
 import com.alexpansion.gts.value.managers.ValueManagerServer;
 import com.alexpansion.gts.value.wrappers.ValueWrapper;
 import com.alexpansion.gts.value.wrappers.ValueWrapperChannel;
+import com.alexpansion.gts.network.CatalogRefreshPacket;
+import com.alexpansion.gts.network.Networking;
+import com.alexpansion.gts.network.RefreshRequestPacket;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.inventory.container.ClickType;
 import net.minecraft.inventory.container.INamedContainerProvider;
@@ -26,6 +30,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.network.PacketDistributor;
 import net.minecraftforge.items.wrapper.InvWrapper;
 
 public class CatalogContainer extends ContainerGTS {
@@ -228,6 +233,12 @@ public class CatalogContainer extends ContainerGTS {
     }
 
     public void refresh(){
+        if(world.isRemote){
+            GTS.LOGGER.info("Client Norefresh");
+            Networking.INSTANCE.sendToServer(new RefreshRequestPacket());
+            return;
+        }
+        GTS.LOGGER.info("Server refresh");
         //checking if they player is holding anything, cancel if they are. 
         //This way the items don't move around while you're trying to buy them.
         handFull = player.inventory.getItemStack().getItem() != ItemStack.EMPTY.getItem();
@@ -241,6 +252,14 @@ public class CatalogContainer extends ContainerGTS {
         for(Item i : buyable){
             stacks.add(new ItemStack(i));
         }
+        this.itemList.addAll(stacks);
+        scrollTo(0.0f);
+        Networking.INSTANCE.send(PacketDistributor.PLAYER.with(() -> (ServerPlayerEntity)this.player), new CatalogRefreshPacket(stacks));
+    }
+
+    public void refresh(ArrayList<ItemStack> stacks){
+        GTS.LOGGER.info("client packet refresh");
+        this.itemList.clear();
         this.itemList.addAll(stacks);
         scrollTo(0.0f);
     }
@@ -380,6 +399,7 @@ public class CatalogContainer extends ContainerGTS {
                     newStack = sellItem(mouseStack);
                 }
                 player.inventory.setItemStack(newStack);
+                refresh();
                 return newStack;
             }
         }else {

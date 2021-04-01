@@ -31,5 +31,15 @@ public class Networking {
             BaseValuePacket::toBytes,
             BaseValuePacket::new,
             BaseValuePacket::handle);
+        INSTANCE.registerMessage(nextID(),
+            CatalogRefreshPacket.class,
+            CatalogRefreshPacket::toBytes,
+            CatalogRefreshPacket::new,
+            CatalogRefreshPacket::handle);
+        INSTANCE.registerMessage(nextID(),
+            RefreshRequestPacket.class,
+            RefreshRequestPacket::toBytes,
+            RefreshRequestPacket::new,
+            RefreshRequestPacket::handle);
     }
 }
