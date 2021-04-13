@@ -84,7 +84,12 @@ public class CatalogContainer extends ContainerGTS {
 
     public int getValue(){
         if(ender){
-            return (int)getChannel().getValue();
+            ValueWrapperChannel channel = getChannel();
+            if(channel == null){
+                return 0;
+            }else{
+                return (int)channel.getValue();
+            }
         }else{
             return valueStack.getValue();
         }
